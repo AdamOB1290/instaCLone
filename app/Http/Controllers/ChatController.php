@@ -14,7 +14,9 @@ class ChatController extends Controller
      */
     public function index()
     {
-        //
+        $chats = Chat::with('user')->get();
+
+        return view('chats.crud.index', compact('chats'));
     }
 
     /**
@@ -24,7 +26,7 @@ class ChatController extends Controller
      */
     public function create()
     {
-        //
+        return view('chats.crud.create');
     }
 
     /**
@@ -35,7 +37,14 @@ class ChatController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = request()->validate([
+            'sender_id' => 'required',
+            'receiver_id' => 'required',
+            'content' => 'required',
+        ]);
+
+        Chat::create($data);
+        return redirect('chats');
     }
 
     /**
@@ -46,7 +55,7 @@ class ChatController extends Controller
      */
     public function show(Chat $chat)
     {
-        //
+        return view('chats.crud.show', compact('chat'));
     }
 
     /**
@@ -57,7 +66,7 @@ class ChatController extends Controller
      */
     public function edit(Chat $chat)
     {
-        //
+        return view('chats.crud.update', compact('chat'));
     }
 
     /**
@@ -67,9 +76,16 @@ class ChatController extends Controller
      * @param  \App\Chat  $chat
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Chat $chat)
+    public function update(Chat $chat)
     {
-        //
+        $data = request()->validate([
+            'sender_id' => 'required',
+            'receiver_id' => 'required',
+            'content' => 'required',
+        ]);
+
+        $chat->update($data);
+        return redirect('chats');
     }
 
     /**
@@ -80,6 +96,7 @@ class ChatController extends Controller
      */
     public function destroy(Chat $chat)
     {
-        //
+        $chat->delete();
+        return redirect('chats');
     }
 }

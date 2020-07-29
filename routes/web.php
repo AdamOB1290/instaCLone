@@ -13,6 +13,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+Route::get('/view', function () {
     return view('welcome');
 });
+
+Route::resource('users', 'UserController');
+
+Route::resource('chats', 'ChatController');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

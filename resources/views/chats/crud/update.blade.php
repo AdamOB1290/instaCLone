@@ -64,38 +64,28 @@
         </style>
     </head>
     <body>
-        
-        <div class="flex-center position-ref full-height">
-            @if (Route::has('login'))
-                <div class="top-right links">
-                    @auth
-                        <a href="{{ url('/home') }}">Home</a>
-                    @else
-                        <a href="{{ route('login') }}">Login</a>
-
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}">Register</a>
-                        @endif
-                    @endauth
-                </div>
-            @endif
-
-            <div class="content">
-                <div class="title m-b-md">
-                    Laravel
-                </div>
-
-                <div class="links">
-                    <a href="https://laravel.com/docs">Docs</a>
-                    <a href="https://laracasts.com">Laracasts</a>
-                    <a href="https://laravel-news.com">News</a>
-                    <a href="https://blog.laravel.com">Blog</a>
-                    <a href="https://nova.laravel.com">Nova</a>
-                    <a href="https://forge.laravel.com">Forge</a>
-                    <a href="https://vapor.laravel.com">Vapor</a>
-                    <a href="https://github.com/laravel/laravel">GitHub</a>
-                </div>
+        <form method="POST" action="/chats/{{$chat->id}}" enctype="multipart/form-data">
+            @csrf   
+            @method('PATCH')
+            <div class="form-group">
+                <label for="name">Sender ID :</label>
+                <input type="text" class="form-control" name="sender_id" value="{{old('sender_id') ?? $chat->sender_id}}">
+                @error('sender_id') <div style="color:red;">{{ $message }}</div> @enderror
             </div>
-        </div>
+            <div class="form-group">
+                <label for="year">Receiver ID :</label>
+                <input type="text" class="form-control" name="receiver_id" value="{{old('receiver_id') ?? $chat->receiver_id}}">
+                @error('receiver_id') <div style="color:red;">{{ $message }}</div> @enderror
+            </div>
+            <div class="form-group">
+                <label for="year">Content :</label>
+                <input type="text" class="form-control" name="content"  value="{{old('content') ?? $chat->content}}">
+                @error('content') <div style="color:red;">{{ $message }}</div> @enderror
+            </div>
+            
+            
+            
+            <button type='submit' class='btn btn-primary'>Update</button>
+        </form>
     </body>
 </html>
