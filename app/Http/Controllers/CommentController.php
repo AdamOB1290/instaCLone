@@ -14,7 +14,9 @@ class CommentController extends Controller
      */
     public function index()
     {
-        //
+        $comments = Comment::all();
+
+        return view("comments.crud.index")->with("comments", $comments);
     }
 
     /**
@@ -22,9 +24,25 @@ class CommentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($parentId = null, $postId = null, $userID = null)
     {
-        //
+        if ($parentId == null) {
+            $parentId = 0;
+        }
+        if ($postId == null) {
+            $postId = \App\Post::all()->random()->id;
+        }
+        if ($userID == null) {
+            $userID = \App\User::all()->random()->id;
+        }
+
+        // $parentId = 4;
+
+        // dd($parentId);
+        // echo $parentId;
+        $comment = new Comment();
+
+        return view("comments.crud.create", compact('comment', 'parentId', 'postId'));
     }
 
     /**
@@ -35,7 +53,10 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $comment = Comment::create($this->validatedData());
+
+
+        return redirect("/comments")->with('success', 'Comment Uploaded Successfully!');
     }
 
     /**
@@ -46,7 +67,8 @@ class CommentController extends Controller
      */
     public function show(Comment $comment)
     {
-        //
+        $replies = Comment::where('parent_comment_id', $comment->id)->get();;
+        return view("comments.crud.show", compact('comment', 'replies'));
     }
 
     /**
@@ -55,9 +77,13 @@ class CommentController extends Controller
      * @param  \App\Comment  $comment
      * @return \Illuminate\Http\Response
      */
-    public function edit(Comment $comment)
+    public function edit(Comment $comment, $userID = null)
     {
-        //
+        if ($userID == null) {
+            $userID = \App\User::all()->random()->id;
+        }
+
+        return view('comments.crud.update', compact("comment"));
     }
 
     /**
@@ -69,7 +95,9 @@ class CommentController extends Controller
      */
     public function update(Request $request, Comment $comment)
     {
-        //
+        $comment->update($this->validatedData());
+
+        return redirect('comments/' . $comment->id)->with('success', 'Comment Updated!');
     }
 
     /**
@@ -80,6 +108,18 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment)
     {
-        //
+        $comment->delete();
+        return redirect('/comments')->with('success', 'Comment deleted!');
+    }
+
+    protected  function validatedData()
+    {
+
+        return request()->validate([
+            'user_id' => 'required',
+            'post_id' => 'required',
+            'parent_comment_id' => 'required',
+            'content' => 'required|max:255',
+        ]);
     }
 }

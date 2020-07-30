@@ -39,7 +39,7 @@ class UserController extends Controller
     {
 
         $user = User::create($this->validateCreateRequest());
-        
+
         $this->storeImage($user);
 
         return redirect('/users');
@@ -63,7 +63,8 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(User $user) {
+    public function edit(User $user)
+    {
 
         return view('users.crud.update', compact('user'));
     }
@@ -75,19 +76,20 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(User $user) {
-        
+    public function update(User $user)
+    {
+
         $user->update($this->validateUpdateRequest());
 
         $this->storeImage($user);
         return redirect("users");
     }
-    
 
 
-        
-        
-    
+
+
+
+
 
     /**
      * Remove the specified resource from storage.
@@ -101,42 +103,45 @@ class UserController extends Controller
         return redirect('/users');
     }
 
-    private function validateCreateRequest(){
+    private function validateCreateRequest()
+    {
         return
-        tap(request()->validate([
-            'full_name' => 'required|max:255',
-            'birthdate' => 'required|date_format:d-m-Y|before:today',
-            'email' => 'required|email|unique:users,email',
-            'username' => 'required|unique:users,username',
-            'password' => 'required|min:8|confirmed',
-        ]), function () {
-            if (request()->hasFile('pfp')) {
-                request()->validate([
-                    'pfp' => 'file|image|max:5000',
-                ]);
-            }
-        });
+            tap(request()->validate([
+                'name' => 'required|max:255',
+                'birthdate' => 'required|date_format:d-m-Y|before:today',
+                'email' => 'required|email|unique:users,email',
+                'username' => 'required|unique:users,username',
+                'password' => 'required|min:8|confirmed',
+            ]), function () {
+                if (request()->hasFile('pfp')) {
+                    request()->validate([
+                        'pfp' => 'file|image|max:5000',
+                    ]);
+                }
+            });
     }
 
-    private function validateUpdateRequest() {
+    private function validateUpdateRequest()
+    {
         return
-        tap(request()->validate([
-            'full_name' => 'required|max:255',
-            'birthdate' => 'required|date_format:d-m-Y|before:today',
-            'email' => 'required|email',
-            // 'email' => 'required|email|unique:users,email',
-            // 'username' => 'required|unique:users,username',
-            // 'password' => 'required|min:8|confirmed',
-        ]), function () {
-            if (request()->hasFile('pfp')) {
-                request()->validate([
-                    'pfp' => 'file|image|max:5000',
-                ]);
-            }
-        });
+            tap(request()->validate([
+                'name' => 'required|max:255',
+                'birthdate' => 'required|date_format:d-m-Y|before:today',
+                'email' => 'required|email',
+                // 'email' => 'required|email|unique:users,email',
+                // 'username' => 'required|unique:users,username',
+                // 'password' => 'required|min:8|confirmed',
+            ]), function () {
+                if (request()->hasFile('pfp')) {
+                    request()->validate([
+                        'pfp' => 'file|image|max:5000',
+                    ]);
+                }
+            });
     }
 
-    private function storeImage($user) {
+    private function storeImage($user)
+    {
         if (request()->has('pfp')) {
             $user->update([
                 'pfp' => request()->pfp->store('uploads', 'public'),

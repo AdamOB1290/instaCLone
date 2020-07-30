@@ -67,9 +67,9 @@
         <form method="POST" action="{{route('users.store')}}" enctype="multipart/form-data">
             @csrf   
             <div class="form-group">
-                <label for="full_name">Full Name :</label>
-                <input type="text" class="form-control" name="full_name" placeholder="John Doe" value="{{old('full_name')}}">
-                @error('full_name') <div style="color:red;">{{ $message }}</div> @enderror
+                <label for="name">Full Name :</label>
+                <input type="text" class="form-control" name="name" placeholder="John Doe" value="{{old('name')}}">
+                @error('name') <div style="color:red;">{{ $message }}</div> @enderror
             </div>
             <div class="form-group">
                 <label for="birthdate">Birthdate :</label>

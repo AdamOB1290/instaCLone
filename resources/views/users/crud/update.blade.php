@@ -69,8 +69,8 @@
             @method('PATCH')
             <div class="form-group">
                 <label for="name">Full Name :</label>
-                <input type="text" class="form-control" name="full_name" placeholder="John Doe" value="{{old('full_name') ?? $user->full_name}}">
-                @error('full_name') <div style="color:red;">{{ $message }}</div> @enderror            </div>
+                <input type="text" class="form-control" name="name" placeholder="John Doe" value="{{old('name') ?? $user->name}}">
+                @error('name') <div style="color:red;">{{ $message }}</div> @enderror            </div>
             <div class="form-group">
                 <label for="year">Birthdate :</label>
                 <input type="text" class="form-control" name="birthdate" placeholder="DD-MM-YYYY" value="{{old('birthdate') ?? $user->birthdate}}">

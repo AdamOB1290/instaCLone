@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +14,9 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
+        $posts = Post::all();
+
+        return view("posts.crud.index")->with("posts", $posts);
     }
 
     /**
@@ -25,7 +26,9 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        $post = new Post();
+
+        return view("posts.crud.create", compact('post'));
     }
 
     /**
@@ -34,9 +37,13 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store()
     {
-        //
+        $post = Post::create($this->validatedData());
+
+        // $this->storeMediaFile($post);
+
+        return redirect("/posts")->with('success', 'Post Uploaded Successfully!');
     }
 
     /**
@@ -47,7 +54,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        //
+        return view("posts.crud.show", compact('post'));
     }
 
     /**
@@ -58,7 +65,7 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        //
+        return view('posts.crud.update', compact("post"));
     }
 
     /**
@@ -70,7 +77,12 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        //
+
+        $post->update($this->validatedData());
+
+        $this->storeMediaFile($post);
+
+        return redirect("/posts" . $post->id)->with('success', 'Post Updated!');
     }
 
     /**
@@ -81,6 +93,52 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        $post->delete();
+        return redirect('/posts')->with('success', 'Post deleted!');
     }
+
+    protected  function validatedData()
+    {
+
+        return tap(request()->validate([
+            'user_id' => 'required',
+            'cover' => 'image|max:5000', #more image validation rules: https://laraveldaily.com/four-laravel-validation-rules-for-images-and-photos/
+            'title' => 'max:255',
+            'description' => '',
+            // 'media_file' => 'required|mimetypes:mp4, jpeg, png, bmp, gif, svg, avi,jpg, png, jpeg, gif, svg| max:20000',#'mimetypes:video/mp4,video/jpeg,video/png,video/bmp,video/gif,video/svg,video/avi,image/jpg, image/png, image/jpeg, image/gif, image/svg| max:20000',
+            'media_file' => 'required',
+        ]), function () {
+            if (request()->hasFile('media_file')) {
+                request()->validate([
+                    'media_file' => 'file|mimes:jpg,png,jpeg,gif,svg,mp4,jpeg,png,bmp,svg,avi,mkv,mpeg|max:20000 ',
+                ]);
+
+                // $fileRules = [
+                //     'media_file' => 'file',
+                // ];
+
+                // //  if fileType is image
+                // if ($this->input('fileType') == 'image') {
+                //     $fileRules['file'] = 'image|mimetypes:image/jpg, image/png, image/jpeg, image/gif, image/svg|max:5000';
+                // }
+
+                // //if fileType is video
+                // if ($this->input('fileType') == 'video') {
+                //     $fileRules['file'] = 'mimetypes:video/mp4,video/jpeg,video/png,video/bmp,video/gif,video/svg,video/avi| max:20000';
+                // }
+
+                // return $fileRules;
+            }
+        });
+    }
+
+    // private function storeMediaFile($post)
+    // {
+    //     if (request()->has('media_file')) {
+    //         $post->update([
+    //             'media_file' => request()->media_file->store('uploads', 'public')
+    //         ]);
+    //     }
+    // }
+
 }

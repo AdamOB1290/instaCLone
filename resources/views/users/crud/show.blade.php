@@ -24,7 +24,7 @@
             <td><img src="{{asset('storage/'.$user->pfp)}}" alt="" style="height:30%"></td>
               @endif
                 <td>{{ $user->id}} </td>
-                <td><a href="">{{$user['full_name']}} </a></td>
+                <td><a href="">{{$user['name']}} </a></td>
                 <td><a href="">{{$user['email']}} </a></td>
                 <td class="text-center">
                   <form action="" method="user" >

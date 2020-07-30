@@ -27,7 +27,7 @@
             <tr>
                 <th><a href="/users/{{ $user->id }}">{{$key+1}} </a></th>
                 <td><a href="/users/{{ $user->id }}">{{'#' . $user['id']}} </a></td>
-                <td><a href="/users/{{ $user->id }}/edit">{{$user['full_name']}} </a></td>
+                <td><a href="/users/{{ $user->id }}/edit">{{$user['name']}} </a></td>
                 <td><a href="/users/{{ $user->id }}/edit">{{$user['email']}} </a></td>
                 <td class="text-center">
                   <form action="/users/{{ $user->id }}" method="post" >
