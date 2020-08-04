@@ -27,6 +27,7 @@
           </tr>
         </thead>
         <tbody>
+          {{-- <span>{{$posts[0]['id']}}</span> --}}
             @foreach ($posts as $key => $post)
             <tr>
                 <th><a href="{{ route('posts.show',$post->id) }}">{{$key+1}} </a></th>
@@ -44,6 +45,56 @@
                    <img src="{{ $post['media_file']}}" alt="" class="img-thumbnail">
                 </a></td>
                 <td><a href="{{ route('posts.edit',$post->id) }}">{{$post['description']}} </a></td>
+
+                <td class="text-center">
+                  @php
+                      $user = \App\User::findorFail(session('user_id'));
+                      $liked_posts=$user->liked['posts'];
+                  @endphp
+                  @if (!in_array($post->id,$liked_posts))
+                    <form action="{{ route('posts.like', [$post->id, session('user_id')]) }}" method="get" >
+                      <span>{{$post->likes}}</span> <input class="btn btn-primary" type="submit" value="Like" />
+                      @csrf
+                      @method('PATCH')
+                    </form>
+                  @else
+                    <form action="{{ route('posts.unlike', [$post->id, session('user_id')]) }}" method="get" >
+                      <span>{{$post->likes}}</span> <input class="btn btn-primary" type="submit" value="Unlike" />
+                      @csrf
+                      @method('PATCH')
+                    </form> 
+                  @endif
+                  
+                </td>
+
+                <td class="text-center">
+                  @php
+                      $user = \App\User::findorFail(session('user_id'));
+                      $favorites=$user->favorites;
+                      if($favorites==null)
+                      $favorites = [];
+                      // dd($favorites);
+                  @endphp
+                  @if (!in_array($post->id,$favorites))
+                    <form action="{{ route('posts.favorite', [$post->id, session('user_id')]) }}" method="get" >
+                      <input class="btn btn-primary" type="submit" value="Save" />
+                      @csrf
+                      @method('PATCH')
+                    </form>
+                  @else
+                    <form action="{{ route('posts.unfavorite', [$post->id, session('user_id')]) }}" method="get" >
+                      <input class="btn btn-primary" type="submit" value="Unsave" />
+                      @csrf
+                      @method('PATCH')
+                    </form> 
+                  @endif
+                  
+                </td>
+
+
+
+
+
                 <td class="text-center">
                   <form action="{{ route('posts.destroy',$post->id) }}" method="post" >
                     <input class="btn btn-danger" type="submit" value="Delete" />
@@ -65,8 +116,6 @@
 
         </tbody>
       </table>
-      
-      
           
       
 @endsection

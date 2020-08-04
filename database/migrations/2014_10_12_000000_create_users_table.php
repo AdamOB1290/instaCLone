@@ -22,13 +22,15 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('role')->default('user');
-            $table->integer('followers')->default(0);
+            $table->json('followers')->nullable();
+            $table->json('followed')->nullable();
             $table->string('pfp')->nullable()->default('uploads/default_pic.jpg');
             $table->string('username')->nullable();
             $table->string('password');
             $table->string('website')->nullable();
             $table->text('bio')->nullable();
             $table->json('favorites')->nullable();
+            $table->json('liked')->default('{"posts":[],"comments":[]}');
             $table->string('notification')->nullable();
             $table->rememberToken();
             $table->timestamps();

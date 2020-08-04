@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Post;
+use App\User;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -26,9 +27,8 @@ class PostController extends Controller
      */
     public function create()
     {
-        $post = new Post();
 
-        return view("posts.crud.create", compact('post'));
+        return view("posts.crud.create");
     }
 
     /**
@@ -75,7 +75,7 @@ class PostController extends Controller
      * @param  \App\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Post $post)
+    public function update(Post $post)
     {
 
         $post->update($this->validatedData());
@@ -141,4 +141,104 @@ class PostController extends Controller
     //     }
     // }
 
+
+    // public function like(Post $post, $userId)
+    // {
+
+    //     $post->likes += 1;
+    //     $post->update(array('likes' => $post->likes));
+    //     $user = \App\User::findorFail($userId);
+    //     $liked = $user->liked;
+
+    //     array_push($liked['posts'], $post->id);
+
+    //     $user->liked = $liked;
+
+    //     $user->save();
+    //     // return view("posts.crud.test", compact('liked'));
+    //     return redirect('/posts');
+
+    // }
+
+    // public function unlike(Post $post, $userId){
+
+    //     $post->likes -= 1;
+    //     $post->update(array('likes' => $post->likes));
+    //     $user = \App\User::findorFail($userId);
+    //     $liked = $user->liked;
+
+    //     if (($key = array_search($post->id, $liked['posts'])) !== false) {
+    //         unset($liked['posts'][$key]);
+
+    //     }
+
+    //     $user->liked = $liked;
+
+    //     $user->save();
+    //     return redirect('/posts');
+    // }
+
+    public function like(Post $post, $userId, $object = 'post')
+    {
+        $user = new User;
+        $user->dynamicLike($post, $userId, $object);
+        return redirect('/' . $object . 's');
+    }
+
+    public function unlike(Post $post, $userId, $object = 'post')
+    {
+        $user = new User;
+        $user->dynamicUnlike($post, $userId, $object);
+        return redirect('/' . $object . 's');
+    }
+
+    public function favorite(Post $post, $userId)
+    {
+        // Fetch from database the user who will receive the id
+        $user = \App\User::findorFail($userId);
+
+        // Fetch the user's attribute who will store the id and assign it to a variable $favorite
+        $favorite = $user->favorites;
+
+
+        if ($favorite == null) {
+            $favorite = [$post->id];
+        } else {
+            array_push($favorite, $post->id);
+        }
+
+        $user->favorites = $favorite;
+
+        $user->save();
+
+        // $user = new User;
+        // $user->dynamicFollow($post->id, $userId, 'favorites');
+
+        return redirect('/posts');
+    }
+
+    public function unfavorite(Post $post, $userId)
+    {
+        $user = \App\User::findorFail($userId);
+        $favorite = $user->favorites;
+
+        if (($key = array_search($post->id, $favorite)) !== false) {
+            unset($favorite[$key]);
+        }
+
+        $user->favorites = $favorite;
+
+        $user->save();
+
+        // $user = new User;
+        // $user->dynamicUnfollow($post->id, $userId, 'favorites');
+
+        return redirect('/posts');
+    }
 }
+
+  
+        
+        
+        
+        

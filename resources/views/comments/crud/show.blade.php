@@ -51,7 +51,7 @@
         <th>Content</th>
         {{-- <th>Email</th> --}}
         <th style="width:170px;" class="text-center">
-          <a href="{{ route('comments.create')}}" class="btn btn-primary m-0">Reply</a>
+          <a href="{{ route('comments.create', [$comment->id,$comment->post_id])}}" class="btn btn-primary">Reply</a>
         </th> 
 
       </tr>

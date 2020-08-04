@@ -20,6 +20,7 @@ class CreateCommentsTable extends Migration
             $table->foreignId('post_id')->references('id')->on('posts')->onDelete('cascade')->onUpdate('cascade');
             $table->text('content');
             $table->integer('likes')->default(0);
+            $table->integer('delete_state')->default(0);
             $table->string('notification')->nullable();
             $table->timestamps();
         });

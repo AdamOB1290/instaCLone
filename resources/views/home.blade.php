@@ -13,8 +13,10 @@
                             {{ session('status') }}
                         </div>
                     @endif
-
-                    {{ __('You are logged in!') }}
+                        <?php 
+                        $user= \App\User::findOrFail(session('user_id'));
+                        ?>
+                    {{ __('You are logged in as :  '.$user->username) }}
                 </div>
             </div>
         </div>

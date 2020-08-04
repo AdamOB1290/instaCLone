@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Comment;
+use App\User;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
@@ -24,7 +25,7 @@ class CommentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($parentId = null, $postId = null, $userID = null)
+    public function create($parentId = null, $postId = null)
     {
         if ($parentId == null) {
             $parentId = 0;
@@ -32,17 +33,15 @@ class CommentController extends Controller
         if ($postId == null) {
             $postId = \App\Post::all()->random()->id;
         }
-        if ($userID == null) {
-            $userID = \App\User::all()->random()->id;
-        }
+
 
         // $parentId = 4;
 
         // dd($parentId);
         // echo $parentId;
-        $comment = new Comment();
+        // $comment = new Comment();
 
-        return view("comments.crud.create", compact('comment', 'parentId', 'postId'));
+        return view("comments.crud.create", compact('parentId', 'postId'));
     }
 
     /**
@@ -67,7 +66,7 @@ class CommentController extends Controller
      */
     public function show(Comment $comment)
     {
-        $replies = Comment::where('parent_comment_id', $comment->id)->get();;
+        $replies = Comment::where('parent_comment_id', $comment->id)->get();
         return view("comments.crud.show", compact('comment', 'replies'));
     }
 
@@ -77,12 +76,8 @@ class CommentController extends Controller
      * @param  \App\Comment  $comment
      * @return \Illuminate\Http\Response
      */
-    public function edit(Comment $comment, $userID = null)
+    public function edit(Comment $comment)
     {
-        if ($userID == null) {
-            $userID = \App\User::all()->random()->id;
-        }
-
         return view('comments.crud.update', compact("comment"));
     }
 
@@ -108,8 +103,46 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment)
     {
-        $comment->delete();
-        return redirect('/comments')->with('success', 'Comment deleted!');
+        // $comment->delete();
+        // return redirect('/comments')->with('success', 'Comment deleted!');
+
+        //check for children
+        $children = Comment::where('parent_comment_id', $comment->id)->get();
+        $count = count($children);
+
+        if ($count == 0) { //if it has no children
+            //check for parent
+            $parent_id = Comment::where('id', $comment->id)->pluck('parent_comment_id');
+
+            if ($parent_id[0] != 0) { //if it has a parent
+
+                //check for siblings with undeleted status ( meaning delete_state = 0)
+                $request_siblings = [
+                    'parent_comment_id' => $parent_id,
+                    'delete_state' => 0,
+                ];
+                $siblings = Comment::where($request_siblings)->get();
+                $count = count($siblings);
+
+                if ($count == 1) { //if there are no undeleted siblings
+
+                    // run recursive function ( located in Comment model ) to delete the comment thread :
+
+                    $comment->delete_thread($comment, $parent_id[0]);
+
+                    // delete the current comment 
+                    $comment->delete();
+                } else {
+                    // delete the current comment 
+                    $comment->delete();
+                }
+            } else {
+                // delete the current comment 
+                $comment->delete();
+            }
+        } else { // update the current comment instead of delete ( since it has a child)
+            $comment->where('id', $comment->id)->update(['delete_state' => 1]);
+        }
     }
 
     protected  function validatedData()
@@ -121,5 +154,19 @@ class CommentController extends Controller
             'parent_comment_id' => 'required',
             'content' => 'required|max:255',
         ]);
+    }
+
+    public function like(Comment $comment, $userId, $object = 'comment')
+    {
+        $user = new User;
+        $user->dynamicLike($comment, $userId, $object);
+        return redirect('/' . $object . 's');
+    }
+
+    public function unlike(Comment $comment, $userId, $object = 'comment')
+    {
+        $user = new User;
+        $user->dynamicUnlike($comment, $userId, $object);
+        return redirect('/' . $object . 's');
     }
 }

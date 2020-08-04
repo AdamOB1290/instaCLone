@@ -26,7 +26,6 @@ Route::resource('posts', 'PostController');
 Route::resource('comments', 'CommentController'); #->except('create');
 
 Route::get('comments/create/{parentId?}/{postId?}', 'CommentController@create')->name('comments.create');
-Route::get('comments/{comment}/{userId?}/edit', 'CommentController@edit')->name('comments.edit');
 
 
 Auth::routes();
@@ -34,3 +33,18 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/test', 'PostController@imgTest');
+
+Route::get('posts/{post}/{user}/like', 'PostController@like')->name('posts.like');
+Route::get('posts/{post}/{user}/unlike', 'PostController@unlike')->name('posts.unlike');
+
+Route::get('/test2', 'PostController@like')->name('posts.test');
+
+Route::get('posts/{post}/{user}/favorite', 'PostController@favorite')->name('posts.favorite');
+Route::get('posts/{post}/{user}/unfavorite', 'PostController@unfavorite')->name('posts.unfavorite');
+
+Route::get('comments/{comment}/{user}/like', 'CommentController@like')->name('comments.like');
+Route::get('comments/{comment}/{user}/unlike', 'CommentController@unlike')->name('comments.unlike');
+
+Route::get('users/{user}/{sessionUser}/follow', 'UserController@follow')->name('users.follow');
+Route::get('users/{user}/{sessionUser}/unfollow', 'UserController@unfollow')->name('users.unfollow');
+

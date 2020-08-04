@@ -148,4 +148,24 @@ class UserController extends Controller
             ]);
         }
     }
+
+    public function follow($followedUserId, $sessionUserId)
+    {
+        $user = new User;
+        // (int) was needed because ids were shown as strings
+        $user->dynamicFollow((int)$followedUserId, (int)$sessionUserId, 'followed');
+        $user->dynamicFollow((int)$sessionUserId, (int)$followedUserId, 'followers');
+
+        return redirect('/users'); 
+    }
+
+    public function unfollow($followedUserId, $sessionUserId)
+    {
+        $user = new User;
+        // (int) was needed because ids were shown as strings
+        $user->dynamicUnfollow((int)$followedUserId, (int)$sessionUserId, 'followed');
+        $user->dynamicUnfollow((int)$sessionUserId, (int)$followedUserId, 'followers');
+        return redirect('/users'); 
+
+    }
 }
