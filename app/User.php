@@ -55,6 +55,9 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'favorites' => 'array',
         'liked' => 'array',
+        'followed' => 'array',
+        'followers' => 'array',
+        'notification_preferences'=> 'array',
     ];
 
     // $databaseIndex is the index of the User liked column in the database
@@ -120,7 +123,7 @@ class User extends Authenticatable
         $sessionUser = User::findorFail($idToReceive);
 
         // Fetch the user's attribute who will store the id and assign it to a variable $followedUsers
-        $followedUsers = json_decode($sessionUser->$storage);
+        $followedUsers = $sessionUser->$storage;
 
         // if $followedUsers is not an array, create an array with the $idToAdd
         if ($followedUsers == null) {
@@ -143,7 +146,7 @@ class User extends Authenticatable
         $sessionUser = User::findorFail($idToReceive);
 
         // Fetch the user's attribute who will store the id and assign it to a variable $followedUsers
-        $followedUsers = json_decode($sessionUser->$storage, true);
+        $followedUsers = $sessionUser->$storage;
 
         //Find the $idToRemove within the attribute array, then assign it's index to $key
         $key = array_search($idToRemove, $followedUsers);
@@ -154,4 +157,6 @@ class User extends Authenticatable
         $sessionUser->$storage = $followedUsers;
         $sessionUser->save();
     }
+
+    
 }

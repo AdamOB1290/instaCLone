@@ -12,6 +12,49 @@
         </div>
       @endif
     </div>
+      <div class="modalShare">
+        <div id="shareModal" class="modal" tabindex="-1" role="dialog">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Choose a receiver</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                @if ($followedUsers != null)
+                  @foreach ($followedUsers as $followedUserId)
+                  @php
+                    $followedUser= \App\User::findorFail($followedUserId);
+                    $postId = \App\Post::all()->random()->id;
+                  @endphp
+                      <ul>
+                        <li class="followed_user">{{$followedUser->name}}
+                          <form method="POST" action="{{route('chats.store')}}">
+                                @csrf
+                            <input type="hidden" name="receiver_id" value="{{$followedUserId}}">
+                            <input type="hidden" class="form-control" name="sender_id" value="{{session('user_id')}}">
+                            <input type="hidden" name="content" value="{{$postId}}">
+                            <button type="submit" name="submit" class="btn btn-primary">Send</button>
+                            {{-- input[{!! Form::hidden($name, $value, [$options]) !!}] WTF IS THIS--}} 
+                          </form>
+                          
+                        </li>  
+                      </ul>
+                  @endforeach
+                @endif
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="table">
       <table class="table">
         <thead>
           <tr>
@@ -21,13 +64,13 @@
             <th>Media File</th>
             <th>Description</th>
             <th style="width:170px;" class="text-center">
-              <a href="{{ route('posts.create')}}" class="btn btn-primary m-0">Add Post</a>
+              <a href="{{ route('posts.create', 'post')}}" class="btn btn-primary m-0">Add Post</a>
+              <a href="{{ route('posts.create', 'story')}}" class="btn btn-primary m-0">Add Story</a>
             </th> 
 
           </tr>
         </thead>
         <tbody>
-          {{-- <span>{{$posts[0]['id']}}</span> --}}
             @foreach ($posts as $key => $post)
             <tr>
                 <th><a href="{{ route('posts.show',$post->id) }}">{{$key+1}} </a></th>
@@ -41,11 +84,9 @@
                         <source src="{{asset('storage/' . $post['media_file'])}}" type="">
                       </video>
                   @endif --}}
-                  
-                   <img src="{{ $post['media_file']}}" alt="" class="img-thumbnail">
+                  <img src="{{ $post['media_file']}}" alt="" class="">
                 </a></td>
                 <td><a href="{{ route('posts.edit',$post->id) }}">{{$post['description']}} </a></td>
-
                 <td class="text-center">
                   @php
                       $user = \App\User::findorFail(session('user_id'));
@@ -64,9 +105,8 @@
                       @method('PATCH')
                     </form> 
                   @endif
-                  
-                </td>
 
+                </td>
                 <td class="text-center">
                   @php
                       $user = \App\User::findorFail(session('user_id'));
@@ -88,19 +128,46 @@
                       @method('PATCH')
                     </form> 
                   @endif
-                  
+
                 </td>
-
-
-
-
-
+                <td class="text-center">
+                  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#shareModal">
+                    Share
+                  </button>
+                </td>
+                <td>
+                  {{-- if publication type is 'post' show option 'share as story', and vice versa --}}
+                  @if ($post->type=='post')
+                    <form action="{{ route('posts.update', $post->id) }}" method="post" >
+                      <input type="hidden" name='type' value='post/story'>
+                      <input class="btn btn-primary" type="submit" value="Share as story" />
+                      @csrf
+                      @method('PATCH')
+                    </form> 
+                  @elseif ($post->type=='story')
+                    <form action="{{ route('posts.update', $post->id) }}" method="post" >
+                      <input type="hidden" name='type' value='story/post'>
+                      <input class="btn btn-primary" type="submit" value="Save as post" />
+                      @csrf
+                      @method('PATCH')
+                    </form> 
+                  @endif
+                </td>
                 <td class="text-center">
                   <form action="{{ route('posts.destroy',$post->id) }}" method="post" >
-                    <input class="btn btn-danger" type="submit" value="Delete" />
+                    <input type="hidden" name ='type' value="post">
+                    <input class="btn btn-danger" type="submit" value="Delete Post" />
                     @method('delete')
                     @csrf
-                </form>
+                  </form>
+                </td>
+                <td class="text-center">
+                  <form action="{{ route('posts.destroy',$post->id) }}" method="post" >
+                    <input type="hidden" name ='type' value="story">
+                    <input class="btn btn-danger" type="submit" value="Delete Story" />
+                    @method('delete')
+                    @csrf
+                  </form>
                 </td>
 
             </tr>      
@@ -116,6 +183,8 @@
 
         </tbody>
       </table>
+  </div>    
+      
           
       
 @endsection

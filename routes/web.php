@@ -21,12 +21,11 @@ Route::resource('users', 'UserController');
 
 Route::resource('chats', 'ChatController');
 
-Route::resource('posts', 'PostController');
+Route::resource('posts', 'PostController'); #->except('create');
+Route::get('posts/create/{type}', 'PostController@create')->name('posts.create');
 
 Route::resource('comments', 'CommentController'); #->except('create');
-
 Route::get('comments/create/{parentId?}/{postId?}', 'CommentController@create')->name('comments.create');
-
 
 Auth::routes();
 
@@ -48,3 +47,4 @@ Route::get('comments/{comment}/{user}/unlike', 'CommentController@unlike')->name
 Route::get('users/{user}/{sessionUser}/follow', 'UserController@follow')->name('users.follow');
 Route::get('users/{user}/{sessionUser}/unfollow', 'UserController@unfollow')->name('users.unfollow');
 
+Route::get('users/{user}/{sessionUser}/{index}/notification_preference', 'UserController@notification_preference')->name('users.notification_preference');

@@ -35,8 +35,7 @@
                 <td><a href="{{ route('comments.edit',$comment->id) }}">{{$comment['content']}} </a></td>
                 <td class="text-center">
                   <a href="{{ route('comments.create', [$comment->id,$comment->post_id])}}" class="btn btn-primary">Reply</a>
-                </td>   
-                
+                </td>     
                 <td class="text-center">
                   @php
                       $user = \App\User::findorFail(session('user_id'));
@@ -55,8 +54,9 @@
                       @method('PATCH')
                     </form> 
                   @endif
-                  
+
                 </td>
+
 
                 <td class="text-center">
                   <form action="{{ route('comments.destroy',$comment->id) }}" method="post" >
@@ -65,8 +65,6 @@
                     @csrf
                 </form>
                 </td>
-
-                
 
             </tr>      
             @endforeach

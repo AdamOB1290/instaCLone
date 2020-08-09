@@ -21,7 +21,7 @@ class CreatePostsTable extends Migration
             $table->string('title')->nullable();
             $table->text('description')->nullable();
             $table->integer('likes')->default(0);
-            $table->string('type')->default('post');
+            $table->string('type')->nullable();
             $table->string('notification')->nullable();
             $table->timestamps();
         });

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\LikeEvent;
 use App\Post;
 use App\User;
 use Illuminate\Http\Request;
+use App\Events\PostCreated;
 
 class PostController extends Controller
 {
@@ -16,8 +18,9 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::all();
+        $followedUsers = User::findorFail(session('user_id'))->followed;
 
-        return view("posts.crud.index")->with("posts", $posts);
+        return view('posts.crud.index', compact('posts', 'followedUsers'));
     }
 
     /**
@@ -25,10 +28,9 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($type)
     {
-
-        return view("posts.crud.create");
+        return view("posts.crud.create", compact('type'));
     }
 
     /**
@@ -39,10 +41,13 @@ class PostController extends Controller
      */
     public function store()
     {
+
         $post = Post::create($this->validatedData());
 
-        // $this->storeMediaFile($post);
 
+        $this->storeMediaFile($post);
+
+        event(new PostCreated($post));
         return redirect("/posts")->with('success', 'Post Uploaded Successfully!');
     }
 
@@ -81,8 +86,9 @@ class PostController extends Controller
         $post->update($this->validatedData());
 
         $this->storeMediaFile($post);
+        event(new PostCreated($post));
 
-        return redirect("/posts" . $post->id)->with('success', 'Post Updated!');
+        return redirect("posts/" . $post->id)->with('success', 'Post Updated!');
     }
 
     /**
@@ -91,9 +97,27 @@ class PostController extends Controller
      * @param  \App\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Post $post)
+    public function destroy(Request $request, Post $post)
     {
-        $post->delete();
+        
+        // check if it's both a post and a story
+        if ($post->type == 'post/story' || $post->type == 'story/post') {
+            // check if we want to delete post
+            if ($request->type == 'post') {
+
+                // update to story
+                $post->update(array('type' => 'story'));
+
+                // check if we want to delete story
+            } else if ($request->type == 'story') {
+
+                // update to post
+                $post->update(array('type' => 'post'));
+            }
+        } else {
+            $post->delete();
+        }
+
         return redirect('/posts')->with('success', 'Post deleted!');
     }
 
@@ -101,87 +125,49 @@ class PostController extends Controller
     {
 
         return tap(request()->validate([
-            'user_id' => 'required',
+            'user_id' => '',
             'cover' => 'image|max:5000', #more image validation rules: https://laraveldaily.com/four-laravel-validation-rules-for-images-and-photos/
             'title' => 'max:255',
             'description' => '',
-            // 'media_file' => 'required|mimetypes:mp4, jpeg, png, bmp, gif, svg, avi,jpg, png, jpeg, gif, svg| max:20000',#'mimetypes:video/mp4,video/jpeg,video/png,video/bmp,video/gif,video/svg,video/avi,image/jpg, image/png, image/jpeg, image/gif, image/svg| max:20000',
-            'media_file' => 'required',
+            'media_file' => '',
+            'type' => '',
         ]), function () {
             if (request()->hasFile('media_file')) {
                 request()->validate([
                     'media_file' => 'file|mimes:jpg,png,jpeg,gif,svg,mp4,jpeg,png,bmp,svg,avi,mkv,mpeg|max:20000 ',
                 ]);
-
-                // $fileRules = [
-                //     'media_file' => 'file',
-                // ];
-
-                // //  if fileType is image
-                // if ($this->input('fileType') == 'image') {
-                //     $fileRules['file'] = 'image|mimetypes:image/jpg, image/png, image/jpeg, image/gif, image/svg|max:5000';
-                // }
-
-                // //if fileType is video
-                // if ($this->input('fileType') == 'video') {
-                //     $fileRules['file'] = 'mimetypes:video/mp4,video/jpeg,video/png,video/bmp,video/gif,video/svg,video/avi| max:20000';
-                // }
-
-                // return $fileRules;
             }
         });
     }
 
-    // private function storeMediaFile($post)
-    // {
-    //     if (request()->has('media_file')) {
-    //         $post->update([
-    //             'media_file' => request()->media_file->store('uploads', 'public')
-    //         ]);
-    //     }
-    // }
+    private function storeMediaFile($post)
+    {
+        if (request()->has('media_file')) {
+            $post->update([
+                'media_file' => request()->media_file->store('uploads', 'public')
+            ]);
+        }
+    }
 
-
-    // public function like(Post $post, $userId)
-    // {
-
-    //     $post->likes += 1;
-    //     $post->update(array('likes' => $post->likes));
-    //     $user = \App\User::findorFail($userId);
-    //     $liked = $user->liked;
-
-    //     array_push($liked['posts'], $post->id);
-
-    //     $user->liked = $liked;
-
-    //     $user->save();
-    //     // return view("posts.crud.test", compact('liked'));
-    //     return redirect('/posts');
-
-    // }
-
-    // public function unlike(Post $post, $userId){
-
-    //     $post->likes -= 1;
-    //     $post->update(array('likes' => $post->likes));
-    //     $user = \App\User::findorFail($userId);
-    //     $liked = $user->liked;
-
-    //     if (($key = array_search($post->id, $liked['posts'])) !== false) {
-    //         unset($liked['posts'][$key]);
-
-    //     }
-
-    //     $user->liked = $liked;
-
-    //     $user->save();
-    //     return redirect('/posts');
-    // }
 
     public function like(Post $post, $userId, $object = 'post')
     {
-        $user = new User;
-        $user->dynamicLike($post, $userId, $object);
+        // fetch the user who made the post
+        $postUser = User::findOrFail($post->user_id);
+
+        // index the user id who liked the post into it
+        $postUser['liker_id'] = $userId;
+
+        // index the post id into it
+        $postUser['liked_post'] = (string)$post->id;
+
+        event(new LikeEvent(($postUser)));
+
+        //remove the indexes created earlier
+        unset($postUser['liker_id'], $postUser['liked_post']);
+
+        //apply like function
+        $postUser->dynamicLike($post, $userId, $object);
         return redirect('/' . $object . 's');
     }
 
@@ -236,9 +222,3 @@ class PostController extends Controller
         return redirect('/posts');
     }
 }
-
-  
-        
-        
-        
-        

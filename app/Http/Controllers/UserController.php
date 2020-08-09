@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserFollowed;
 use Illuminate\Http\Request;
 use App\User;
 
@@ -151,21 +152,48 @@ class UserController extends Controller
 
     public function follow($followedUserId, $sessionUserId)
     {
-        $user = new User;
-        // (int) was needed because ids were shown as strings
-        $user->dynamicFollow((int)$followedUserId, (int)$sessionUserId, 'followed');
-        $user->dynamicFollow((int)$sessionUserId, (int)$followedUserId, 'followers');
+        $user = User::findOrFail($followedUserId);
+        $user->dynamicFollow($followedUserId, $sessionUserId, 'followed');
+        $user->dynamicFollow($sessionUserId, $followedUserId, 'followers');
 
+        //we are creating the followerId to it on to the $notifiable object in App\Notifications\Follow;
+
+        $user['followerId'] = $sessionUserId;
+
+        event(new UserFollowed($user));
+        // unset($user['followerId']);
         return redirect('/users'); 
     }
 
     public function unfollow($followedUserId, $sessionUserId)
     {
-        $user = new User;
-        // (int) was needed because ids were shown as strings
-        $user->dynamicUnfollow((int)$followedUserId, (int)$sessionUserId, 'followed');
-        $user->dynamicUnfollow((int)$sessionUserId, (int)$followedUserId, 'followers');
+        $user = User::findOrFail($followedUserId);
+        $user->dynamicUnfollow($followedUserId, $sessionUserId, 'followed');
+        $user->dynamicUnfollow($sessionUserId, $followedUserId, 'followers');
         return redirect('/users'); 
 
+    }
+
+    public function notification_preference($userId, $sessionUserId, $index) {
+        
+        //fetch the user of $userId
+        $user = User::findOrFail($userId);
+
+        //assign the user array to a variable
+        $userArray= $user->notification_preferences;
+        
+        // if the array contains the session user id, delete it
+        if (($key = array_search($sessionUserId, $userArray[$index])) !== false) {
+            unset($userArray[$index][$key]);
+        } else {//If it doesn't contain it, add it
+            array_push($userArray[$index], $sessionUserId);
+        }
+
+        //update the user array
+        $user->notification_preferences = $userArray;
+
+        $user->save();
+
+        return redirect('/users'); 
     }
 }

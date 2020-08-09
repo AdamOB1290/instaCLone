@@ -18,6 +18,31 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        // 'App\Events\PostCreated' => [
+        //     'App\Listeners\DeleteStory',
+        // ],
+        'App\Events\UserFollowed' => [
+            'App\Listeners\FollowNotification',
+        ],
+        'App\Events\PostCreated' => [
+            'App\Listeners\PostNotification',
+            'App\Listeners\DeleteStory',
+        ],
+        'App\Events\CommentCreated' => [
+            'App\Listeners\CommentNotification',
+        ],
+        'App\Events\SavedPost' => [
+            'App\Listeners\SavedPostNotification',
+        ],
+        'App\Events\LikeEvent' => [
+            'App\Listeners\LikeNotification',
+        ],
+        'App\Events\SharePost' => [
+            'App\Listeners\ShareNotification',
+        ],
+        'App\Events\MessageSent' => [
+            'App\Listeners\MessageNotification',
+        ],
     ];
 
     /**

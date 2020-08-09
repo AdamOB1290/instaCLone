@@ -22,6 +22,7 @@
         <th>Poster</th>
         <th>Media File</th>
         <th>Description</th>
+        <th>Type</th>
         <th>Delete</th>
       </tr>
     </thead>
@@ -29,8 +30,18 @@
         <tr>
           <td>{{'#' . $post['id']}}</td>
           <td>{{$post->user['name']}}</td>
-          <td>{{$post['media_file']}}</td>
+          <td><a href="{{ route('posts.edit',$post->id) }}">
+            {{-- @if(strstr(mime_content_type('storage/' . $post->media_file), "image/"))
+                <img src="{{asset('storage/' . $post['media_file'])}}" alt="" class="img-thumbnail">
+            @elseif(strstr(mime_content_type('storage/' . $post->media_file), "video/"))
+                <video controls muted class="">
+                  <source src="{{asset('storage/' . $post['media_file'])}}" type="">
+                </video> --}}
+            {{-- @endif --}}
+             <img src="{{ $post['media_file']}}" alt="" class="">
+          </a></td>          
           <td>{{$post['description']}}</td>
+          <td>{{$post['type']}}</td>
           <td class="text-center">
             <form action="{{ route('posts.destroy',$post->id) }}" method="post" >
               <input class="btn btn-danger" type="submit" value="Delete" />

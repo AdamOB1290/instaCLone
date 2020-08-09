@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Comment;
+use App\Events\CommentCreated;
+use App\Events\LikeEvent;
 use App\User;
 use Illuminate\Http\Request;
 
@@ -54,6 +56,7 @@ class CommentController extends Controller
     {
         $comment = Comment::create($this->validatedData());
 
+        event(new CommentCreated($comment));
 
         return redirect("/comments")->with('success', 'Comment Uploaded Successfully!');
     }
@@ -143,6 +146,7 @@ class CommentController extends Controller
         } else { // update the current comment instead of delete ( since it has a child)
             $comment->where('id', $comment->id)->update(['delete_state' => 1]);
         }
+        return redirect('/comments');
     }
 
     protected  function validatedData()
@@ -158,8 +162,22 @@ class CommentController extends Controller
 
     public function like(Comment $comment, $userId, $object = 'comment')
     {
-        $user = new User;
-        $user->dynamicLike($comment, $userId, $object);
+        // fetch the user who made the comment
+        $commentUser = User::findOrFail($comment->user_id);
+
+        // index the user id who liked the comment into it
+        $commentUser['liker_id'] = $userId;
+
+        // index the comment id into it
+        $commentUser['liked_comment'] = (string)$comment->id;
+
+        event(new LikeEvent($commentUser));
+
+        //remove the indexes created earlier
+        unset($commentUser['liker_id'], $commentUser['liked_comment']);
+
+        //apply like function
+        $commentUser->dynamicLike($comment, $userId, $object);
         return redirect('/' . $object . 's');
     }
 

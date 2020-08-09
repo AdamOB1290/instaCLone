@@ -17,7 +17,8 @@ class CreateChatsTable extends Migration
             $table->id();
             $table->foreignId('sender_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('receiver_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
-            $table->text('content');
+            $table->text('content')->nullable();
+            $table->string('media_file')->nullable();
             $table->integer('notification')->default(1);
             $table->timestamps();
         });

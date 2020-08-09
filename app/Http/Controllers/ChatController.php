@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Chat;
+use App\Events\MessageSent;
 use Illuminate\Http\Request;
 
 class ChatController extends Controller
@@ -37,13 +38,11 @@ class ChatController extends Controller
      */
     public function store(Request $request)
     {
-        $data = request()->validate([
-            'sender_id' => 'required',
-            'receiver_id' => 'required',
-            'content' => 'required',
-        ]);
+        $chat = Chat::create($this->validatedData());
 
-        Chat::create($data);
+        event(new MessageSent($chat));
+
+        $this->storeMediaFile($chat);;
         return redirect('chats');
     }
 
@@ -79,9 +78,7 @@ class ChatController extends Controller
     public function update(Chat $chat)
     {
         $data = request()->validate([
-            'sender_id' => 'required',
-            'receiver_id' => 'required',
-            'content' => 'required',
+            
         ]);
 
         $chat->update($data);
@@ -98,5 +95,31 @@ class ChatController extends Controller
     {
         $chat->delete();
         return redirect('chats');
+    }
+
+    protected  function validatedData()
+    {
+
+        return tap(request()->validate([
+            'sender_id' => 'required',
+            'receiver_id' => 'required',
+            'content' => '',
+            'media_file' => '',
+        ]), function () {
+            if (request()->hasFile('media_file')) {
+                request()->validate([
+                    'media_file' => 'file|mimes:jpg,png,jpeg,gif,svg,mp4,jpeg,png,bmp,svg,avi,mkv,mpeg|max:20000 ',
+                ]);
+            }
+        });
+    }
+
+    private function storeMediaFile($chat)
+    {
+        if (request()->has('media_file')) {
+            $chat->update([
+                'media_file' => request()->media_file->store('uploads', 'public')
+            ]);
+        }
     }
 }

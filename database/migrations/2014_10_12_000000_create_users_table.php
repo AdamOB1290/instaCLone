@@ -31,7 +31,7 @@ class CreateUsersTable extends Migration
             $table->text('bio')->nullable();
             $table->json('favorites')->nullable();
             $table->json('liked')->default('{"posts":[],"comments":[]}');
-            $table->string('notification')->nullable();
+            $table->json('notification_preferences')->default('{"posts":[],"stories":[]}');
             $table->rememberToken();
             $table->timestamps();
         });

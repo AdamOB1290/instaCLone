@@ -18,6 +18,7 @@
 
   <div class="form-group">    
       <label for="description">Description:</label>
-      <textarea cols="30" rows="7" class="form-control" name="description" id="description" value="{{ old('description') ?? $post->description ?? ''  }}"></textarea>
+      <textarea cols="30" rows="7" class="form-control" name="description" id="description">{{ old('description') ?? $post->description ?? ''  }}</textarea>
       <p class="text-danger">{{$errors->first('description')}}</p>
   </div>
+  
