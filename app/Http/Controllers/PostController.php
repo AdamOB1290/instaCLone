@@ -34,8 +34,41 @@ class PostController extends Controller
             array_push($posts, ...$followedPosts);
 
             }
-        }
+
+            // if session user has not followed other users 
+        } else {
+            $users = User::all();
+
+            foreach ($users as $user) {
+                // check if the profile picture of the post user is a url
+                if (filter_var($user->pfp, FILTER_VALIDATE_URL)) {
+
+                    // index it to post user
+                    $user['pfp_type'] = 'imageUrl';
+                } else { // else it means it's a local file
+
+                    // index it to post user
+                    $user['pfp_type'] = 'localImage';
+                }
+
+                foreach ($user->posts as $post) {
+                    if (filter_var($post->media_file, FILTER_VALIDATE_URL)) {
+
+                        // index it to post
+                        $post['media_type'] = 'imageUrl';
+
+                        // else it means it's a local file, check if the local file is an image
+                    } elseif (strstr(mime_content_type('storage/' . $post->media_file), "image/")) {
+
+                        // index it to post
+                        $post['media_type'] = 'localImage';
+                    }
+                }
+
+                $user['top_posts'] = $user->posts;
+        } 
         
+        return $users;
 
         // we're sending the username with each comment made on a post
         // loop through posts
@@ -79,7 +112,7 @@ class PostController extends Controller
 
             
                      
-
+        }
 
             // loop through the comments of every post
             foreach ($post->comments as $comment) {
