@@ -1,8 +1,9 @@
-.feed_wrapper .card{
+.feed_wrapper .card {
     width: 18rem; 
     max-width:280px;
     font-size: 11px;
 }
+
 
 .feed_wrapper .card,
 .feed_wrapper .card > *{
@@ -35,5 +36,48 @@
     font-weight: 600;
 }
 
+/* SLIDER JS */
 
+.glider::-webkit-scrollbar {
+    display: none;
+}
+
+.story-username{
+    font-size: 9px;
+    font-weight: 500;
+}
+
+.border-down{
+    border-bottom: 0.5px solid #dee2e6 !important;
+}
+
+.plusStory{
+    background: white;
+    font-size: 11px;
+    bottom: -2px;
+    right: -2px;  
+    border: 1.5px solid white;
+    border-radius: 50%;
+}
+
+.gradiant_background{
+    background: linear-gradient(to bottom left, #cf00cf 25%, #ffcc00 100%);    width: 50px;
+    height: 53px;
+    width: 53px;
+    border-radius: 50%;
+}
+.gradiant_background div{
+    background-color: white;
+    height: 49px;
+    width: 49px;
+    border-radius: 50%;
+}
+
+.slider-image {
+  width: 46.5px;
+  max-width: none !important;
+  height: 46.5px;
+  border-radius: 50%;
+  box-shadow: 0px 0px 0.5px #000000;
+}
 

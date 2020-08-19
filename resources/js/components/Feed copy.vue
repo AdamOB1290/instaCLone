@@ -1,29 +1,27 @@
 <template>
   <div>
-    <div class="glider story-slider border-down pb-1">
-      <div class="story-wrapper px-2">
-        <div class="float-left d-flex flex-column align-items-center pt-1 mr-1">
-          <div class="position-relative">
+
+    <div class="story-slider border-down pb-1">
+      <div class="story-wrapper">
+        <div class="">
+          <div>
             <img v-if="sessionUser.pfp_type == 'imageUrl'" class=" slider-image self-align-center" :src="sessionUser.pfp"/>
-            <img v-else class=" slider-image  " :src="'storage/'+sessionUser.pfp"/>
-            <i class="plusStory fas fa-plus-circle position-absolute text-primary "></i>
+            <img v-else class=" slider-image  " :src="'storage/'+sessionUser.pfp"/>  
           </div>
                       
-          <span class="story-username pt-1">Your Story</span>
+          <span class="story-username ">{{sessionUser.username}}</span>
 
         </div>
 
-        <div v-for="(page, key) in storyFeed" :key="key" class="d-flex ">
+        <div v-for="(page, key) in storyFeed" :key="key" class="d-flex glider px-2">
                   
 
-            <div v-for="(story, key) in page" :key="key" class="mx-1 d-flex flex-column align-items-center">
-              <div class="gradiant_background d-flex flex-column">
-                <div class="m-auto align-items-center d-flex justify-content-center">
-                  <img v-if="story.user.pfp_type == 'imageUrl'" class=" slider-image self-align-center " :src="story.user.pfp"/>
-                  <img v-else class="slider-image " :src="'storage/'+story.user.pfp"/>
-                </div>
+            <div class="mx-1 d-flex flex-column align-items-center" v-for="(story, key) in page" :key="key">
+              <div class="">
+                <img v-if="story.user.pfp_type == 'imageUrl'" class=" slider-image self-align-center " :src="story.user.pfp"/>
+              <img v-else class="slider-image " :src="'storage/'+story.user.pfp"/>
               </div>
-                
+              
               <span class="story-username ">{{story.user.username}}</span>
             </div>
 
@@ -142,8 +140,6 @@ export default {
       sessionUserId: this.$sessionUserId,
       likedPosts: [],
       savedPosts: [],
-      slide: 0,
-      sliding: null,
       
     };
   },
@@ -201,78 +197,79 @@ export default {
   },
 
   updated: function () {
-new Glider(document.querySelector('.glider'), {
 
-    // `auto` allows automatic responsive
-    // width calculations
-    slidesToShow: 'auto',
-    slidesToScroll: 'auto',
+    new Glider(document.querySelector('.glider'), {
 
-    // should have been named `itemMinWidth`
-    // slides grow to fit the container viewport
-    // ignored unless `slidesToShow` is set to `auto`
-    itemWidth: undefined,
+      // `auto` allows automatic responsive
+      // width calculations
+      slidesToShow: 'auto',
+      slidesToScroll: 'auto',
 
-    // if true, slides wont be resized to fit viewport
-    // requires `itemWidth` to be set
-    // * this may cause fractional slides
-    exactWidth: false,
+      // should have been named `itemMinWidth`
+      // slides grow to fit the container viewport
+      // ignored unless `slidesToShow` is set to `auto`
+      itemWidth: undefined,
 
-    // speed aggravator - higher is slower
-    duration: .5,
+      // if true, slides wont be resized to fit viewport
+      // requires `itemWidth` to be set
+      // * this may cause fractional slides
+      exactWidth: false,
 
-    // dot container element or selector
-    dots: 'CSS Selector',
+      // speed aggravator - higher is slower
+      duration: .5,
 
-    // arrow container elements or selector
-    // arrows: {
-    //   prev: 'CSS Selector',
-      // may also pass element directly
-    //   next: document.querySelector('CSS Selector')
-    // },
+      // dot container element or selector
+      dots: 'CSS Selector',
 
-    // allow mouse dragging
-    draggable: false,
-    // how much to scroll with each mouse delta
-    dragVelocity: 3.3,
+      // arrow container elements or selector
+      arrows: {
+        prev: 'CSS Selector',
+        // may also pass element directly
+        next: document.querySelector('CSS Selector')
+      },
 
-    // use any custom easing function
-    // compatible with most easing plugins
-    easing: function (x, t, b, c, d) {
-      return c*(t/=d)*t + b;
-    },
+      // allow mouse dragging
+      draggable: false,
+      // how much to scroll with each mouse delta
+      dragVelocity: 3.3,
 
-    // event control
-    scrollPropagate: false,
-    eventPropagate: true,
+      // use any custom easing function
+      // compatible with most easing plugins
+      easing: function (x, t, b, c, d) {
+        return c*(t/=d)*t + b;
+      },
 
-    // Force centering slide after scroll event
-    scrollLock: false,
-    // how long to wait after scroll event before locking
-    // if too low, it might interrupt normal scrolling
-    scrollLockDelay: 150,
+      // event control
+      scrollPropagate: false,
+      eventPropagate: true,
 
-    // Force centering slide after resize event
-    resizeLock: true,
+      // Force centering slide after scroll event
+      scrollLock: false,
+      // how long to wait after scroll event before locking
+      // if too low, it might interrupt normal scrolling
+      scrollLockDelay: 150,
 
-    // Glider.js breakpoints are mobile-first
-    responsive: [
-      // {
-      //   breakpoint: 900,
-      //   settings: {
-      //     slidesToShow: 5,
-      //     slidesToScroll: 2
-      //   }
-      // },
-      {
-        breakpoint: 575,
-        settings: {
-          slidesToShow: 'auto',
-          slidesToScroll: 3
+      // Force centering slide after resize event
+      resizeLock: true,
+
+      // Glider.js breakpoints are mobile-first
+      responsive: [
+        {
+          breakpoint: 900,
+          settings: {
+            slidesToShow: 2,
+            slidesToScroll: 2
+          }
+        },
+        {
+          breakpoint: 575,
+          settings: {
+            slidesToShow: 3,
+            slidesToScroll: 3
+          }
         }
-      }
-    ]
-  });
+      ]
+    });
   },
 
   mounted: function () {

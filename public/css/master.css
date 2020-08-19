@@ -9,7 +9,7 @@
 nav {
   /* border-bottom: 1px solid rgba(var(--b6a,219,219,219),1); */
   /* border-bottom: 1px solid #DBDBDB; */
-  box-shadow: 0px 0px 2.5px black;
+  box-shadow: 0px 0px 2.5px #0000006e;
 }
 
 nav .fa-camera{
