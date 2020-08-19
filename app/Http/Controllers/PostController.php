@@ -17,10 +17,86 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::all();
-        $followedUsers = User::findorFail(session('user_id'))->followed;
 
-        return view('posts.crud.index', compact('posts', 'followedUsers'));
+        $posts = [];
+        $followedUsersIds = User::findorFail(session('user_id'))->followed;
+
+        // if session user has followed other users 
+        if (isset($followedUsersIds)) {
+
+            // loop through the followed users ids
+            foreach ($followedUsersIds as $followedUserId ) {
+
+            // fetch the posts of every followed user
+            $followedPosts = Post::select()->where('user_id', $followedUserId)->with('user')->with('comments')->get();
+            
+            // push the posts of the followed user into the array posts
+            array_push($posts, ...$followedPosts);
+
+            }
+        }
+        
+
+        // we're sending the username with each comment made on a post
+        // loop through posts
+        foreach($posts as $post){
+
+            // check if the media file of each post is a url
+            if (filter_var($post->media_file, FILTER_VALIDATE_URL)) {
+                
+                // index it to post
+                $post['media_type'] = 'imageUrl';
+                
+
+            } else { // else it means it's a local file
+
+                // check if the local file is an image
+                if (strstr(mime_content_type('storage/' . $post->media_file), "image/")) {
+
+                    // index it to post
+                    $post['media_type'] = 'localImage';
+
+                // else check if the local file is a video
+                } elseif (strstr(mime_content_type('storage/' . $post->media_file), "video/")) {
+
+                    // index it to post
+                    $post['media_type'] = 'localVideo';
+                }
+            }
+
+            // check if the profile picture of the post user is a url
+            if (filter_var($post->user->pfp, FILTER_VALIDATE_URL)) {
+
+                // index it to post user
+                $post->user['pfp_type'] = 'imageUrl';
+                
+            } else { // else it means it's a local file
+
+                // index it to post user
+                $post->user['pfp_type'] = 'localImage';
+
+            }
+
+            
+                     
+
+
+            // loop through the comments of every post
+            foreach ($post->comments as $comment) {
+
+                // fetch the username for every comment
+                $username = User::findOrFail($comment->user_id)->username;
+
+                // index the username to the comment
+                $comment['username'] = $username;
+            }
+            
+        };
+        
+
+        // return view('posts.crud.index', compact('posts', 'followedUserIds'));
+        // return response()->json(['posts'=> $posts]);
+        return $posts;
     }
 
     /**
@@ -167,15 +243,20 @@ class PostController extends Controller
         unset($postUser['liker_id'], $postUser['liked_post']);
 
         //apply like function
-        $postUser->dynamicLike($post, $userId, $object);
-        return redirect('/' . $object . 's');
+        $sessionUser = $postUser->dynamicLike($post, $userId, $object);
+        return $sessionUser;
+
+        // return redirect('/' . $object . 's');
+
     }
 
     public function unlike(Post $post, $userId, $object = 'post')
     {
         $user = new User;
-        $user->dynamicUnlike($post, $userId, $object);
-        return redirect('/' . $object . 's');
+        $sessionUser = $user->dynamicUnlike($post, $userId, $object);
+        return $sessionUser;
+
+        // return redirect('/' . $object . 's');
     }
 
     public function favorite(Post $post, $userId)
@@ -208,8 +289,9 @@ class PostController extends Controller
         $user = \App\User::findorFail($userId);
         $favorite = $user->favorites;
 
+        // we need to use !== because we need to check for the datatype as well
         if (($key = array_search($post->id, $favorite)) !== false) {
-            unset($favorite[$key]);
+            array_splice ($favorite, $key, 1);
         }
 
         $user->favorites = $favorite;

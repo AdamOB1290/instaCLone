@@ -48,3 +48,7 @@ Route::get('users/{user}/{sessionUser}/follow', 'UserController@follow')->name('
 Route::get('users/{user}/{sessionUser}/unfollow', 'UserController@unfollow')->name('users.unfollow');
 
 Route::get('users/{user}/{sessionUser}/{index}/notification_preference', 'UserController@notification_preference')->name('users.notification_preference');
+
+Route::get('/feeds', function () {
+    return view('feed');
+});

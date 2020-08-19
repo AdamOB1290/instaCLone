@@ -84,6 +84,8 @@ class User extends Authenticatable
 
         $user->save();
 
+        return $user;
+
         // return redirect('/' . $object . 's'); this only works in controller ??? Iliass
     }
 
@@ -105,8 +107,7 @@ class User extends Authenticatable
         $key = array_search($unlikedObject->id, $liked[$databaseIndex . 's']);
 
         //Remove the unliked object's ID from the array
-        unset($liked[$databaseIndex . 's'][$key]);
-
+        array_splice($liked[$databaseIndex . 's'], $key, 1);
 
         //update the User's liked attribute 
         $user->liked = $liked;
@@ -114,6 +115,8 @@ class User extends Authenticatable
         $user->save();
 
         // return redirect('/' . $object . 's'); this only works in controller ??? illias
+        return $user;
+
     }
 
     public function dynamicFollow($idToAdd, $idToReceive, $storage)
@@ -151,7 +154,7 @@ class User extends Authenticatable
         //Find the $idToRemove within the attribute array, then assign it's index to $key
         $key = array_search($idToRemove, $followedUsers);
         //Remove the $idToRemove from the array
-        unset($followedUsers[$key]);
+        array_splice($followedUsers, $key, 1);
 
         //update the User's receiver attribute 
         $sessionUser->$storage = $followedUsers;

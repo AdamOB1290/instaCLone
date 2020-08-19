@@ -7,6 +7,18 @@
 require('./bootstrap');
 
 window.Vue = require('vue');
+// import Vue from 'vue'
+import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+
+// Install BootstrapVue
+Vue.use(BootstrapVue)
+// Optionally install the BootstrapVue icon components plugin
+Vue.use(IconsPlugin)
+
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+
+
 
 /**
  * The following block of code may be used to automatically register your
@@ -20,6 +32,11 @@ window.Vue = require('vue');
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+Vue.component('navbar', require('./components/Navbar.vue').default);
+Vue.component('feed', require('./components/Feed.vue').default);
+Vue.component('comments', require('./components/Comments.vue').default);
+
+Vue.prototype.$sessionUserId = document.querySelector("meta[name='user-id']").getAttribute('content');
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -27,6 +44,23 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
+// window.axios = require('axios');
+
 const app = new Vue({
     el: '#app',
+    data() {
+        return {
+            
+        }
+    },
+   
+    
+    components: {
+
+    },
+
+    
+
+   
 });
+

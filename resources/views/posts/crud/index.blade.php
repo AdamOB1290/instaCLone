@@ -84,7 +84,7 @@
                         <source src="{{asset('storage/' . $post['media_file'])}}" type="">
                       </video>
                   @endif --}}
-                  <img src="{{ $post['media_file']}}" alt="" class="">
+                  {{-- <img src="{{ $post['media_file']}}" alt="" class=""> --}}
                 </a></td>
                 <td><a href="{{ route('posts.edit',$post->id) }}">{{$post['description']}} </a></td>
                 <td class="text-center">

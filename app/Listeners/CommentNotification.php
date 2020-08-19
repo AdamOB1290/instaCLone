@@ -55,9 +55,11 @@ class CommentNotification
         //remove the indexes created earlier
         unset($postUser['notificationMessage'], $postUser['commentId']);
 
-
+       
         //if the comment has a parent
-        if ($event->comment->parent_comment_id !== 0) {
+        // we need to use != because we want to ignore the datatype
+        if ($event->comment->parent_comment_id != 0) {
+           
 
             //fetch the parent comment
             $parentComment = \App\Comment::findOrFail($event->comment->parent_comment_id);
@@ -79,6 +81,9 @@ class CommentNotification
 
             //remove the index created earlier
             // unset($parentCommentUser['commentUserId']);
+
+            
         }
+        
     }
 }

@@ -1,0 +1,39 @@
+.feed_wrapper .card{
+    width: 18rem; 
+    max-width:280px;
+    font-size: 11px;
+}
+
+.feed_wrapper .card,
+.feed_wrapper .card > *{
+    border: 0;
+}
+
+.feed_wrapper .card .card-head{
+    height: 35px;
+}
+
+.feed_wrapper .card .card-head .pfp{
+    width: 25px; 
+    height: 25px;
+}
+
+.feed_wrapper .card .card-body{
+    padding: 0;
+}
+
+.feed_wrapper .card .show_more{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* number of lines to show */
+    -webkit-box-orient: vertical;
+}
+
+.feed_wrapper .card .show_hide{
+    color: rgb(165, 165, 165);
+    font-weight: 600;
+}
+
+
+

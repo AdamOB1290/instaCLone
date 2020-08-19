@@ -55,7 +55,8 @@ class UserController extends Controller
     public function show(User $user)
     {
 
-        return view('users.crud.show', compact('user'));
+        // return view('users.crud.show', compact('user'));
+        return $user;
     }
 
     /**
@@ -181,8 +182,8 @@ class UserController extends Controller
 
         //assign the user array to a variable
         $userArray= $user->notification_preferences;
-        
         // if the array contains the session user id, delete it
+        // we need to use !== because we need to check for the datatype as well
         if (($key = array_search($sessionUserId, $userArray[$index])) !== false) {
             unset($userArray[$index][$key]);
         } else {//If it doesn't contain it, add it

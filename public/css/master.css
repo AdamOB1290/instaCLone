@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Cookie&display=swap');
+
+
+.navbar-brand {
+    font-family: 'Cookie', cursive;
+    font-size: 27px!important;
+}
+
+nav {
+  /* border-bottom: 1px solid rgba(var(--b6a,219,219,219),1); */
+  /* border-bottom: 1px solid #DBDBDB; */
+  box-shadow: 0px 0px 2.5px black;
+}
+
+nav .fa-camera{
+font-size: 25px;
+}
