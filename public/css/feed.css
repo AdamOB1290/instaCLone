@@ -86,6 +86,13 @@
     /* font-weight: 300; */
 }
 
+.user_wrapper {
+    width: 300px;
+    height: 330px;
+    min-width: 205px;
+    margin: 0;
+}
+
 .user_wrapper .card{
     width: 180px;
     min-width: 180px;

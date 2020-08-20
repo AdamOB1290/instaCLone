@@ -131,9 +131,9 @@ class User extends Authenticatable
 
         // if $followedUsers is not an array, create an array with the $idToAdd
         if ($followedUsers == null) {
-            $followedUsers = [$idToAdd];
+            $followedUsers = [(int)$idToAdd];
         } else { // if $followedUsers is already an array, push the $idToAdd
-            array_push($followedUsers, $idToAdd);
+            array_push($followedUsers, (int)$idToAdd);
         }
 
 

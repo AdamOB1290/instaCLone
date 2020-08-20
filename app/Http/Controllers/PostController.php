@@ -22,7 +22,7 @@ class PostController extends Controller
         $followedUsersIds = User::findorFail(session('user_id'))->followed;
 
         // if session user has followed other users 
-        if (isset($followedUsersIds)) {
+        if (isset($followedUsersIds) && (count($followedUsersIds) > 0)) {
 
             // loop through the followed users ids
             foreach ($followedUsersIds as $followedUserId ) {

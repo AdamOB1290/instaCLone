@@ -1,23 +1,33 @@
 <template>
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">Example Component</div>
-
-                    <div class="card-body">
-                        I'm an example component.
-                    </div>
-                </div>
-            </div>
-        </div>
+        
+        <slick ref="slick" :options="slickOptions">
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+        </slick>
+            
     </div>
 </template>
 
 <script>
+import Slick from 'vue-slick';
+
     export default {
+        data() {
+        return {
+            slickOptions: {
+                slidesToShow: 1,
+                // Any other options that can be got from plugin documentation
+            },
+        };
+    },
         mounted() {
             console.log('Component mounted.')
-        }
+        },
+        components: {
+    Slick,
+  },
     }
 </script>

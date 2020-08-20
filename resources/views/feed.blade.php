@@ -4,7 +4,6 @@
 @endsection
 @section('content')
 <feed></feed>
-   
           
       
 @endsection
