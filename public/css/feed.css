@@ -81,3 +81,78 @@
   box-shadow: 0px 0px 0.5px #000000;
 }
 
+.welcome_message {
+    font-size: 10px;
+    /* font-weight: 300; */
+}
+
+.user_wrapper .card{
+    width: 180px;
+    min-width: 180px;
+    height: fit-content;
+    box-shadow: 0px 3px 20px #00000041;
+    border-radius: 10%;
+}
+.user_wrapper .card-body{
+    padding: 0;
+    margin: 0;
+}
+
+.suggestion_pfp {
+  width: 60px;
+  max-width: none !important;
+  height: 60px;
+  border-radius: 50%;
+  box-shadow: 0px 0px 0.5px #000000;
+}
+
+.suggestion_username{
+    font-size: 11px;
+    margin: 10px 10px 0;
+}
+
+.suggestion_text{
+    font-size: 7px;
+    color: gray;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* number of lines to show */
+    -webkit-box-orient: vertical;
+    text-align: center;
+    padding: 0 25px;
+    margin: 3px 0 7px;
+}
+
+.suggestion_images {
+    width: 100%;
+    max-height: 42px;
+}
+
+.user_wrapper .card-footer{
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 8px;
+}
+
+.user_wrapper .card-footer button{
+    padding: 0 6px 1.5px;
+    font-size: 9px;
+    border-radius: 2px;
+    margin-top: 2px;
+}
+
+.image_div {
+    width: 33.3%;
+    margin: 0 0.5px;
+    height: 100%;
+    background-color:rgba(128, 128, 128, 0.158);
+}
+.image_wrapper {
+    height: 42px;
+}
+
+
+

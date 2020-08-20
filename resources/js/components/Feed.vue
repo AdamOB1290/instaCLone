@@ -1,6 +1,6 @@
 <template>
   <div class="my-1">
-    <div v-if="posts.lenght > 0" class="glider story_slider border-down pb-1" :class="post_display">
+    <div v-if="posts.length > 0" class="glider story_slider border-down pb-1" :class="post_display">
       <div class="story_wrapper px-2 my-1">
         <div class="float-left d-flex flex-column align-items-center mr-1">
           <div class="gradiant_background d-flex">
@@ -169,37 +169,38 @@
       <observer v-on:intersect="intersected" />
     </div>
 
-    <div
-      class="follow_suggestions"
-      v-for="(page, key) in userFeed"
-      :key="key"
-      :class="user_display"
-    >
+    <div class="welcome follow_suggestions text-center mt-4 mb-0" :class="user_display">
+      <h5>Welcome to Instaclone</h5>
+      <p class="welcome_message mx-4 my-0">Follow people to start seeing the photos and videos they share.</p>
+    </div>
+
+    <div  class="glider pt-3 pb-5 follow_suggestions d-flex  justify-content-center align-items-center" v-for="(page, key) in userFeed" :key="key" :class="user_display">
       <div class="user_wrapper" v-for="(user, key) in page" :key="key">
-        <div class="card">
+        <div class="card py-2 px-1 border-0 mx-1">
           <div class="card-head d-flex flex-column align-items-center justify-content-center">
-            <img
-              v-if="user.pfp_type == 'imageUrl'"
-              class="slider-image rounded-circle"
-              :src="user.pfp"
-            />
-            <img v-else class="slider-image rounded-circle" :src="'storage/'+user.pfp" />
-            <span class="username font-weight-bold">{{user.username}}</span>
-            <span v-if="user.bio" class>{{user.bio}}</span>
+            <img v-if="user.pfp_type == 'imageUrl'" class="suggestion_pfp rounded-circle" :src="user.pfp"/>
+            <img v-else class="suggestion_pfp rounded-circle" :src="'storage/'+user.pfp" />
+            <span class="suggestion_username font-weight-bold">{{user.username}}</span>
+            
           </div>
 
-          <div class="card-body d-flex">
-            <div v-for="(post, key) in user.top_posts.slice(0,3)" :key="key">
-              <img
-                v-if="post.media_type == 'imageUrl'"
-                class="card-img-top rounded-0"
-                :src="post.media_file"
-              />
-              <img v-else class="card-img-top rounded-0" :src="'storage/'+post.media_file" />
+          <div class="card-body">
+            <p v-if="user.bio" class="suggestion_text">{{user.bio}}</p>
+            <div class="d-flex justify-content-center align-items-center image_wrapper">
+              <div v-for="(post, key) in user.top_posts.slice(0,3)" :key="key" class="image_div">
+                <img v-if="post.media_type == 'imageUrl'" class="suggestion_images rounded-0" :src="post.media_file" />
+                <img v-else-if="post.media_type == 'localImage'"  class="suggestion_images rounded-0" :src="'storage/'+post.media_file" />
+              </div>
             </div>
+            
           </div>
 
-          <div class="card-footer"></div>
+          <div class="card-footer">
+            <span class="suggestion_text">Instaclone recommended</span>
+
+            <button class="btn btn-primary "> Follow </button>
+          </div>
+            
         </div>
       </div>
     </div>
@@ -291,10 +292,24 @@ export default {
           this.post_display = "d-none";
           this.users = data.data;
 
-          // this.users.forEach((user) => {
-          //   user.topPosts = user.top_posts
-          //   console.log(user.topPosts);
-          // })
+          this.users.forEach(user => {
+            if (user.top_posts.length == 0) {
+              user.top_posts.push(
+                {},{},{}
+                )
+            } 
+            else if (user.top_posts.length == 1) {
+                user.top_posts.push(
+                {},{}
+                )
+              
+            } else if (user.top_posts.length == 2) {
+                user.top_posts.push(
+                {}
+                )
+            }
+        });
+
           this.userFeed.push(this.users.slice(0, 10));
         }
       })
@@ -302,12 +317,85 @@ export default {
   },
 
   updated: function () {
-    if (this.posts.lenght > 0) {
-      new Glider(document.querySelector(".glider"), {
+    if (this.posts.length > 0) {
+      new Glider(document.querySelector(".glider.story_slider"), {
         // `auto` allows automatic responsive
         // width calculations
         slidesToShow: "auto",
         slidesToScroll: "auto",
+
+        // should have been named `itemMinWidth`
+        // slides grow to fit the container viewport
+        // ignored unless `slidesToShow` is set to `auto`
+        itemWidth: undefined,
+
+        // if true, slides wont be resized to fit viewport
+        // requires `itemWidth` to be set
+        // * this may cause fractional slides
+        exactWidth: false,
+
+        // speed aggravator - higher is slower
+        duration: 0.5,
+
+        // dot container element or selector
+        dots: "CSS Selector",
+
+        // arrow container elements or selector
+        // arrows: {
+        //   prev: 'CSS Selector',
+        // may also pass element directly
+        //   next: document.querySelector('CSS Selector')
+        // },
+
+        // allow mouse dragging
+        draggable: false,
+        // how much to scroll with each mouse delta
+        dragVelocity: 3.3,
+
+        // use any custom easing function
+        // compatible with most easing plugins
+        easing: function (x, t, b, c, d) {
+          return c * (t /= d) * t + b;
+        },
+
+        // event control
+        scrollPropagate: false,
+        eventPropagate: true,
+
+        // Force centering slide after scroll event
+        scrollLock: false,
+        // how long to wait after scroll event before locking
+        // if too low, it might interrupt normal scrolling
+        scrollLockDelay: 150,
+
+        // Force centering slide after resize event
+        resizeLock: true,
+
+        // Glider.js breakpoints are mobile-first
+        responsive: [
+          // {
+          //   breakpoint: 900,
+          //   settings: {
+          //     slidesToShow: 5,
+          //     slidesToScroll: 2
+          //   }
+          // },
+          {
+            breakpoint: 575,
+            settings: {
+              slidesToShow: "auto",
+              slidesToScroll: 3,
+            },
+          },
+        ],
+      });
+      
+    } else {
+      new Glider(document.querySelector(".glider.follow_suggestions"), {
+        // `auto` allows automatic responsive
+        // width calculations
+        slidesToShow: 1,
+        slidesToScroll: 1,
 
         // should have been named `itemMinWidth`
         // slides grow to fit the container viewport
