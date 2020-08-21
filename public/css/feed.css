@@ -129,6 +129,7 @@
     text-align: center;
     padding: 0 25px;
     margin: 3px 0 7px;
+    height: 20px;
 }
 
 .suggestion_images {
@@ -142,6 +143,17 @@
     flex-direction: column;
     align-items: center;
     padding-top: 8px;
+    height: 58px;
+}
+
+.user_wrapper .card-head{
+    
+    height: 86px;
+}
+
+.user_wrapper .card-body{
+    
+    height: 72px;
 }
 
 .user_wrapper .card-footer button{
@@ -160,6 +172,5 @@
 .image_wrapper {
     height: 42px;
 }
-
 
 

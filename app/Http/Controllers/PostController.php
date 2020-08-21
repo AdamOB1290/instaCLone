@@ -18,11 +18,13 @@ class PostController extends Controller
     public function index()
     {
 
-        $posts = [];
+        
         $followedUsersIds = User::findorFail(session('user_id'))->followed;
 
         // if session user has followed other users 
         if (isset($followedUsersIds) && (count($followedUsersIds) > 0)) {
+
+            $posts = [];
 
             // loop through the followed users ids
             foreach ($followedUsersIds as $followedUserId ) {
@@ -34,6 +36,58 @@ class PostController extends Controller
             array_push($posts, ...$followedPosts);
 
             }
+
+            // we're sending the username with each comment made on a post
+            // loop through posts
+            foreach ($posts as $post) {
+
+                // check if the media file of each post is a url
+                if (filter_var($post->media_file, FILTER_VALIDATE_URL)) {
+
+                    // index it to post
+                    $post['media_type'] = 'imageUrl';
+                } else { // else it means it's a local file
+
+                    // check if the local file is an image
+                    if (strstr(mime_content_type('storage/' . $post->media_file), "image/")) {
+
+                        // index it to post
+                        $post['media_type'] = 'localImage';
+
+                        // else check if the local file is a video
+                    } elseif (strstr(mime_content_type('storage/' . $post->media_file), "video/")) {
+
+                        // index it to post
+                        $post['media_type'] = 'localVideo';
+                    }
+                }
+
+                // check if the profile picture of the post user is a url
+                if (filter_var($post->user->pfp, FILTER_VALIDATE_URL)) {
+
+                    // index it to post user
+                    $post->user['pfp_type'] = 'imageUrl';
+                } else { // else it means it's a local file
+
+                    // index it to post user
+                    $post->user['pfp_type'] = 'localImage';
+                }
+            }
+
+            // loop through the comments of every post
+            foreach ($post->comments as $comment) {
+
+                // fetch the username for every comment
+                $username = User::findOrFail($comment->user_id)->username;
+
+                // index the username to the comment
+                $comment['username'] = $username;
+            }
+
+            // return view('posts.crud.index', compact('posts', 'followedUserIds'));
+            // return response()->json(['posts'=> $posts]);
+            return $posts;
+            
 
             // if session user has not followed other users 
         } else {
@@ -66,70 +120,15 @@ class PostController extends Controller
                 }
 
                 $user['top_posts'] = $user->posts;
-        } 
+            } 
         
-        return $users;
+            return $users;
 
-        // we're sending the username with each comment made on a post
-        // loop through posts
-        foreach($posts as $post){
-
-            // check if the media file of each post is a url
-            if (filter_var($post->media_file, FILTER_VALIDATE_URL)) {
-                
-                // index it to post
-                $post['media_type'] = 'imageUrl';
-                
-
-            } else { // else it means it's a local file
-
-                // check if the local file is an image
-                if (strstr(mime_content_type('storage/' . $post->media_file), "image/")) {
-
-                    // index it to post
-                    $post['media_type'] = 'localImage';
-
-                // else check if the local file is a video
-                } elseif (strstr(mime_content_type('storage/' . $post->media_file), "video/")) {
-
-                    // index it to post
-                    $post['media_type'] = 'localVideo';
-                }
-            }
-
-            // check if the profile picture of the post user is a url
-            if (filter_var($post->user->pfp, FILTER_VALIDATE_URL)) {
-
-                // index it to post user
-                $post->user['pfp_type'] = 'imageUrl';
-                
-            } else { // else it means it's a local file
-
-                // index it to post user
-                $post->user['pfp_type'] = 'localImage';
-
-            }
-
-            
-                     
-        }
-
-            // loop through the comments of every post
-            foreach ($post->comments as $comment) {
-
-                // fetch the username for every comment
-                $username = User::findOrFail($comment->user_id)->username;
-
-                // index the username to the comment
-                $comment['username'] = $username;
-            }
-            
+        
         };
         
 
-        // return view('posts.crud.index', compact('posts', 'followedUserIds'));
-        // return response()->json(['posts'=> $posts]);
-        return $posts;
+       
     }
 
     /**
