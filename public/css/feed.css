@@ -1,9 +1,10 @@
+/* Posts */
+
 .feed_wrapper .card {
     width: 18rem; 
     max-width:280px;
     font-size: 11px;
 }
-
 
 .feed_wrapper .card,
 .feed_wrapper .card > *{
@@ -36,7 +37,8 @@
     font-weight: 600;
 }
 
-/* SLIDER JS */
+/* Stories */
+/* GlIDER JS */
 
 .glider::-webkit-scrollbar {
     display: none;
@@ -79,6 +81,12 @@
   height: 46.5px;
   border-radius: 50%;
   box-shadow: 0px 0px 0.5px #000000;
+}
+
+.storyObserver{
+    position: absolute;
+    left: 95%;
+    /* visibility: hidden; */
 }
 
 .welcome_message {
@@ -169,6 +177,7 @@
     height: 100%;
     background-color:rgba(128, 128, 128, 0.158);
 }
+
 .image_wrapper {
     height: 42px;
 }

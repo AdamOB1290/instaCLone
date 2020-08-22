@@ -19,7 +19,7 @@
           <span class="story-username text-center">Your Story</span>
         </div>
 
-        <div v-for="(page, key) in storyFeed" :key="key" class="d-flex ">
+        <div v-for="(page, key) in storyFeed" :key="key" class="d-flex position-relative">
           <div v-for="(story, key) in page" :key="key" class="mx-1 d-flex flex-column align-items-center" >
             <div class="gradiant_background d-flex flex-column">
               <div class="m-auto align-items-center d-flex justify-content-center">
@@ -29,7 +29,7 @@
             </div> 
             <span class="story-username">{{story.user.username}}</span>
           </div>
-          <observer v-on:intersect="storyIntersected"/>
+          <div class="storyObserver"><observer v-on:intersect="storyIntersected"/></div>
         </div>
       </div>
     </div>
@@ -165,24 +165,32 @@
       <h5>Welcome to Instaclone</h5>
       <p class="welcome_message mx-4 my-0">Follow people to start seeing the photos and videos they share.</p>
     </div>
+
     
-    <slick ref="slick" :options="slickOptions" v-for="(page, key) in userFeed" :key="key" :class="user_display" class="pt-3 pb-5 follow_suggestions d-flex justify-content-center align-items-center">
-      <div v-for="(user, key) in page" :key="key" class="user_wrapper py-2 px-1">
+    <!-- <div  class="d-flex">
+      <slick ref="slick" :options="slickOptions" v-for="(user, key) in userFeed" :key="key" ><span>1</span></slick>
+    </div>
+     -->
+    <slick ref="slick" :options="slickOptions"  v-for="(page, key) in slickForLoop " :key="key" :class="user_display" class="pt-3 pb-5 follow_suggestions d-flex justify-content-center align-items-center">
+      
+      <div v-for="(user, key) in userFeed" :key="key" class="user_wrapper py-2 px-1 position-relative">
+        <!-- on 'intersect' event trigger, apply 'intersected' function -->
+        <observer class="position-absolute" :id="'slickOsberver'+user.id" :data-slickIndex="key" v-on:intersect="reInit" />
         <div class="card py-2 px-1 border-0 mx-1">
 
-          <div class="card-head d-flex flex-column align-items-center justify-content-center">
-            <img v-if="user.pfp_type == 'imageUrl'" class="suggestion_pfp rounded-circle" :src="user.pfp"/>
-            <img v-else class="suggestion_pfp rounded-circle" :src="'storage/'+user.pfp" />
+          <div class="card-head d-flex flex-column align-items-center justify-content-center" >
+            <img v-if="user.pfp_type == 'imageUrl'" class="suggestion_pfp rounded-circle"  :src="user.pfp"/>
+            <img v-else class="suggestion_pfp rounded-circle"  :src="'storage/'+user.pfp"/>
             <span class="suggestion_username font-weight-bold">{{user.username}}</span>
             
           </div>
 
           <div class="card-body">
-            <p v-if="user.bio" class="suggestion_text">{{user.bio}}</p>
+            <p  class="suggestion_text">{{user.bio}}</p>
             <div class="d-flex justify-content-center align-items-center image_wrapper">
               <div v-for="(post, key) in user.top_posts.slice(0,3)" :key="key" class="image_div">
-                <img v-if="post.media_type == 'imageUrl'" class="suggestion_images rounded-0" :src="post.media_file" />
-                <img v-else-if="post.media_type == 'localImage'"  class="suggestion_images rounded-0" :src="'storage/'+post.media_file" />
+                <img v-if="post.media_type == 'imageUrl'" class="suggestion_images rounded-0"  :src="post.media_file"/>
+                <img v-else-if="post.media_type == 'localImage'"  class="suggestion_images rounded-0"   :src="'storage/'+post.media_file"/>
               </div>
             </div>
             
@@ -195,11 +203,11 @@
           </div>
                   
         </div>
+        
       </div>
       
-      <!-- on 'intersect' event trigger, apply 'intersected' function -->
-      <observer v-on:intersect="userIntersected" />
     </slick>
+    
   </div>
 </template>
 
@@ -237,22 +245,25 @@ export default {
 
       users: [],
       userFeed: [],
+      slickForLoop: [],
       post_display: "",
       user_display: "",
       followedUsers: [],
       followUnfollowHtml:null,
       userSliceIndex: 10,
       userIterations: 0,
+      userSlickIterations: 0,
+      userTarget: 7,
 
       slickOptions: {
-        slidesToShow: 1.5,
+        slidesToShow: 'auto',
         slidesToScroll: 1,
         arrows: false,
         slickSetOption: true,
         autoplay: false,
         autoplaySpeed: 3000,
-        centerMode: true,
-         infinite: false,
+        centerMode: false,
+        infinite: false,
         responsive: [
 
           // cards needs to be bigger through media queries
@@ -406,7 +417,8 @@ export default {
 
     axios
       .get("posts")
-      .then((data) => {
+      .then((data) => {        
+
         if (typeof data.data[0].username == "undefined") {
           this.user_display = "d-none";
           this.posts = data.data;
@@ -471,7 +483,11 @@ export default {
             
           });
 
-          this.userFeed.push(this.users.slice(0, 10));
+          this.userFeed.push(...this.users.slice(0, 10));
+
+          // to fire the slick forloop once
+          this.slickForLoop=[1]
+          
         }
         
       })
@@ -514,6 +530,7 @@ export default {
       }
     },
 
+
     postIntersected() {
       //count how many pages (a page has 10 posts) of posts we have then execute
       // the code inside that many times
@@ -532,28 +549,67 @@ export default {
         // console.log('iteration :'+this.iterations);
         // console.log('limit :'+Math.ceil(this.posts.length / 10));
         // console.log(this.iterations < Math.ceil(this.posts.length / 10));
-        console.log(this.postFeed);
+        
       }
 
       
       
     },
 
-    userIntersected () {
-      if (this.userIterations < Math.floor(this.users.length / 10)) {
+    reInit() {
+      console.log(this.userSlickIterations);
+      if (this.userSlickIterations == this.userTarget  ) {
+        this.userTarget +=10
+        if (this.userIterations < Math.floor(this.users.length / 10)) {
         // push the next page ( of 10 users) into the array feed
-        this.userFeed.push(this.users.slice(this.userSliceIndex, this.userSliceIndex + 10));
+        this.userFeed.push(...this.users.slice(this.userSliceIndex, this.userSliceIndex + 10))
 
         // increment the slice index to get the next page on the next iteration
-        this.userSliceIndex += 10;
+        this.userSliceIndex += 10
+
+        // // increment the iteration
+        this.userIterations++
+
+        
+        console.log(this.userFeed);
+        
+      }
+      let currIndex = this.$refs.slick[0].currentSlide()
+      this.$refs.slick[0].destroy();
+      this.$nextTick(() => {
+        this.$refs.slick[0].create();
+        let slickElement = this.$refs.slick[0];
+        slickElement.goTo(currIndex, true);
+
+      });
+      }
+      
+      this.userSlickIterations++
+      // console.log( this.$refs.slick[0].$children[7]);
+    },
+
+
+
+    userIntersected () {
+      
+      if (this.userIterations < Math.floor(this.users.length / 10)) {
+        // push the next page ( of 10 users) into the array feed
+        this.userFeed.push(...this.users.slice(this.userSliceIndex, this.userSliceIndex + 1));
+
+        // increment the slice index to get the next page on the next iteration
+        this.userSliceIndex += 1;
 
         // increment the iteration
         this.userIterations++;
-
+       
+   
+        
+      console.log(this.$refs);
         // console.log('iteration :'+this.iterations);
         // console.log('limit :'+Math.ceil(this.posts.length / 10));
         // console.log(this.iterations < Math.ceil(this.posts.length / 10));
-        console.log(this.userFeed);
+        
+        
       }
     },
 

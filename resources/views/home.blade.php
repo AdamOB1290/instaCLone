@@ -14,7 +14,7 @@
                         </div>
                     @endif
                     <?php    
-                    $user= \App\User::findOrFail(session('user_id'));
+                    $user= \App\User::findOrFail(Auth::user()->id);
                     ?>
                     {{ __('You are logged in as :  '.$user->username) }}
 

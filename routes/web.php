@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -31,12 +32,8 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::get('/test', 'PostController@imgTest');
-
 Route::get('posts/{post}/{user}/like', 'PostController@like')->name('posts.like');
 Route::get('posts/{post}/{user}/unlike', 'PostController@unlike')->name('posts.unlike');
-
-Route::get('/test2', 'PostController@like')->name('posts.test');
 
 Route::get('posts/{post}/{user}/favorite', 'PostController@favorite')->name('posts.favorite');
 Route::get('posts/{post}/{user}/unfavorite', 'PostController@unfavorite')->name('posts.unfavorite');
@@ -52,3 +49,7 @@ Route::get('users/{user}/{sessionUser}/{index}/notification_preference', 'UserCo
 Route::get('/feeds', function () {
     return view('feed');
 });
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

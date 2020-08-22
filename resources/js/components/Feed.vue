@@ -19,7 +19,7 @@
           <span class="story-username text-center">Your Story</span>
         </div>
 
-        <div v-for="(page, key) in storyFeed" :key="key" class="d-flex ">
+        <div v-for="(page, key) in storyFeed" :key="key" class="d-flex position-relative">
           <div v-for="(story, key) in page" :key="key" class="mx-1 d-flex flex-column align-items-center" >
             <div class="gradiant_background d-flex flex-column">
               <div class="m-auto align-items-center d-flex justify-content-center">
@@ -29,7 +29,7 @@
             </div> 
             <span class="story-username">{{story.user.username}}</span>
           </div>
-          <observer v-on:intersect="storyIntersected"/>
+          <div class="storyObserver"><observer v-on:intersect="storyIntersected"/></div>
         </div>
       </div>
     </div>
@@ -235,8 +235,7 @@ export default {
       storySliceIndex: 10,
       postIterations: 0,
       storyIterations: 0,
-      sessionUser: [],
-      sessionUserId: this.$sessionUserId,
+      sessionUser: this.$sessionUser,
       likedPosts: [],
       savedPosts: [],
       slide: 0,
@@ -403,21 +402,19 @@ export default {
   },
 
   created: function () {
-    axios
-      .get("users/" + this.sessionUserId)
-      .then((data) => {
-        this.sessionUser = data.data;
-        this.likedPosts.push(...this.sessionUser.liked.posts);
-        
-        this.savedPosts.push(...this.sessionUser.favorites);
-        
-        this.followedUsers.push(...this.sessionUser.followed);
-      })
-      .catch((err) => {});
+    
+    this.likedPosts.push(...this.sessionUser.liked.posts);
+    
+    if (this.sessionUser.favorites !== null) {
+      this.savedPosts.push(...this.sessionUser.favorites);
+    }
 
+    if (this.sessionUser.followed !== null) {
+      this.followedUsers.push(...this.sessionUser.followed);        
+    }
     axios
       .get("posts")
-      .then((data) => {
+      .then((data) => {  
         if (typeof data.data[0].username == "undefined") {
           this.user_display = "d-none";
           this.posts = data.data;
@@ -548,7 +545,7 @@ export default {
         // console.log('iteration :'+this.iterations);
         // console.log('limit :'+Math.ceil(this.posts.length / 10));
         // console.log(this.iterations < Math.ceil(this.posts.length / 10));
-        console.log(this.postFeed);
+        
       }
 
       
@@ -556,7 +553,6 @@ export default {
     },
 
     reInit() {
-      console.log(this.userSlickIterations);
       if (this.userSlickIterations == this.userTarget  ) {
         this.userTarget +=10
         if (this.userIterations < Math.floor(this.users.length / 10)) {
@@ -570,7 +566,7 @@ export default {
         this.userIterations++
 
         
-        console.log(this.userFeed);
+        
         
       }
       let currIndex = this.$refs.slick[0].currentSlide()
@@ -584,7 +580,6 @@ export default {
       }
       
       this.userSlickIterations++
-      // console.log( this.$refs.slick[0].$children[7]);
     },
 
 
@@ -603,7 +598,7 @@ export default {
        
    
         
-      console.log(this.$refs);
+      // console.log(this.$refs);
         // console.log('iteration :'+this.iterations);
         // console.log('limit :'+Math.ceil(this.posts.length / 10));
         // console.log(this.iterations < Math.ceil(this.posts.length / 10));
@@ -626,7 +621,6 @@ export default {
         // console.log('iteration :'+this.iterations);
         // console.log('limit :'+Math.ceil(this.posts.length / 10));
         // console.log(this.iterations < Math.ceil(this.posts.length / 10));
-        console.log(this.storyFeed);
       }
     },
 
@@ -645,7 +639,7 @@ export default {
                 "posts/" +
                   $("#" + postLikeId)[0].attributes[1].nodeValue +
                   "/" +
-                  this.$sessionUserId +
+                  this.$sessionUser.id +
                   "/unlike"
               )
               .then((response) => {
@@ -667,7 +661,7 @@ export default {
               "posts/" +
                 $("#" + postLikeId)[0].attributes[1].nodeValue +
                 "/" +
-                this.$sessionUserId +
+                this.$sessionUser.id +
                 "/like"
             )
             .then((response) => {
@@ -689,14 +683,13 @@ export default {
       
       //  check if the post is already liked by the user
       if (this.followedUsers.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))) {
-        console.log(this.followedUsers);
           // apply the laravel unlike function
           axios
             .get(
               "users/" +
                 $("#" + userFollowId)[0].attributes[1].nodeValue +
                 "/" +
-                this.$sessionUserId +
+                this.sessionUser.id +
                 "/unfollow"
             )
             .then((response) => {
@@ -710,27 +703,25 @@ export default {
             });
             
           $("#" + userFollowId)[0].innerHTML = 'Follow' 
-          
+                  console.log(this.followedUsers);
+
 
       } else {
-        console.log(this.followedUsers);
+        console.log("users/" + $("#" + userFollowId)[0].attributes[1].nodeValue + "/" + this.$sessionUser.id + "/follow");
         // apply the laravel follow function
         axios
-          .get(
-            "users/" +
-              $("#" + userFollowId)[0].attributes[1].nodeValue +
-              "/" +
-              this.$sessionUserId +
-              "/follow"
-          )
+          .get("users/" + $("#" + userFollowId)[0].attributes[1].nodeValue + "/" + this.$sessionUser.id + "/follow" )
           .then((response) => {
+            console.log(response);
             // add the user id to the followedUsers array
             this.followedUsers.push(
               parseInt($("#" + userFollowId)[0].attributes[1].nodeValue)
             );
+            $("#" + userFollowId)[0].innerHTML = 'Unfollow' 
+            
           });
                  
-          $("#" + userFollowId)[0].innerHTML = 'Unfollow' 
+          console.log(this.followedUsers);
           
       }
     },
@@ -750,7 +741,7 @@ export default {
             "posts/" +
               $("#" + postSaveId)[0].attributes[1].nodeValue +
               "/" +
-              this.$sessionUserId +
+              this.$sessionUser.id +
               "/unfavorite"
           )
           .then((response) => {
@@ -772,7 +763,7 @@ export default {
             "posts/" +
               $("#" + postSaveId)[0].attributes[1].nodeValue +
               "/" +
-              this.$sessionUserId +
+              this.$sessionUser.id +
               "/favorite"
           )
           .then((response) => {

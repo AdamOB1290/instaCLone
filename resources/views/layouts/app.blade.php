@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <meta name="user-id" content="{{ session('user_id') }}">
+    <meta name="session_user" content="{{ Auth::user() }}">
 
 
     <title>@yield('Title')</title>
@@ -46,6 +46,8 @@
             
             @yield('content')
         </main>
+
+        <vfooter></vfooter>
     </div>
     
 </body>

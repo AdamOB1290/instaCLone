@@ -33,10 +33,12 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('navbar', require('./components/Navbar.vue').default);
+Vue.component('vfooter', require('./components/Vfooter.vue').default);
 Vue.component('feed', require('./components/Feed.vue').default);
 Vue.component('comments', require('./components/Comments.vue').default);
 
-Vue.prototype.$sessionUserId = document.querySelector("meta[name='user-id']").getAttribute('content');
+Vue.prototype.$sessionUser = JSON.parse(document.querySelector("meta[name='session_user']").getAttribute('content'));
+ 
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -44,7 +46,8 @@ Vue.prototype.$sessionUserId = document.querySelector("meta[name='user-id']").ge
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-// window.axios = require('axios');
+// import axios from 'axios'
+window.axios = require('axios');
 
 const app = new Vue({
     el: '#app',
@@ -64,4 +67,3 @@ const app = new Vue({
    
 });
 
-    

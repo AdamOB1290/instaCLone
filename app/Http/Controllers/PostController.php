@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Events\LikeEvent;
 use App\Post;
 use App\User;
+use Auth;
 use Illuminate\Http\Request;
 use App\Events\PostCreated;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
 
 class PostController extends Controller
 {
@@ -17,10 +19,10 @@ class PostController extends Controller
      */
     public function index()
     {
-
         
-        $followedUsersIds = User::findorFail(session('user_id'))->followed;
-
+        // session('user_id')
+        $followedUsersIds = FacadesAuth::user()->followed;
+        
         // if session user has followed other users 
         if (isset($followedUsersIds) && (count($followedUsersIds) > 0)) {
 
@@ -92,7 +94,6 @@ class PostController extends Controller
             // if session user has not followed other users 
         } else {
             $users = User::all();
-
             foreach ($users as $user) {
                 // check if the profile picture of the post user is a url
                 if (filter_var($user->pfp, FILTER_VALIDATE_URL)) {
@@ -120,7 +121,9 @@ class PostController extends Controller
                 }
 
                 $user['top_posts'] = $user->posts;
+            
             } 
+            
         
             return $users;
 
