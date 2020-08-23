@@ -402,7 +402,6 @@ export default {
   },
 
   created: function () {
-    
     this.likedPosts.push(...this.sessionUser.liked.posts);
     
     if (this.sessionUser.favorites !== null) {

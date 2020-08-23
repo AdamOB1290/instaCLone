@@ -5,10 +5,9 @@ namespace App\Http\Controllers;
 use App\Events\LikeEvent;
 use App\Post;
 use App\User;
-use Auth;
 use Illuminate\Http\Request;
 use App\Events\PostCreated;
-use Illuminate\Support\Facades\Auth as FacadesAuth;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
@@ -21,7 +20,7 @@ class PostController extends Controller
     {
         
         // session('user_id')
-        $followedUsersIds = FacadesAuth::user()->followed;
+        $followedUsersIds = Auth::user()->followed;
         
         // if session user has followed other users 
         if (isset($followedUsersIds) && (count($followedUsersIds) > 0)) {

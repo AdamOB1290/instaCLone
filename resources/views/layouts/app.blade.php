@@ -6,8 +6,10 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <meta name="session_user" content="{{ Auth::user() }}">
+@php
+    
+@endphp
+    <meta name="session_user" content="{{ session('session_user') }}">
 
 
     <title>@yield('Title')</title>
