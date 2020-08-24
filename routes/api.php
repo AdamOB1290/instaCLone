@@ -21,8 +21,14 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 // Route::resource('posts', 'PostController');
 
-Route::get('posts', function (Request $request) {
-    $posts = Post::all();
+// Route::get('posts', function (Request $request) {
+//     $posts = Post::all();
 
-    return $posts;
-});
+//     return $posts;
+// });
+
+// Route::get('/posts/{postId}', function (Request $request, $postId) {
+//     $post = Post::findOrFail($postId);
+
+//     return $post;
+// });

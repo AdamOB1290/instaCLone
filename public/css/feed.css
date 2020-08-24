@@ -1,9 +1,13 @@
 /* Posts */
 
+.feed_wrapper {
+    padding-bottom: 8px;
+}
+
 .feed_wrapper .card {
     width: 18rem; 
     max-width:280px;
-    font-size: 11px;
+    
 }
 
 .feed_wrapper .card,
@@ -15,7 +19,8 @@
     height: 35px;
 }
 
-.feed_wrapper .card .card-head .pfp{
+.feed_wrapper .card .card-head .pfp,
+.comments_wrapper .pfp{
     width: 25px; 
     height: 25px;
 }
@@ -89,6 +94,10 @@
     /* visibility: hidden; */
 }
 
+.welcome{
+    padding-top: 15px;
+  }
+
 .welcome_message {
     font-size: 10px;
     /* font-weight: 300; */
@@ -96,7 +105,7 @@
 
 .user_wrapper {
     width: 300px;
-    height: 330px;
+    height: fit-content;
     min-width: 205px;
     margin: 0;
 }
@@ -104,9 +113,10 @@
 .user_wrapper .card{
     width: 180px;
     min-width: 180px;
-    height: fit-content;
+    height: fit-content;  
     box-shadow: 0px 3px 20px #00000041;
     border-radius: 10%;
+    padding
 }
 .user_wrapper .card-body{
     padding: 0;
@@ -182,4 +192,11 @@
     height: 42px;
 }
 
+.slick-slide > div {
+    padding-bottom: 20px;
+}
 
+.comment_like_icon{
+    height: 20px;
+    width: 60px;
+}

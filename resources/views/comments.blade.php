@@ -3,7 +3,7 @@
     
 @endsection
 @section('content')
-<comments></comments>
+<comment></comment>
    
           
       

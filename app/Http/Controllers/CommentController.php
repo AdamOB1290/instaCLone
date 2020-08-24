@@ -19,7 +19,8 @@ class CommentController extends Controller
     {
         $comments = Comment::all();
 
-        return view("comments.crud.index")->with("comments", $comments);
+        // return view("comments.crud.index")->with("comments", $comments);
+        return $comments;
     }
 
     /**
@@ -177,14 +178,16 @@ class CommentController extends Controller
         unset($commentUser['liker_id'], $commentUser['liked_comment']);
 
         //apply like function
-        $commentUser->dynamicLike($comment, $userId, $object);
-        return redirect('/' . $object . 's');
+        $sessionUser = $commentUser->dynamicLike($comment, $userId, $object);
+        // return redirect('/' . $object . 's');
+        return $sessionUser;
     }
 
     public function unlike(Comment $comment, $userId, $object = 'comment')
     {
         $user = new User;
-        $user->dynamicUnlike($comment, $userId, $object);
-        return redirect('/' . $object . 's');
+        $sessionUser = $user->dynamicUnlike($comment, $userId, $object);
+        // return redirect('/' . $object . 's');
+        return $sessionUser;
     }
 }

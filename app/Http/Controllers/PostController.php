@@ -16,8 +16,23 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+
+        $sessionUser = User::findOrFail(Auth::user()->id);
+
+        // check if the profile picture of the session user is a url
+        if (filter_var($sessionUser->pfp, FILTER_VALIDATE_URL)) {
+
+            // index it to session user
+            $sessionUser['pfp_type'] = 'imageUrl';
+        } else { // else it means it's a local file
+
+            // index it to session user
+            $sessionUser['pfp_type'] = 'localImage';
+        }
+        $request->session()->put('session_user', $sessionUser);
+        
         
         // session('user_id')
         $followedUsersIds = Auth::user()->followed;
@@ -73,16 +88,17 @@ class PostController extends Controller
                     // index it to post user
                     $post->user['pfp_type'] = 'localImage';
                 }
-            }
 
-            // loop through the comments of every post
-            foreach ($post->comments as $comment) {
+                // loop through the comments of every post
+                foreach ($post->comments as $comment) {
 
-                // fetch the username for every comment
-                $username = User::findOrFail($comment->user_id)->username;
+                    // fetch the username for every comment
+                    $username = User::findOrFail($comment->user_id)->username;
 
-                // index the username to the comment
-                $comment['username'] = $username;
+                    // index the username to the comment
+                    $comment['username'] = $username;
+                    
+                }
             }
 
             // return view('posts.crud.index', compact('posts', 'followedUserIds'));
@@ -123,7 +139,6 @@ class PostController extends Controller
             
             } 
             
-        
             return $users;
 
         
@@ -167,9 +182,42 @@ class PostController extends Controller
      * @param  \App\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function show(Post $post)
+    public function show(Request $request, $postId)
     {
-        return view("posts.crud.show", compact('post'));
+        $sessionUser = User::findOrFail(Auth::user()->id);
+
+        // check if the profile picture of the session user is a url
+        if (filter_var($sessionUser->pfp, FILTER_VALIDATE_URL)) {
+
+            // index it to session user
+            $sessionUser['pfp_type'] = 'imageUrl';
+        } else { // else it means it's a local file
+
+            // index it to session user
+            $sessionUser['pfp_type'] = 'localImage';
+        }
+        $request->session()->put('session_user', $sessionUser);
+
+
+        $post = Post::findOrFail($postId);
+        
+        foreach ($post->comments as $comment) {
+            // check if the profile picture of the post user is a url
+            if (filter_var($comment->user->pfp, FILTER_VALIDATE_URL)) {
+
+                // index it to comment user
+                $comment->user['pfp_type'] = 'imageUrl';
+            } else { // else it means it's a local file
+
+                // index it to comment user
+                $comment->user['pfp_type'] = 'localImage';
+            }
+            $comment['user'] = $comment->user;
+        }
+        $post['comments']= $post->comments;
+
+        // return view("posts.crud.show", compact('post'));
+        return $post;
     }
 
     /**

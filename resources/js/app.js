@@ -35,20 +35,19 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 Vue.component('navbar', require('./components/Navbar.vue').default);
 Vue.component('vfooter', require('./components/Vfooter.vue').default);
 Vue.component('feed', require('./components/Feed.vue').default);
-Vue.component('comments', require('./components/Comments.vue').default);
+Vue.component('comment', require('./components/Comments.vue').default);
 
 var sessionUser = JSON.parse(document.querySelector("meta[name='session_user']").getAttribute('content'));
-var liked = JSON.parse(sessionUser.liked);
-var notification_preferences = JSON.parse(sessionUser.notification_preferences);
-var favorites = JSON.parse(sessionUser.favorites);
-var followed = JSON.parse(sessionUser.followed);
-var followers = JSON.parse(sessionUser.followers);
-sessionUser.liked = liked;
-sessionUser.notification_preferences = notification_preferences;
-sessionUser.favorites = favorites;
-sessionUser.followed = followed;
-sessionUser.followers = followers;
-
+// var liked = JSON.parse(sessionUser.liked);
+// var notification_preferences = JSON.parse(sessionUser.notification_preferences);
+// var favorites = JSON.parse(sessionUser.favorites);
+// var followed = JSON.parse(sessionUser.followed);
+// var followers = JSON.parse(sessionUser.followers);
+// sessionUser.liked = liked;
+// sessionUser.notification_preferences = notification_preferences;
+// sessionUser.favorites = favorites;
+// sessionUser.followed = followed;
+// sessionUser.followers = followers;
 Vue.prototype.$sessionUser = sessionUser
 
 /**
@@ -58,9 +57,12 @@ Vue.prototype.$sessionUser = sessionUser
  */
 
 // import axios from 'axios'
+import store from "./src/store";
 window.axios = require('axios');
 
+
 const app = new Vue({
+    store,
     el: '#app',
     data() {
         return {

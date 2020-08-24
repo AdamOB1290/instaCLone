@@ -6,11 +6,7 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-@php
-    
-@endphp
     <meta name="session_user" content="{{ session('session_user') }}">
-
 
     <title>@yield('Title')</title>
     {{-- <title>{{ config('app.name', 'Laravel') }}</title> --}}
@@ -39,12 +35,11 @@
 
     
 </head>
-<body>
-    <div id="app">
+<body style="font-weight:500!important">
+    <div id="app" class="h-100">
         {{-- @include('nav') --}}
         <navbar></navbar>
-        
-        <main>
+        <main class="h-100">
             
             @yield('content')
         </main>

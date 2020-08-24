@@ -136,7 +136,7 @@ class User extends Authenticatable
             array_push($followedUsers, (int)$idToAdd);
         }
 
-
+        
 
         //update the User's receiver attribute 
         $sessionUser->$storage = $followedUsers;

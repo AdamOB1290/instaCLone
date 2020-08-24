@@ -1,5 +1,5 @@
 <template>
-  <div class="my-1">
+  <div class="h-100">
     <div v-if="posts.length > 0" class="glider story_slider border-down pb-1" :class="post_display">
       <div class="story_wrapper d-flex px-2 my-1">
         <div class="float-left d-flex flex-column align-items-center mr-1">
@@ -64,62 +64,23 @@
             <div class="px-2">
               <div class="interaction_buttons pt-2 d-flex">
                 <!-- like icon -->
-                <svg
-                  :id="'postLikeId'+post.id"
-                  :data-postId="post.id"
-                  @click="likeUnlike"
-                  aria-label="Like"
-                  class="mr-3"
-                  :fill="post.likeColor"
-                  height="24"
-                  viewBox="0 0 48 48"
-                  width="24"
-                >
+                <svg :id="'postLikeId'+post.id" :data-postId="post.id" @click="likeUnlike" :fill="post.likeColor" aria-label="Like" class="mr-3" height="24" viewBox="0 0 48 48" width="24" >
                   <path :d="post.likePath" />
                 </svg>
 
                 <!-- comment icon -->
-                <svg
-                  aria-label="Comment"
-                  class="_8-yf5 mr-3"
-                  fill="#262626"
-                  height="24"
-                  viewBox="0 0 48 48"
-                  width="24"
-                >
-                  <path
-                    clip-rule="evenodd"
-                    d="M47.5 46.1l-2.8-11c1.8-3.3 2.8-7.1 2.8-11.1C47.5 11 37 .5 24 .5S.5 11 .5 24 11 47.5 24 47.5c4 0 7.8-1 11.1-2.8l11 2.8c.8.2 1.6-.6 1.4-1.4zm-3-22.1c0 4-1 7-2.6 10-.2.4-.3.9-.2 1.4l2.1 8.4-8.3-2.1c-.5-.1-1-.1-1.4.2-1.8 1-5.2 2.6-10 2.6-11.4 0-20.6-9.2-20.6-20.5S12.7 3.5 24 3.5 44.5 12.7 44.5 24z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
-
+                  <a :href="'http://localhost:8000/post/'+post.id">
+                    <svg :id="'postCommentId'+post.id" :data-postId="post.id" aria-label="Comment" class="_8-yf5 mr-3" fill="#262626" height="24" viewBox="0 0 48 48" width="24">
+                      <path clip-rule="evenodd" d="M47.5 46.1l-2.8-11c1.8-3.3 2.8-7.1 2.8-11.1C47.5 11 37 .5 24 .5S.5 11 .5 24 11 47.5 24 47.5c4 0 7.8-1 11.1-2.8l11 2.8c.8.2 1.6-.6 1.4-1.4zm-3-22.1c0 4-1 7-2.6 10-.2.4-.3.9-.2 1.4l2.1 8.4-8.3-2.1c-.5-.1-1-.1-1.4.2-1.8 1-5.2 2.6-10 2.6-11.4 0-20.6-9.2-20.6-20.5S12.7 3.5 24 3.5 44.5 12.7 44.5 24z" fill-rule="evenodd"/>
+                    </svg> 
+                  </a>
                 <!-- direct message icon -->
-                <svg
-                  aria-label="Share Post"
-                  class="_8-yf5 mr-3"
-                  fill="#262626"
-                  height="24"
-                  viewBox="0 0 48 48"
-                  width="24"
-                >
-                  <path
-                    d="M47.8 3.8c-.3-.5-.8-.8-1.3-.8h-45C.9 3.1.3 3.5.1 4S0 5.2.4 5.7l15.9 15.6 5.5 22.6c.1.6.6 1 1.2 1.1h.2c.5 0 1-.3 1.3-.7l23.2-39c.4-.4.4-1 .1-1.5zM5.2 6.1h35.5L18 18.7 5.2 6.1zm18.7 33.6l-4.4-18.4L42.4 8.6 23.9 39.7z"
-                  />
+                <svg aria-label="Share Post" class="_8-yf5 mr-3" fill="#262626" height="24" viewBox="0 0 48 48" width="24">
+                  <path d="M47.8 3.8c-.3-.5-.8-.8-1.3-.8h-45C.9 3.1.3 3.5.1 4S0 5.2.4 5.7l15.9 15.6 5.5 22.6c.1.6.6 1 1.2 1.1h.2c.5 0 1-.3 1.3-.7l23.2-39c.4-.4.4-1 .1-1.5zM5.2 6.1h35.5L18 18.7 5.2 6.1zm18.7 33.6l-4.4-18.4L42.4 8.6 23.9 39.7z"/>
                 </svg>
 
                 <!-- save icon -->
-                <svg
-                  :id="'postSaveId'+post.id"
-                  :data-postId="post.id"
-                  @click="saveUnsave"
-                  aria-label="Save"
-                  class="ml-auto"
-                  :fill="post.saveColor"
-                  height="24"
-                  viewBox="0 0 48 48"
-                  width="24"
-                >
+                <svg :id="'postSaveId'+post.id" :data-postId="post.id" @click="saveUnsave" aria-label="Save" class="ml-auto" :fill="post.saveColor" height="24" viewBox="0 0 48 48" width="24">
                   <path :d="post.savePath" />
                 </svg>
               </div>
@@ -161,7 +122,7 @@
       <observer v-on:intersect="postIntersected" />
     </div>
 
-    <div class="welcome follow_suggestions text-center mt-4 mb-0" :class="user_display">
+    <div class="welcome follow_suggestions text-center mb-0" :class="user_display">
       <h5>Welcome to Instaclone</h5>
       <p class="welcome_message mx-4 my-0">Follow people to start seeing the photos and videos they share.</p>
     </div>
@@ -402,15 +363,16 @@ export default {
   },
 
   created: function () {
+
     this.likedPosts.push(...this.sessionUser.liked.posts);
     
     if (this.sessionUser.favorites !== null) {
       this.savedPosts.push(...this.sessionUser.favorites);
     }
-
     if (this.sessionUser.followed !== null) {
       this.followedUsers.push(...this.sessionUser.followed);        
     }
+    
     axios
       .get("posts")
       .then((data) => {  
@@ -418,6 +380,7 @@ export default {
           this.user_display = "d-none";
           this.posts = data.data;
           this.posts.forEach((post) => {
+            
             post.created_at = moment(post.created_at).fromNow();
             post.showStatus = "Show More";
             if (this.likedPosts.includes(post.id)) {
@@ -449,7 +412,6 @@ export default {
           this.postFeed.push(this.postsType.slice(0, 10));
           this.storyFeed.push(this.storiesType.slice(0, 10));
         } else {
-          
           this.post_display = "d-none";
           this.users = data.data;
 
@@ -493,7 +455,9 @@ export default {
     
   },
 
-  mounted: function () {},
+  mounted: function () {
+   
+  },
 
   methods: {
     // by default vues js @click has an event parameter from which we can access elements
@@ -580,8 +544,6 @@ export default {
       
       this.userSlickIterations++
     },
-
-
 
     userIntersected () {
       
@@ -678,8 +640,6 @@ export default {
 
     followUnfollow(event) {
       let userFollowId = $(event.currentTarget).attr("id");
-      
-      
       //  check if the post is already liked by the user
       if (this.followedUsers.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))) {
           // apply the laravel unlike function
@@ -697,30 +657,33 @@ export default {
                 parseInt($("#" + userFollowId)[0].attributes[1].nodeValue)
               );
 
-              //  remove it from the followedUsers array
-              this.followedUsers.splice(index, 1);
+              if (this.followedUsers.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))){
+                //  remove it from the followedUsers array
+                this.followedUsers.splice(index, 1); 
+                $("#" + userFollowId)[0].innerHTML = 'Follow' 
+                // console.log(response.data.followed);
+              }
+              
             });
-            
-          $("#" + userFollowId)[0].innerHTML = 'Follow' 
-                  console.log(this.followedUsers);
-
-
       } else {
-        console.log("users/" + $("#" + userFollowId)[0].attributes[1].nodeValue + "/" + this.$sessionUser.id + "/follow");
         // apply the laravel follow function
         axios
           .get("users/" + $("#" + userFollowId)[0].attributes[1].nodeValue + "/" + this.$sessionUser.id + "/follow" )
           .then((response) => {
-            console.log(response);
-            // add the user id to the followedUsers array
-            this.followedUsers.push(
-              parseInt($("#" + userFollowId)[0].attributes[1].nodeValue)
-            );
-            $("#" + userFollowId)[0].innerHTML = 'Unfollow' 
+            if (!this.followedUsers.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))){
+                // add the user id to the followedUsers array
+                this.followedUsers.push(
+                  parseInt($("#" + userFollowId)[0].attributes[1].nodeValue)
+                );
+                $("#" + userFollowId)[0].innerHTML = 'Unfollow' 
+                // console.log(response.data.followed); 
+                // not up to date in consolelog so cant work with it, ask iliass
+              
+              }
             
           });
                  
-          console.log(this.followedUsers);
+         
           
       }
     },
@@ -777,6 +740,13 @@ export default {
           "M43.5 48c-.4 0-.8-.2-1.1-.4L24 28.9 5.6 47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 1.2-.9 1.4-.2.1-.4.1-.6.1z";
       }
     },
+
+    // showComments(event) {
+    //   let postId = $(event.currentTarget)[0].attributes[1].nodeValue;
+    //   this.$store.commit("changePostId", postId);
+    //   this.$store.commit("changeName", 'postId');
+    //   console.log(this.$store.state.user.username);
+    // },
   },
 
   components: {
