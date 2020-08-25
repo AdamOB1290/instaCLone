@@ -32,7 +32,7 @@
         <tbody>
             @foreach ($users as $key => $user)
             @php
-              $sessionUser = \App\User::findorFail(session('user_id'));
+              $sessionUser = \App\User::findorFail(session('session_user'));
               $followedUsers=$sessionUser->followed;
               
               

@@ -53,4 +53,14 @@ class Comment extends Model
         }
         
     }
+
+    // public function recursiveReplies($comments) {
+    //     foreach ($comments as $comment) {
+    //         $replies = Comment::where('parent_comment_id', $comment->id)->get();
+    //         $repliesToIndex = $this->recursiveReplies($replies);
+    //         $comment['replies'] = $repliesToIndex;
+    //     }
+    //     return $comments;
+    // }
+    
 }

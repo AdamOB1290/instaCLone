@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Comment;
 use App\Events\LikeEvent;
 use App\Post;
 use App\User;
@@ -213,7 +214,13 @@ class PostController extends Controller
                 $comment->user['pfp_type'] = 'localImage';
             }
             $comment['user'] = $comment->user;
+   
         }
+        
+
+        // $commentModel = new Comment;
+        // $comments = $commentModel->recursiveReplies();
+        
         $post['comments']= $post->comments;
 
         // return view("posts.crud.show", compact('post'));

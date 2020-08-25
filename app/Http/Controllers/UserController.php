@@ -17,7 +17,8 @@ class UserController extends Controller
     {
         $users = User::all();
 
-        return view('users.crud.index', compact('users'));
+        // return view('users.crud.index', compact('users'));
+        return $users;
     }
 
     /**
@@ -167,6 +168,8 @@ class UserController extends Controller
 
         event(new UserFollowed($user));
         // unset($user['followerId']);
+        $user = User::findOrFail($sessionUserId);
+        
         return $user; 
     }
 
@@ -178,6 +181,7 @@ class UserController extends Controller
             $user->dynamicUnfollow($sessionUserId, $followedUserId, 'followers');
         }
         
+        $user = User::findOrFail($sessionUserId);
         return $user; 
 
     }
