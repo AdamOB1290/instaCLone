@@ -199,6 +199,8 @@ class PostController extends Controller
         }
         $request->session()->put('session_user', $sessionUser);
 
+        
+
 
         $post = Post::findOrFail($postId);
         
@@ -222,6 +224,7 @@ class PostController extends Controller
         // $comments = $commentModel->recursiveReplies();
         
         $post['comments']= $post->comments;
+        $post['session_user']= $sessionUser;
 
         // return view("posts.crud.show", compact('post'));
         return $post;
@@ -356,21 +359,24 @@ class PostController extends Controller
         // Fetch the user's attribute who will store the id and assign it to a variable $favorite
         $favorite = $user->favorites;
 
-
+    
         if ($favorite == null) {
             $favorite = [$post->id];
         } else {
+            if ( array_search($post->id, $favorite) === false ) {
             array_push($favorite, $post->id);
+            }
+        
         }
-
         $user->favorites = $favorite;
 
         $user->save();
 
+
         // $user = new User;
         // $user->dynamicFollow($post->id, $userId, 'favorites');
 
-        return redirect('/posts');
+        // return redirect('/posts');
     }
 
     public function unfavorite(Post $post, $userId)
@@ -378,18 +384,20 @@ class PostController extends Controller
         $user = \App\User::findorFail($userId);
         $favorite = $user->favorites;
 
+
         // we need to use !== because we need to check for the datatype as well
         if (($key = array_search($post->id, $favorite)) !== false) {
             array_splice ($favorite, $key, 1);
+            $user->favorites = $favorite;
+
+            $user->save();
         }
 
-        $user->favorites = $favorite;
-
-        $user->save();
+        
 
         // $user = new User;
         // $user->dynamicUnfollow($post->id, $userId, 'favorites');
 
-        return redirect('/posts');
+        // return redirect('/posts');
     }
 }

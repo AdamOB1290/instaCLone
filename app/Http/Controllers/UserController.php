@@ -169,7 +169,7 @@ class UserController extends Controller
         event(new UserFollowed($user));
         // unset($user['followerId']);
         $user = User::findOrFail($sessionUserId);
-        
+        // dd($user);
         return $user; 
     }
 
@@ -182,6 +182,7 @@ class UserController extends Controller
         }
         
         $user = User::findOrFail($sessionUserId);
+        // dd($user);
         return $user; 
 
     }

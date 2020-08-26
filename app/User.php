@@ -77,13 +77,18 @@ class User extends Authenticatable
         // Assign the User's liked attribute to a variable
         $liked = $user->liked;
 
-        //Push the id of the liked object into the declared variable, with the appropriate index ex($liked['post' or 'comment']) 
-        array_push($liked[$databaseIndex . 's'], $likedObject->id);
+        
+        if ( array_search($likedObject->id, $liked[$databaseIndex . 's']) === false ) {
+            //Push the id of the liked object into the declared variable, with the appropriate index ex($liked['post' or 'comment']) 
+            array_push($liked[$databaseIndex . 's'], $likedObject->id);
 
-        //update the User's liked attribute 
-        $user->liked = $liked;
+            //update the User's liked attribute 
+            $user->liked = $liked;
 
-        $user->save();
+            $user->save();
+        }
+        
+        
 
         return $user;
 
@@ -107,13 +112,18 @@ class User extends Authenticatable
         //Find the unliked object's ID within the $liked array, then assign it's index to $key
         $key = array_search($unlikedObject->id, $liked[$databaseIndex . 's']);
 
-        //Remove the unliked object's ID from the array
-        array_splice($liked[$databaseIndex . 's'], $key, 1);
 
-        //update the User's liked attribute 
-        $user->liked = $liked;
+        if (array_search($unlikedObject->id, $liked[$databaseIndex . 's']) !== false) {
+            //Remove the unliked object's ID from the array
+            array_splice($liked[$databaseIndex . 's'], $key, 1);
+            //update the User's liked attribute 
+            $user->liked = $liked;
 
-        $user->save();
+            $user->save();
+        }
+        
+
+        
 
         // return redirect('/' . $object . 's'); this only works in controller ??? illias
         return $user;
@@ -129,18 +139,21 @@ class User extends Authenticatable
         // Fetch the user's attribute who will store the id and assign it to a variable $followedUsers
         $followedUsers = $sessionUser->$storage;
 
-        // if $followedUsers is not an array, create an array with the $idToAdd
-        if ($followedUsers == null) {
-            $followedUsers = [(int)$idToAdd];
-        } else { // if $followedUsers is already an array, push the $idToAdd
-            array_push($followedUsers, (int)$idToAdd);
-        }
-
         
+           // if $followedUsers is not an array, create an array with the $idToAdd
+            if ($followedUsers == null) {
+                $followedUsers = [(int)$idToAdd];
+            } else { // if $followedUsers is already an array, push the $idToAdd
+                if (array_search((int)$idToAdd, $followedUsers) !== false) {
+                    array_push($followedUsers, (int)$idToAdd);
+                }
+
+                
+            }
 
         //update the User's receiver attribute 
         $sessionUser->$storage = $followedUsers;
-        $sessionUser->save();
+        $sessionUser->save(); 
     }
 
     public function dynamicUnfollow($idToRemove, $idToReceive, $storage)
@@ -151,15 +164,19 @@ class User extends Authenticatable
 
         // Fetch the user's attribute who will store the id and assign it to a variable $followedUsers
         $followedUsers = $sessionUser->$storage;
-
+        
         //Find the $idToRemove within the attribute array, then assign it's index to $key
-        $key = array_search($idToRemove, $followedUsers);
-        //Remove the $idToRemove from the array
-        array_splice($followedUsers, $key, 1);
+        if (($key = array_search((int)$idToRemove, $followedUsers)) !== false) {
+            
+            //Remove the $idToRemove from the array
+            array_splice($followedUsers, $key, 1);
 
-        //update the User's receiver attribute 
-        $sessionUser->$storage = $followedUsers;
-        $sessionUser->save();
+            //update the User's receiver attribute 
+            $sessionUser->$storage = $followedUsers;
+            $sessionUser->save();
+        }
+        
+        
     }
 
     

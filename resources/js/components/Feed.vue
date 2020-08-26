@@ -192,16 +192,15 @@ export default {
       storyFeed: [],
       commentCount: 0,
       observer: null,
-      postSliceIndex: 10,
-      storySliceIndex: 10,
+      postSliceIndex: 10,      
       postIterations: 0,
+      storySliceIndex: 10,
       storyIterations: 0,
       sessionUser: this.$sessionUser,
       likedPosts: [],
       savedPosts: [],
       slide: 0,
       sliding: null,
-      test: [],
      
 
       users: [],
@@ -364,6 +363,9 @@ export default {
   },
 
   created: function () {
+    this.likeUnlike = _.debounce(this.likeUnlike, 300)
+    this.saveUnsave = _.debounce(this.saveUnsave, 300)
+    this.followUnfollow = _.debounce(this.followUnfollow, 300)
 
     this.likedPosts.push(...this.sessionUser.liked.posts);
     
@@ -624,14 +626,16 @@ export default {
     },
 
     likeUnlike(event) {
-        let postLikeId = $(event.currentTarget).attr("id");
-        
+      let postLikeId;
+
+      if (typeof $(event.target).attr("id") == 'undefined') {
+        postLikeId = $(event.target.parentElement).attr("id");
+      } else {
+        postLikeId = $(event.target).attr("id");
+      }
+
         //  check if the post is already liked by the user
-        if (
-            this.likedPosts.includes(
-              parseInt($("#" + postLikeId)[0].attributes[1].nodeValue)
-            )
-          ) {
+        if (this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
             // apply the laravel unlike function
             axios
               .get(
@@ -642,17 +646,23 @@ export default {
                   "/unlike"
               )
               .then((response) => {
-                // get the index of the post id we want to delete
-                let index = this.likedPosts.indexOf(
-                  parseInt($("#" + postLikeId)[0].attributes[1].nodeValue)
-                );
+                if (this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
 
-                //  remove it from the likedPosts array
-                this.likedPosts.splice(index, 1);
+                  // get the index of the post id we want to delete
+                  let index = this.likedPosts.indexOf(
+                    parseInt($("#" + postLikeId)[0].attributes[1].nodeValue)
+                  );
+
+                  //  remove it from the likedPosts array
+                  this.likedPosts.splice(index, 1);
+                         
+                  $("#" + postLikeId)[0].attributes[2].nodeValue = "#262626";
+                  $("#" + postLikeId)[0].firstChild.attributes[0].nodeValue =
+                    "M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+
+                }
+
               });
-            $("#" + postLikeId)[0].attributes[2].nodeValue = "#262626";
-            $("#" + postLikeId)[0].firstChild.attributes[0].nodeValue =
-              "M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
         } else {
           // apply the laravel like function
           axios
@@ -664,20 +674,32 @@ export default {
                 "/like"
             )
             .then((response) => {
-              // add the post id to the likedPosts array
-              this.likedPosts.push(
-                parseInt($("#" + postLikeId)[0].attributes[1].nodeValue)
-              );
+              if (!this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
+                // add the post id to the likedPosts array
+                this.likedPosts.push(
+                  parseInt($("#" + postLikeId)[0].attributes[1].nodeValue)
+                );
+                
+                $("#" + postLikeId)[0].attributes[2].nodeValue = "#ed4956";
+                $("#" + postLikeId)[0].firstChild.attributes[0].nodeValue =
+                  "M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+
+              }
+
             });
 
-          $("#" + postLikeId)[0].attributes[2].nodeValue = "#ed4956";
-          $("#" + postLikeId)[0].firstChild.attributes[0].nodeValue =
-            "M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
         }
     },
 
     followUnfollow(event) {
-      let userFollowId = $(event.currentTarget).attr("id");
+      let userFollowId;
+
+      if (typeof $(event.target).attr("id") == 'undefined') {
+        userFollowId = $(event.target.parentElement).attr("id");
+      } else {
+        userFollowId = $(event.target).attr("id");
+      }
+
       //  check if the post is already liked by the user
       if (this.followedUsers.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))) {
           // apply the laravel unlike function
@@ -690,6 +712,7 @@ export default {
                 "/unfollow"
             )
             .then((response) => {
+              
               // get the index of the user id we want to delete
               let index = this.followedUsers.indexOf(
                 parseInt($("#" + userFollowId)[0].attributes[1].nodeValue)
@@ -699,9 +722,7 @@ export default {
                 //  remove it from the followedUsers array
                 this.followedUsers.splice(index, 1)
                 $("#" + userFollowId)[0].innerHTML = 'Follow' 
-                
-                this.test.splice(index, 1)
-                console.log(response)
+               
               }
               
               
@@ -718,13 +739,8 @@ export default {
                   parseInt($("#" + userFollowId)[0].attributes[1].nodeValue)
                 )
                 $("#" + userFollowId)[0].innerHTML = 'Unfollow' 
-                
-                this.test.push(
-                  parseInt($("#" + userFollowId)[0].attributes[1].nodeValue)
-                )
-                console.log(response)
-                // not up to date in consolelog so cant work with it, ask iliass
-              
+                               
+
               }
             
           });
@@ -735,55 +751,50 @@ export default {
     },
 
     saveUnsave(event) {
-      let postSaveId = $(event.currentTarget).attr("id");
+      let postSaveId; 
+
+
+      if (typeof $(event.target).attr("id") == 'undefined') {
+        postSaveId = $(event.target.parentElement).attr("id");
+      } else {
+        postSaveId = $(event.target).attr("id");
+      }
 
       //  check if the post is already saved by the user
-      if (
-        this.savedPosts.includes(
-          parseInt($("#" + postSaveId)[0].attributes[1].nodeValue)
-        )
-      ) {
+      if ( this.savedPosts.includes( parseInt($("#" + postSaveId)[0].attributes[1].nodeValue))) {
         // apply the laravel unSave function
-        axios
-          .get(
-            "posts/" +
-              $("#" + postSaveId)[0].attributes[1].nodeValue +
-              "/" +
-              this.$sessionUser.id +
-              "/unfavorite"
-          )
+        axios.get("posts/" + $("#" + postSaveId)[0].attributes[1].nodeValue + "/" + this.$sessionUser.id + "/unfavorite")
           .then((response) => {
-            // get the index of the post id we want to delete
-            let index = this.savedPosts.indexOf(
-              parseInt($("#" + postSaveId)[0].attributes[1].nodeValue)
-            );
+            if ( this.savedPosts.includes( parseInt($("#" + postSaveId)[0].attributes[1].nodeValue))){
+              // get the index of the post id we want to delete
+              let index = this.savedPosts.indexOf(
+                parseInt($("#" + postSaveId)[0].attributes[1].nodeValue)
+              );
 
-            //  remove it from the savedPosts array
-            this.savedPosts.splice(index, 1);
+              //  remove it from the savedPosts array
+              this.savedPosts.splice(index, 1);
+              $("#" + postSaveId)[0].attributes[3].nodeValue = "#262626";
+              $("#" + postSaveId)[0].firstChild.attributes[0].nodeValue =
+                "M43.5 48c-.4 0-.8-.2-1.1-.4L24 29 5.6 47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 1.2-.9 1.4-.2.1-.4.1-.6.1zM24 26c.8 0 1.6.3 2.2.9l15.8 16V3H6v39.9l15.8-16c.6-.6 1.4-.9 2.2-.9z";
+              
+            }
           });
-        $("#" + postSaveId)[0].attributes[3].nodeValue = "#262626";
-        $("#" + postSaveId)[0].firstChild.attributes[0].nodeValue =
-          "M43.5 48c-.4 0-.8-.2-1.1-.4L24 29 5.6 47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 1.2-.9 1.4-.2.1-.4.1-.6.1zM24 26c.8 0 1.6.3 2.2.9l15.8 16V3H6v39.9l15.8-16c.6-.6 1.4-.9 2.2-.9z";
       } else {
         // apply the laravel Save function
-        axios
-          .get(
-            "posts/" +
-              $("#" + postSaveId)[0].attributes[1].nodeValue +
-              "/" +
-              this.$sessionUser.id +
-              "/favorite"
-          )
+        axios.get("posts/" + $("#" + postSaveId)[0].attributes[1].nodeValue + "/" + this.$sessionUser.id + "/favorite")
           .then((response) => {
-            // add the post id to the savedPosts array
-            this.savedPosts.push(
-              parseInt($("#" + postSaveId)[0].attributes[1].nodeValue)
-            );
+            if ( !this.savedPosts.includes( parseInt($("#" + postSaveId)[0].attributes[1].nodeValue))){
+              // add the post id to the savedPosts array
+              this.savedPosts.push(
+                parseInt($("#" + postSaveId)[0].attributes[1].nodeValue)
+              );
+              $("#" + postSaveId)[0].attributes[3].nodeValue = "#ffbb00";
+              $("#" + postSaveId)[0].firstChild.attributes[0].nodeValue =
+                "M43.5 48c-.4 0-.8-.2-1.1-.4L24 28.9 5.6 47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 1.2-.9 1.4-.2.1-.4.1-.6.1z";
+              
+            }
           });
 
-        $("#" + postSaveId)[0].attributes[3].nodeValue = "#ffbb00";
-        $("#" + postSaveId)[0].firstChild.attributes[0].nodeValue =
-          "M43.5 48c-.4 0-.8-.2-1.1-.4L24 28.9 5.6 47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 1.2-.9 1.4-.2.1-.4.1-.6.1z";
       }
     },
 
