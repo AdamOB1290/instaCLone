@@ -100,8 +100,9 @@ class PostController extends Controller
                     $comment['username'] = $username;
                     
                 }
+                $post['session_user']= $sessionUser;
             }
-
+            
             // return view('posts.crud.index', compact('posts', 'followedUserIds'));
             // return response()->json(['posts'=> $posts]);
             return $posts;
@@ -137,7 +138,7 @@ class PostController extends Controller
                 }
 
                 $user['top_posts'] = $user->posts;
-            
+                $user['session_user']= $sessionUser;
             } 
             
             return $users;
@@ -174,7 +175,7 @@ class PostController extends Controller
         $this->storeMediaFile($post);
 
         event(new PostCreated($post));
-        return redirect("/posts")->with('success', 'Post Uploaded Successfully!');
+        // return redirect("/posts")->with('success', 'Post Uploaded Successfully!');
     }
 
     /**

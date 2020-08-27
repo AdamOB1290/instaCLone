@@ -63,6 +63,7 @@ Vue.prototype.$sessionUser = sessionUser
 // import axios from 'axios'
 import store from "./src/store";
 window.axios = require('axios');
+window.Fire = new Vue();
 
 
 const app = new Vue({

@@ -19,5 +19,13 @@ class Post extends Model
         return $this->hasMany(Comment::class)->orderByDesc('likes');
     }
 
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'likes' => 'array',
+    ];
     
 }

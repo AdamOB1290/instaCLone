@@ -65,19 +65,26 @@ class User extends Authenticatable
 
     public function dynamicLike($likedObject, $userId, $databaseIndex)
     {
+        $objectLikes=$likedObject->likes;
         // When like button is clicked, increment the likes attribute by 1
-        $likedObject->likes += 1;
+        if ($objectLikes == null) {
+            $objectLikes = [(int)$userId];
+        } else { // if $objectLikes is already an array, push the $userId
+            if (array_search((int)$userId, $objectLikes) !== false) {
+                array_push($objectLikes, (int)$userId);
+            }
+
+            
+        }
 
         // update the table->likes column
-        $likedObject->update(array('likes' => $likedObject->likes));
+        $likedObject->update(array('likes' => $objectLikes));
 
         // Fetch from database the user who clicked on the like button
         $user = User::findorFail($userId);
 
         // Assign the User's liked attribute to a variable
         $liked = $user->liked;
-
-        
         if ( array_search($likedObject->id, $liked[$databaseIndex . 's']) === false ) {
             //Push the id of the liked object into the declared variable, with the appropriate index ex($liked['post' or 'comment']) 
             array_push($liked[$databaseIndex . 's'], $likedObject->id);
@@ -87,9 +94,6 @@ class User extends Authenticatable
 
             $user->save();
         }
-        
-        
-
         return $user;
 
         // return redirect('/' . $object . 's'); this only works in controller ??? Iliass
@@ -97,18 +101,23 @@ class User extends Authenticatable
 
     public function dynamicUnlike($unlikedObject, $userId, $databaseIndex)
     {
+        $objectLikes = $unlikedObject->likes;
         // When unlike button is clicked, decrement the likes attribute by 1
-        $unlikedObject->likes -= 1;
+        if (($key = array_search((int)$userId, $objectLikes)) !== false) {
+            
+            //Remove the $idToRemove from the array
+            array_splice($objectLikes, $key, 1);
+            
+        }
 
         // update the table->likes column
-        $unlikedObject->update(array('likes' => $unlikedObject->likes));
+        $unlikedObject->update(array('likes' => $objectLikes));
 
         // Fetch from database the user who clicked on the like button
         $user = User::findorFail($userId);
 
         // Assign the User's liked attribute to a variable
         $liked = $user->liked;
-
         //Find the unliked object's ID within the $liked array, then assign it's index to $key
         $key = array_search($unlikedObject->id, $liked[$databaseIndex . 's']);
 

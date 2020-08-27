@@ -54,6 +54,15 @@ class Comment extends Model
         
     }
 
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'likes' => 'array',
+    ];
+
     // public function recursiveReplies($comments) {
     //     foreach ($comments as $comment) {
     //         $replies = Comment::where('parent_comment_id', $comment->id)->get();

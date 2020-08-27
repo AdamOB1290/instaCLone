@@ -20,7 +20,7 @@ class CreatePostsTable extends Migration
             $table->string('media_file')->nullable();
             $table->string('title')->nullable();
             $table->text('description')->nullable();
-            $table->integer('likes')->default(0);
+            $table->json('likes')->nullable();
             $table->string('type')->nullable();
             $table->string('notification')->nullable();
             $table->timestamps();

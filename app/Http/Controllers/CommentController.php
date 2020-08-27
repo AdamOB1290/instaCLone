@@ -57,9 +57,28 @@ class CommentController extends Controller
     {
         $comment = Comment::create($this->validatedData());
 
+
         event(new CommentCreated($comment));
 
-        return redirect("/comments")->with('success', 'Comment Uploaded Successfully!');
+        $user = User::findOrFail($comment['user_id']);
+
+        // check if the profile picture of the session user is a url
+        if (filter_var($user->pfp, FILTER_VALIDATE_URL)) {
+
+            // index it to session user
+            $user['pfp_type'] = 'imageUrl';
+        } else { // else it means it's a local file
+
+            // index it to session user
+            $user['pfp_type'] = 'localImage';
+        }
+        
+        $comment['user'] = $user;
+        $comment['replies'] = [];
+        $comment['likes'] = [];
+        
+        // return redirect("/comments")->with('success', 'Comment Uploaded Successfully!');
+        return $comment;
     }
 
     /**

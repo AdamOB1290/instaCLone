@@ -28,7 +28,8 @@ Route::get('post/comments/{postId}','PostController@show')->name('posts.show');
 Route::get('posts/create/{type}', 'PostController@create')->name('posts.create');
 
 Route::resource('comments', 'CommentController'); #->except('create');
-Route::get('comments/create/{parentId?}/{postId?}', 'CommentController@create')->name('comments.create');
+// Route::get('post/comments/store/{parentId?}/{postId?}', 'CommentController@store')->name('comments.store');
+Route::post('post/comments', 'CommentController@store')->name('comments.store');
 
 Auth::routes();
 

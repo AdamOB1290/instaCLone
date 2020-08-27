@@ -14,6 +14,5 @@ $factory->define(Comment::class, function (Faker $faker) {
         'user_id' => User::all()->random()->id,
         'post_id' => Post::all()->random()->id,
         'content' => $faker->realText($maxNbChars = 200, $indexSize = 2),
-        'likes' => $faker->numberBetween($min = 1, $max = User::count()),
     ];
 });
