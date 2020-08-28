@@ -113,9 +113,12 @@ class CommentController extends Controller
      */
     public function update(Request $request, Comment $comment)
     {
-        $comment->update($this->validatedData());
-
-        return redirect('comments/' . $comment->id)->with('success', 'Comment Updated!');
+        $comment->update(request()->validate([
+            'content' => 'required|max:255',
+            ])
+        );
+        // return redirect('comments/' . $comment->id)->with('success', 'Comment Updated!');
+        return $comment;
     }
 
     /**
@@ -166,7 +169,8 @@ class CommentController extends Controller
         } else { // update the current comment instead of delete ( since it has a child)
             $comment->where('id', $comment->id)->update(['delete_state' => 1]);
         }
-        return redirect('/comments');
+        // return redirect('/comments');
+        // return 'success';
     }
 
     protected  function validatedData()
@@ -176,6 +180,7 @@ class CommentController extends Controller
             'user_id' => 'required',
             'post_id' => 'required',
             'parent_comment_id' => 'required',
+            'original_comment_id' => 'required',
             'content' => 'required|max:255',
         ]);
     }

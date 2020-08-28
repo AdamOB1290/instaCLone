@@ -33,6 +33,7 @@
         "readmore-js": "^2.2.1",
         "underscore": "^1.10.2",
         "vue-loader": "^14.2.4",
+        "vue-router": "^3.4.3",
         "vue-slick": "^1.1.15",
         "vuex": "^3.5.1"
     }

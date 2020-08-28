@@ -217,3 +217,87 @@
     animation: highlight 2s;
     border-radius: 2%;
   }
+
+  .modal {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .modal-content{
+    border-radius: 12px !important;
+  }
+
+  .modal-body{
+    padding: 0 !important;
+  }
+
+  .settings_btn {
+    font-size: 13px;
+    font-weight: 700;
+    background: none;
+    border: none;
+    border-bottom: 0.1px solid #0000005e;
+    
+  }
+
+  .settings_btn:focus {
+    
+    outline: none !important;
+
+  }
+
+  .cancel_edit{
+    position: absolute;
+    font-weight: 700;
+    top: 8.5px;
+    right: 30px;
+  }
+
+  .editTxt {
+      font-size: 11px !important;
+  }
+
+  .addComment_form{
+    position: fixed!important;
+    width: 100%;
+    z-index: 1;  
+    bottom: 40px;
+  }
+
+  /* HIDE SHOW FORM EFFECT */
+
+  /* .hideForm {
+    bottom:-40px;
+    visibility: hidden;
+    transition: bottom 2s , visibility 10s 2s;
+  }
+
+  .showForm {
+    bottom:40px;
+    visibility: visible;
+    transition: bottom 2s, visibility 10s 2s;
+  } */
+  
+
+  .addComment_form textarea {
+      width: 95% !important;
+      font-size: 13px !important;
+      border-radius: 30px !important;
+      padding:  15px 35px 0 20px;
+      line-height: 15px;
+    
+  }
+
+  .submitComment {
+    position: absolute !important;
+    right: 7% !important;
+    top: 50% !important;
+    transform: translateY(-51%) !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: rgba(var(--d69,0,149,246),1) !important;
+    outline: none;
+  }
+
+  

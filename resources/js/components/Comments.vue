@@ -5,16 +5,28 @@
           <div class="comments d-flex position-relative show_more p-2" >
             <img v-if="comment.user.pfp_type == 'imageUrl'" class="pfp card-img-top rounded-circle mr-2"
               :src="comment.user.pfp"/>
-            <img v-else class="pfp card-img-top rounded-circle mr-2" :src="'storage/'+comment.user.pfp"/>
-            <div class="pr-3">
-              <span class="username font-weight-bold">{{comment.user.username}}</span>
-              {{comment.content}}
+            <img v-else class="pfp card-img-top rounded-circle mr-2" :src="`${publicPath}storage/`+comment.user.pfp"/>
+           
+            <div class="pr-3 pl-1">
+              <span class="username font-weight-bold pb-2">{{comment.user.username}}</span>
+              <textarea v-if="comment.editState"  v-model="comment.content" @keydown.enter.exact.prevent 
+              @keyup.enter.exact="submitEdit" :data-commentId="comment.id"
+               cols="35" rows="5" class="mt-2 editTxt">
+              </textarea>
+              <span v-else>{{comment.content}}</span>
               <br>
               <span class="text-secondary">{{comment.created_at}}</span>
               <span v-if=" comment.likes.length != 0" class="text-secondary ml-2">{{comment.likes.length}} likes</span>
               <span v-if=" comment.likes.length == 0" class="text-secondary ml-2">0 likes</span>
-              <span class="text-secondary ml-2">Reply</span>
+              <span :id="'commentReplyId'+comment.id" :data-commentId="comment.id" :data-username="comment.user.username" :data-originalCommentId="comment.id" @click="commentReply" class="text-secondary ml-2">Reply</span>
+              <i class="fas fa-ellipsis-h text-secondary ml-2"  v-b-modal="'my_commentModal'+key"></i>
+              <b-modal :id="'my_commentModal'+key" :ref="'modal'+comment.id" class="settings_Modal" hide-header hide-footer >
+                <button :id="'commentEditId'+comment.id" :data-commentId="comment.id" @click="editComment"  class="w-100 settings_btn px-5 py-2">Edit</button>
+                <button :id="'commentDeleteId'+comment.id" :data-commentId="comment.id" @click="deleteComment" class="w-100 settings_btn text-danger px-5 py-2" >Delete</button>
+              </b-modal>
+              
             </div>
+            <span v-if="comment.editState" :id="'cancelCommentEditId'+comment.id" :data-commentId="comment.id" @click="cancelEditComment" class="cancel_edit text-danger ml-2">Cancel</span>
             <!-- like icon -->
             <svg :id="'commentLikeId'+comment.id" :data-commentId="comment.id" @click="likeUnlike" :fill="comment.likeColor"  class="comment_like_icon" aria-label="Like" viewBox="0 0 48 48" >
               <path :d="comment.likePath"></path>
@@ -23,19 +35,29 @@
           <div v-if="comment.replies.length > 0" class="text-secondary text-center" @click="Expand_Collapse">{{replyStatus}}</div>
           <div v-if="comment.replies.length > 0" class="reply_wrapper mx-4" :class="reply_display">
             <div  v-for="(reply, key) in comment.replyFeed" :key="key">
-              <div class="replys d-flex show_more p-2">
+              <div class="replys d-flex position-relative show_more p-2">
                 <img v-if="reply.user.pfp_type == 'imageUrl'" class="pfp card-img-top rounded-circle mr-2"
                   :src="reply.user.pfp"/>
-                <img v-else class="pfp card-img-top rounded-circle mr-2" :src="'storage/'+reply.user.pfp"/>
+                <img v-else class="pfp card-img-top rounded-circle mr-2" :src="`${publicPath}storage/`+reply.user.pfp"/>
                 <div>
-                  <span class="username font-weight-bold">{{reply.user.username}}</span>
-                  {{reply.content}}
+                  <span class="username font-weight-bold pb-2">{{reply.user.username}}</span>
+                  <textarea  v-if="reply.editState" v-model="reply.content" @keydown.enter.exact.prevent 
+                  @keyup.enter.exact="submitEdit" :data-commentId="reply.id" 
+                  cols="30" rows="5" class="mt-2 editTxt">
+                  </textarea>
+                  <span v-else>{{reply.content}}</span>
                   <br>
                   <span class="text-secondary">{{reply.created_at}}</span>
                   <span v-if=" reply.likes.length != 0" class="text-secondary ml-2">{{reply.likes.length}} likes</span>
                   <span v-if=" reply.likes.length == 0" class="text-secondary ml-2">0 likes</span>
-                  <span class="text-secondary ml-2">Reply</span>
+                  <span :id="'commentReplyId'+comment.id" :data-commentId="reply.id" :data-username="reply.user.username" :data-originalCommentId="reply.original_comment_id" @click="commentReply" class="text-secondary ml-2">Reply</span>
+                  <i class="fas fa-ellipsis-h text-secondary ml-2"  v-b-modal="'my_replyModal'+key"></i>
+                  <b-modal :id="'my_replyModal'+key" :ref="'modal'+reply.id" class="settings_Modal" hide-header hide-footer >
+                    <button :id="'replyEditId'+reply.id" :data-replyId="reply.id" @click="editComment"  class="w-100 settings_btn px-5 py-2">Edit</button>
+                    <button :id="'replyDeleteId'+reply.id" :data-replyId="reply.id" @click="deleteComment" class="w-100 settings_btn text-danger px-5 py-2" >Delete</button>
+                  </b-modal> 
                 </div>
+                <span v-if="reply.editState" :id="'cancelReplyEditId'+comment.id" :data-replyId="reply.id" @click="cancelEditComment" class="cancel_edit text-danger ml-2">Cancel</span>
                 <!-- like icon -->
                 <svg :id="'commentLikeId'+reply.id" :data-replyId="reply.id" @click="likeUnlike" :fill="reply.likeColor"  class="comment_like_icon" aria-label="Like" viewBox="0 0 48 48" >
                   <path :d="reply.likePath"></path>
@@ -48,19 +70,16 @@
           <observer v-on:intersect="commentIntersected" />
         </div>
       </div>
-      <form @submit.prevent="addComment" method="post" action="">
+      <form class="addComment_form" @submit.prevent="addComment" method="post" action="">
         
-        <p>Hidden 'Parent id' Input: </p>
-        <input type="hidden" name="parent_comment_id" id="parent_comment_id" v-model.trim="parentCommentId">
-        <p>Hidden 'Post id' Input: </p>
+        <input type="hidden" name="parent_comment_id" id="parent_comment_id" v-model.trim="addCommentForm.parentCommentId">
+        <input type="hidden" name="original_comment_id" id="parent_comment_id" v-model.trim="addCommentForm.originalCommentId">
         <input type="hidden" name="post_id" id="post_id" v-model.trim="postId">
-
-        <div class="form-group">    
-            <label for="content">Content:</label>
-            <textarea v-model="commentBody" cols="30" rows="1" class="form-control" name="content" id="content" ></textarea>
+        <div class="form-group position-relative d-flex justify-content-center">    
+            <b-form-textarea ref="commentForm" v-model="addCommentForm.commentBody" cols="30" rows="1" max-rows="10" class="form-control addCommentTxt" name="content" id="content" ></b-form-textarea>
+            <button type="submit" class="btn btn-primary-outline submitComment p-0">Post</button>
             <p class="text-danger"></p>
         </div>
-        <button type="submit" class="btn btn-primary-outline">Add Comment</button>
       </form>  
     </div>
     
@@ -87,8 +106,13 @@ export default {
       componentKey: 0,  
       reply_display : 'd-none',  
       replyStatus: 'View replies',
-      parentCommentId: 0,
-      commentBody: '',
+      publicPath: 'http://localhost:8000/',
+      addCommentForm: {
+        parentCommentId: 0,
+        originalCommentId: 0,
+        commentBody: '',
+        parentCommentUsername: '',
+      }
 
       
     };
@@ -107,14 +131,12 @@ export default {
         
         this.comments.forEach((comment) => {
          comment.replies = []
+         comment.editState = false
           if (comment.likes == null) {
               comment.likes = []
           }
-          var dateArray = moment(comment.created_at).fromNow().split(" ")
-          console.log(dateArray);
-          var timeLetter = dateArray[1].charAt(0)
-          comment.created_at = dateArray[0]+timeLetter
-
+          
+          comment.created_at=this.dateReformat(comment.created_at)
 
           if (this.likedComments.includes(comment.id)) {
               comment.likePath =
@@ -186,11 +208,9 @@ export default {
   mounted: function () {
     // this.$store.commit("changeName", "New Name");
     // console.log(this.$store.state.user.username);
-
   },
 
   methods: {
-
     likeUnlike(event) {
 
       let commentLikeId
@@ -286,7 +306,6 @@ export default {
         }
     },
 
-    
     commentIntersected() {
       //count how many pages (a page has 10 comments) of comments we have then execute
       // the code inside that many times
@@ -322,24 +341,170 @@ export default {
       this.componentKey += 1;  
     },
 
+    commentReply (event) {
+      this.addCommentForm.parentCommentId = event.target.attributes[1].nodeValue
+      this.addCommentForm.parentCommentUsername = event.target.attributes[2].nodeValue
+      this.addCommentForm.originalCommentId = event.target.attributes[3].nodeValue
+      this.$refs.commentForm.focus()
+      this.$refs.commentForm.value = '@'+this.addCommentForm.parentCommentUsername
+    },
+
+
     addComment () {
       const params = new URLSearchParams();
-      params.append('parent_comment_id', this.parentCommentId);
+      params.append('parent_comment_id', this.addCommentForm.parentCommentId);
+      params.append('original_comment_id', this.addCommentForm.originalCommentId);
       params.append('post_id', this.postId);
       params.append('user_id', this.sessionUser.id);
-      params.append('content', this.commentBody);
+      params.append('content', this.addCommentForm.commentBody);
       axios({
         method: 'post',
         url: 'comments',
         data: params
       }).then((response) => {
-        this.commentFeed[0].push(response.data)
-        console.log(this.commentFeed[0]);
-        this.forceRerender()
+
+        if (this.likedComments.includes(response.data.id)) {
+            response.data.likePath =
+              "M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+            response.data.likeColor = "#ed4956";
+          } else {              
+            response.data.likePath =
+              "M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+            response.data.likeColor = "#262626";
+          }
+          
+        response.data.created_at= this.dateReformat(response.data.created_at)
+
+        if (this.addCommentForm.originalCommentId == 0) {
+          this.commentFeed[0].push(response.data)
+        } else {
+          this.originalComments.forEach(originalComment => {
+            if (originalComment.id == this.addCommentForm.originalCommentId) {
+                originalComment.replyFeed.push(response.data)
+              } else {
+                originalComment.replyFeed.forEach(reply => {
+                  if (reply.id == this.addCommentForm.originalCommentId) {
+                    console.log(originalComment.replyFeed);
+                    originalComment.replyFeed[0].push(response.data)
+                    console.log(originalComment.replyFeed);
+                  } 
+                });
+              }
+            
+          });
+        } 
         
+        this.addCommentForm.commentBody = ''
+        this.addCommentForm.originalCommentId = 0
+        this.addCommentForm.parentCommentId = 0
       })
       
-    }
+    },
+    
+    deleteComment (event) {
+      var targetId = event.target.attributes[1].nodeValue;
+      axios({
+        method: 'delete',
+        url: `${this.publicPath}comments/`+targetId,
+      }).then((response) => {
+        this.commentFeed.forEach(page => {
+          page.forEach(comment => {
+            if (targetId == comment.id) {
+              let index = page.indexOf(comment)
+              page.splice(index, 1)
+            }
+          });
+          
+        });
+        // console.log(response);
+        
+      })
+    },
+
+    cancelEditComment(event) {
+      var id = event.target.attributes[1].nodeValue
+      this.commentFeed.forEach(page => {
+        page.forEach(comment => {
+          if (comment.id == id) {
+            comment.editState = false
+            
+          } else {
+            comment.replies.forEach(reply => {
+              if (reply.id == id) {
+                reply.editState = false
+              }
+            });
+          }
+        });
+      });
+      $(this.$refs)[0]['modal'+id][0].hide() 
+      this.forceRerender()
+    },
+
+    editComment(event) {
+      var id = event.target.attributes[1].nodeValue
+      this.commentFeed.forEach(page => {
+        page.forEach(comment => {
+          if (comment.id == id) {
+            comment.editState = true
+            
+          } else {
+            comment.replies.forEach(reply => {
+              if (reply.id == id) {
+                reply.editState = true
+              }
+            });
+          }
+        });
+      });
+      $(this.$refs)[0]['modal'+id][0].hide() 
+      this.forceRerender()
+    },
+
+    submitEdit (event) {
+      var targetId = event.target.attributes[0].nodeValue
+      var updatedComment = $(event.target)[0].value
+      axios({
+        method: 'patch',
+        url: `${this.publicPath}comments/${targetId}`,
+        data: {
+          content: updatedComment,
+          },
+      }).then((response) => {
+         
+        this.commentFeed.forEach(page => {
+          page.forEach(comment => {
+            if (comment.id == targetId) {
+              comment.editState = false
+              
+            } else {
+              comment.replies.forEach(reply => {
+                if (reply.id == targetId) {
+                  reply.editState = false
+                }
+              });
+            }
+          });
+        });
+        this.forceRerender()
+      })
+    },
+    
+    dateReformat (createdAt) {
+      var dateArray = moment(createdAt).fromNow()
+      // console.log(dateArray);
+          
+      //     if (dateArray[0]=='a') {
+      //       dateArray[0]= 1
+      //     }
+      //     var timeLetter = dateArray[1].charAt(0)
+      //     if (timeLetter=='f') {
+      //       timeLetter= 'm'
+      //     }
+           
+          return dateArray
+    },
+    
     
     
   },
