@@ -1,5 +1,5 @@
 <template>
-  <div class="h-100">
+  <div key="feedKey" class="h-100">
     <div v-if="posts.length > 0" class="glider story_slider border-down pb-1" :class="post_display">
       <div class="story_wrapper d-flex px-2 my-1">
         <div class="float-left d-flex flex-column align-items-center mr-1">
@@ -53,13 +53,9 @@
 
           <div class="card-body">
             <video v-if="post.media_type == 'localVideo'" controls muted class>
-              <source :src="'storage/'+post.media_file" type="video/mp4" />
+              <source :src="'storage/'+post.media_file"  />
             </video>
-            <img
-              v-else-if="post.media_type == 'imageUrl'"
-              class="card-img-top rounded-0"
-              :src="post.media_file"
-            />
+            <img  v-else-if="post.media_type == 'imageUrl'" class="card-img-top rounded-0" :src="post.media_file"/>
             <img v-else class="card-img-top rounded-0" :src="'storage/'+post.media_file" />
             <div class="px-2">
               <div class="interaction_buttons pt-2 d-flex">
@@ -95,7 +91,7 @@
                   {{post.description}}
                 </span>
                 <!-- this button shows/hides the description -->
-                <span class="show_hide" @click="showHideDescription">{{ post.showStatus }}</span>
+                <span :ref="'showMoreLess'+post.id" class="show_hide" @click="showHideDescription">{{ post.showStatus }}</span>
               </div>
             </div>
           </div>
@@ -178,6 +174,29 @@
       
     </slick>
     
+    <b-modal id="modal_post_form" ref="modal_post_form" class="settings_Modal" title="Add a Post" hide-footer>
+      <form class="addPost_form" @submit.prevent="addPost" method="post" action="" enctype="multipart/form-data">
+        <b-form-group>
+          <div class="form-group">
+            <input type="hidden" name="type" v-model="postForm.mediaType">
+            <b-form-file v-model="postForm.postMedia" @change="postPreview" name="media_file" id="file-default"></b-form-file>
+            <div class="previewWrapper d-flex justify-content-center align-items-center ">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <div>
+                <video class="video img" v-if="postForm.videoPreview" controls muted>
+                  <source :src="postForm.videoPreview"/>
+                </video>
+              </div>
+              <div>
+                <img class="preview img" v-if="postForm.imgPreview" :src="postForm.imgPreview"/>
+              </div>
+            </div>
+            <b-form-textarea v-model="postForm.postCaption" name="description" placeholder="Add a caption ..."  cols="30" rows="1" max-rows="10" class="form-control addPostTxt"></b-form-textarea>
+            <button type="submit" class="btn btn-primary float-right">Submit</button>
+          </div>
+        </b-form-group>
+      </form>
+    </b-modal> 
   </div>
 </template>
 
@@ -194,10 +213,18 @@ var moment = require("moment");
 export default {
   data() {
     return {
+      feedKey: 0,
       posts: [],
       postsType: [],
       storiesType: [],
       postFeed: [],
+      postForm: {
+        postMedia: null,
+        imgPreview: null,
+        videoPreview: null,
+        postCaption: null,
+        mediaType: 'post',
+      },
       storyFeed: [],
       commentCount: 0,
       observer: null,
@@ -395,6 +422,7 @@ export default {
           this.likedComments.push(...this.sessionUser.liked.comments);
           this.user_display = "d-none";
           this.posts = data.data;
+
           this.posts.forEach((post) => {
             if (post.likes == null) {
               post.likes = []
@@ -442,6 +470,9 @@ export default {
           });
           this.postFeed.push(this.postsType.slice(0, 10));
           this.storyFeed.push(this.storiesType.slice(0, 10));
+
+       
+
         } else {
           this.post_display = "d-none";
           this.users = data.data;
@@ -501,8 +532,19 @@ export default {
   },
 
   mounted: function () {
+      // THIS.REFS.SHOWMORELESS NOT ACCESSIBLE
+      //  console.log(this.postFeed);            
+      //     console.log(this.$refs);
+      //     console.log(this.$refs['modal_post_form']);
+
+      //     this.postFeed.forEach(page => {
+      //       page.forEach(post => {
+      //       console.log(this.$refs['showMoreLess3']);
+      //       console.log('showMoreLess'+post.id);
+
+      //       });
+      //     });
     this.posts.forEach((post) => {
-            
             if (this.likedPosts.includes(post.id)) {
               post.likePath =
                 "M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
@@ -909,12 +951,59 @@ export default {
       }
     },
 
-    // showComments(event) {
-    //   let postId = $(event.currentTarget)[0].attributes[1].nodeValue;
-    //   this.$store.commit("changePostId", postId);
-    //   this.$store.commit("changeName", 'postId');
-    //   console.log(this.$store.state.user.username);
-    // },
+    postPreview(event) {
+      const file = event.target.files[0];
+      if (file.type.indexOf('video/') !== -1) {
+        this.postForm.videoPreview = URL.createObjectURL(file);
+      } else {
+        this.postForm.imgPreview = URL.createObjectURL(file);
+      }
+      
+      
+    },
+
+    forceRerender () {
+      this.feedKey += 1;  
+    },
+
+    addPost(event) {
+      let formData = new FormData();
+
+      formData.append('media_file', this.postForm.postMedia);
+      formData.append('description', this.postForm.postCaption);
+      formData.append('type', this.postForm.mediaType);
+      formData.append('user_id', this.sessionUser.id);
+            
+      axios({
+        method: 'post',
+        url: 'posts',
+        data: formData,
+      }).then((response) => {
+        console.log(response);
+        let post = response.data
+        post.likes = []
+        post.created_at = moment(post.created_at).fromNow();
+        post.showStatus = "Show More";
+        post.likePath = "M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+        post.likeColor = "#262626";
+        post.savePath = "M43.5 48c-.4 0-.8-.2-1.1-.4L24 29 5.6 47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 1.2-.9 1.4-.2.1-.4.1-.6.1zM24 26c.8 0 1.6.3 2.2.9l15.8 16V3H6v39.9l15.8-16c.6-.6 1.4-.9 2.2-.9z";
+        post.saveColor = "#262626";
+      
+        console.log(post);
+        this.$refs['modal_post_form'].hide()
+        this.postFeed[0].splice(0, 0, post)
+
+        this.postForm.imgPreview = null;
+        this.postForm.videoPreview = null;
+        this.postForm.postCaption = ''
+
+      }).catch((err) => {
+        console.log("ERRRR:: ",err.response.data);
+
+      });
+
+      
+    }
   },
 
   components: {

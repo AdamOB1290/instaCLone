@@ -156,8 +156,8 @@ class PostController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create($type)
-    {
-        return view("posts.crud.create", compact('type'));
+    {   
+        // return view("posts.crud.create", compact('type'));
     }
 
     /**
@@ -166,16 +166,59 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store()
+    public function store(Request $request)
     {
+        // $post = Post::create($this->validatedData());
+        $post = Post::create(request()->validate([
+            'user_id' => 'required',
+            'description' => '',
+            'media_file' => 'required|file|mimes:jpg,png,jpeg,gif,svg,mp4,jpeg,png,bmp,svg,avi,mkv,mpeg|max:20000 ',
+            'type' => 'required',
+            ]
+        ));
 
-        $post = Post::create($this->validatedData());
-
-
+        // dd($post);
         $this->storeMediaFile($post);
 
         event(new PostCreated($post));
-        // return redirect("/posts")->with('success', 'Post Uploaded Successfully!');
+
+        $user = User::findOrFail(Auth::user()->id);
+
+        $post['user'] = $user;
+        $post['comments'] = [];
+        
+        if (filter_var($post->media_file, FILTER_VALIDATE_URL)) {
+
+            // index it to post
+            $post['media_type'] = 'imageUrl';
+        } else { // else it means it's a local file
+
+            // check if the local file is an image
+            if (strstr(mime_content_type('storage/' . $post->media_file), "image/")) {
+
+                // index it to post
+                $post['media_type'] = 'localImage';
+
+                // else check if the local file is a video
+            } elseif (strstr(mime_content_type('storage/' . $post->media_file), "video/")) {
+
+                // index it to post
+                $post['media_type'] = 'localVideo';
+            }
+        }
+
+        // check if the profile picture of the post user is a url
+        if (filter_var($post->user->pfp, FILTER_VALIDATE_URL)) {
+
+            // index it to post user
+            $post->user['pfp_type'] = 'imageUrl';
+        } else { // else it means it's a local file
+
+            // index it to post user
+            $post->user['pfp_type'] = 'localImage';
+        }
+        
+        return $post;
     }
 
     /**
@@ -294,19 +337,22 @@ class PostController extends Controller
     {
 
         return tap(request()->validate([
-            'user_id' => '',
-            'cover' => 'image|max:5000', #more image validation rules: https://laraveldaily.com/four-laravel-validation-rules-for-images-and-photos/
-            'title' => 'max:255',
+            'user_id' => 'required',
+            // 'cover' => 'image|max:5000', #more image validation rules: https://laraveldaily.com/four-laravel-validation-rules-for-images-and-photos/
+            // 'title' => 'max:255',
             'description' => '',
-            'media_file' => '',
+            'media_file' => 'required|file|mimes:jpg,png,jpeg,gif,svg,mp4,jpeg,png,bmp,svg,avi,mkv,mpeg|max:20000 ',
             'type' => '',
-        ]), function () {
-            if (request()->hasFile('media_file')) {
-                request()->validate([
-                    'media_file' => 'file|mimes:jpg,png,jpeg,gif,svg,mp4,jpeg,png,bmp,svg,avi,mkv,mpeg|max:20000 ',
-                ]);
-            }
-        });
+        ]), 
+        // function () {
+            // if (request()->hasFile('media_file')) {
+            //     request()->validate([
+            //         'media_file' => 'file|mimes:jpg,png,jpeg,gif,svg,mp4,jpeg,png,bmp,svg,avi,mkv,mpeg|max:20000 ',
+            //     ]);
+            // }
+        // }
+    );
+
     }
 
     private function storeMediaFile($post)

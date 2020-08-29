@@ -1,6 +1,6 @@
 <template>
-    <div :key = "componentKey">
-      <div class="comments_wrapper" v-for="(commentPage, key) in commentFeed" :key="key">
+    <div :key = "commentKey">
+      <div class="comments_wrapper mb-5" v-for="(commentPage, key) in commentFeed" :key="key">
         <div v-for="(comment, key) in commentPage" :key="key">
           <div class="comments d-flex position-relative show_more p-2" >
             <img v-if="comment.user.pfp_type == 'imageUrl'" class="pfp card-img-top rounded-circle mr-2"
@@ -75,8 +75,10 @@
         <input type="hidden" name="parent_comment_id" id="parent_comment_id" v-model.trim="addCommentForm.parentCommentId">
         <input type="hidden" name="original_comment_id" id="parent_comment_id" v-model.trim="addCommentForm.originalCommentId">
         <input type="hidden" name="post_id" id="post_id" v-model.trim="postId">
-        <div class="form-group position-relative d-flex justify-content-center">    
-            <b-form-textarea ref="commentForm" v-model="addCommentForm.commentBody" cols="30" rows="1" max-rows="10" class="form-control addCommentTxt" name="content" id="content" ></b-form-textarea>
+        <div class="form-group position-relative d-flex justify-content-center"> 
+            <img v-if="this.sessionUser.pfp_type == 'imageUrl'" class="pfp_form" :src="reply.user.pfp"/>
+            <img v-else class="pfp_form" :src="`${publicPath}storage/`+this.sessionUser.pfp"/>   
+            <b-form-textarea ref="commentForm" placeholder="Add a comment ..." v-model="addCommentForm.commentBody" cols="30" rows="1" max-rows="10" class="form-control addCommentTxt" name="content" id="content" ></b-form-textarea>
             <button type="submit" class="btn btn-primary-outline submitComment p-0">Post</button>
             <p class="text-danger"></p>
         </div>
@@ -103,7 +105,7 @@ export default {
       commentIterations: 0,
       replySliceIndex: 5, 
       targetCommentId: null,
-      componentKey: 0,  
+      commentKey: 0,  
       reply_display : 'd-none',  
       replyStatus: 'View replies',
       publicPath: 'http://localhost:8000/',
@@ -111,7 +113,6 @@ export default {
         parentCommentId: 0,
         originalCommentId: 0,
         commentBody: '',
-        parentCommentUsername: '',
       }
 
       
@@ -338,15 +339,14 @@ export default {
     },
 
     forceRerender () {
-      this.componentKey += 1;  
+      this.commentKey += 1;  
     },
 
     commentReply (event) {
       this.addCommentForm.parentCommentId = event.target.attributes[1].nodeValue
-      this.addCommentForm.parentCommentUsername = event.target.attributes[2].nodeValue
+      this.addCommentForm.commentBody = '@'+event.target.attributes[2].nodeValue
       this.addCommentForm.originalCommentId = event.target.attributes[3].nodeValue
       this.$refs.commentForm.focus()
-      this.$refs.commentForm.value = '@'+this.addCommentForm.parentCommentUsername
     },
 
 
@@ -381,12 +381,12 @@ export default {
           this.originalComments.forEach(originalComment => {
             if (originalComment.id == this.addCommentForm.originalCommentId) {
                 originalComment.replyFeed.push(response.data)
+                originalComment.replies.push(response.data)
               } else {
                 originalComment.replyFeed.forEach(reply => {
                   if (reply.id == this.addCommentForm.originalCommentId) {
-                    console.log(originalComment.replyFeed);
                     originalComment.replyFeed[0].push(response.data)
-                    console.log(originalComment.replyFeed);
+                    originalComment.replies.push(response.data)
                   } 
                 });
               }
@@ -412,11 +412,24 @@ export default {
             if (targetId == comment.id) {
               let index = page.indexOf(comment)
               page.splice(index, 1)
+            } else {
+              this.originalComments.forEach(originalComment => {
+                originalComment.replyFeed.forEach(reply => {
+                  if (reply.id == targetId) {
+                    let index = originalComment.replyFeed.indexOf(reply)
+                    originalComment.replyFeed.splice(index, 1)
+                    let index2 = originalComment.replies.indexOf(reply)
+                    originalComment.replies.splice(index2, 1)
+                  }
+                })
+              })
             }
           });
           
         });
-        // console.log(response);
+        
+        $(this.$refs)[0]['modal'+targetId][0].hide() 
+        this.forceRerender()
         
       })
     },
