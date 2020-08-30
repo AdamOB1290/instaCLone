@@ -19,16 +19,16 @@
               <span v-if=" comment.likes.length != 0" class="text-secondary ml-2">{{comment.likes.length}} likes</span>
               <span v-if=" comment.likes.length == 0" class="text-secondary ml-2">0 likes</span>
               <span :id="'commentReplyId'+comment.id" :data-commentId="comment.id" :data-username="comment.user.username" :data-originalCommentId="comment.id" @click="commentReply" class="text-secondary ml-2">Reply</span>
-              <i class="fas fa-ellipsis-h text-secondary ml-2"  v-b-modal="'my_commentModal'+key"></i>
-              <b-modal :id="'my_commentModal'+key" :ref="'modal'+comment.id" class="settings_Modal" hide-header hide-footer >
+              <i class="fas fa-ellipsis-h text-secondary ml-2"  v-b-modal="'my_commentModal'+comment.id"></i>
+              <b-modal :id="'my_commentModal'+comment.id" :ref="'my_commentModal'+comment.id" class="settings_Modal" hide-header hide-footer >
                 <button :id="'commentEditId'+comment.id" :data-commentId="comment.id" @click="editComment"  class="w-100 settings_btn px-5 py-2">Edit</button>
-                <button :id="'commentDeleteId'+comment.id" :data-commentId="comment.id" @click="deleteComment" class="w-100 settings_btn text-danger px-5 py-2" >Delete</button>
+                <button :id="'commentDeleteId'+comment.id" :data-commentId="comment.id" @click="deleteComment" class="w-100 settings_btn text-danger px-5 py-2 border-0" >Delete</button>
               </b-modal>
               
             </div>
             <span v-if="comment.editState" :id="'cancelCommentEditId'+comment.id" :data-commentId="comment.id" @click="cancelEditComment" class="cancel_edit text-danger ml-2">Cancel</span>
             <!-- like icon -->
-            <svg :id="'commentLikeId'+comment.id" :data-commentId="comment.id" @click="likeUnlike" :fill="comment.likeColor"  class="comment_like_icon" aria-label="Like" viewBox="0 0 48 48" >
+            <svg :id="'commentLikeId'+comment.id" :data-commentId="comment.id" @click="likeUnlike" :fill="comment.likeColor"  class="comment_like_icon commentfeed" aria-label="Like" viewBox="0 0 48 48" >
               <path :d="comment.likePath"></path>
             </svg>
           </div>
@@ -39,7 +39,7 @@
                 <img v-if="reply.user.pfp_type == 'imageUrl'" class="pfp card-img-top rounded-circle mr-2"
                   :src="reply.user.pfp"/>
                 <img v-else class="pfp card-img-top rounded-circle mr-2" :src="`${publicPath}storage/`+reply.user.pfp"/>
-                <div>
+              <div>
                   <span class="username font-weight-bold pb-2">{{reply.user.username}}</span>
                   <textarea  v-if="reply.editState" v-model="reply.content" @keydown.enter.exact.prevent 
                   @keyup.enter.exact="submitEdit" :data-commentId="reply.id" 
@@ -51,15 +51,15 @@
                   <span v-if=" reply.likes.length != 0" class="text-secondary ml-2">{{reply.likes.length}} likes</span>
                   <span v-if=" reply.likes.length == 0" class="text-secondary ml-2">0 likes</span>
                   <span :id="'commentReplyId'+comment.id" :data-commentId="reply.id" :data-username="reply.user.username" :data-originalCommentId="reply.original_comment_id" @click="commentReply" class="text-secondary ml-2">Reply</span>
-                  <i class="fas fa-ellipsis-h text-secondary ml-2"  v-b-modal="'my_replyModal'+key"></i>
-                  <b-modal :id="'my_replyModal'+key" :ref="'modal'+reply.id" class="settings_Modal" hide-header hide-footer >
+                  <i class="fas fa-ellipsis-h text-secondary ml-2"  v-b-modal="'my_replyModal'+reply.id"></i>
+                  <b-modal :id="'my_replyModal'+reply.id" :ref="'my_commentModal'+reply.id" class="settings_Modal" hide-header hide-footer >
                     <button :id="'replyEditId'+reply.id" :data-replyId="reply.id" @click="editComment"  class="w-100 settings_btn px-5 py-2">Edit</button>
-                    <button :id="'replyDeleteId'+reply.id" :data-replyId="reply.id" @click="deleteComment" class="w-100 settings_btn text-danger px-5 py-2" >Delete</button>
+                    <button :id="'replyDeleteId'+reply.id" :data-replyId="reply.id" @click="deleteComment" class="w-100 settings_btn text-danger px-5 py-2 border-0" >Delete</button>
                   </b-modal> 
                 </div>
                 <span v-if="reply.editState" :id="'cancelReplyEditId'+comment.id" :data-replyId="reply.id" @click="cancelEditComment" class="cancel_edit text-danger ml-2">Cancel</span>
                 <!-- like icon -->
-                <svg :id="'commentLikeId'+reply.id" :data-replyId="reply.id" @click="likeUnlike" :fill="reply.likeColor"  class="comment_like_icon" aria-label="Like" viewBox="0 0 48 48" >
+                <svg :id="'commentLikeId'+reply.id" :data-replyId="reply.id" @click="likeUnlike" :fill="reply.likeColor"  class="comment_like_icon replyfeed" aria-label="Like" viewBox="0 0 48 48" >
                   <path :d="reply.likePath"></path>
                 </svg>
               </div>
@@ -76,8 +76,8 @@
         <input type="hidden" name="original_comment_id" id="parent_comment_id" v-model.trim="addCommentForm.originalCommentId">
         <input type="hidden" name="post_id" id="post_id" v-model.trim="postId">
         <div class="form-group position-relative d-flex justify-content-center"> 
-            <img v-if="this.sessionUser.pfp_type == 'imageUrl'" class="pfp_form" :src="reply.user.pfp"/>
-            <img v-else class="pfp_form" :src="`${publicPath}storage/`+this.sessionUser.pfp"/>   
+            <img v-if="sessionUser.pfp_type == 'imageUrl'" class="pfp_form" :src="sessionUser.pfp"/>
+            <img v-else class="pfp_form" :src="`${publicPath}storage/`+sessionUser.pfp"/>   
             <b-form-textarea ref="commentForm" placeholder="Add a comment ..." v-model="addCommentForm.commentBody" cols="30" rows="1" max-rows="10" class="form-control addCommentTxt" name="content" id="content" ></b-form-textarea>
             <button type="submit" class="btn btn-primary-outline submitComment p-0">Post</button>
             <p class="text-danger"></p>
@@ -428,7 +428,7 @@ export default {
           
         });
         
-        $(this.$refs)[0]['modal'+targetId][0].hide() 
+        $(this.$refs)[0]['my_commentModal'+targetId][0].hide() 
         this.forceRerender()
         
       })
@@ -450,7 +450,7 @@ export default {
           }
         });
       });
-      $(this.$refs)[0]['modal'+id][0].hide() 
+      $(this.$refs)[0]['my_commentModal'+id][0].hide() 
       this.forceRerender()
     },
 
@@ -470,7 +470,7 @@ export default {
           }
         });
       });
-      $(this.$refs)[0]['modal'+id][0].hide() 
+      $(this.$refs)[0]['my_commentModal'+id][0].hide() 
       this.forceRerender()
     },
 

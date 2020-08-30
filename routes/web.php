@@ -53,6 +53,10 @@ Route::get('feeds', function () {
     return view('feed');
 });
 
+Route::get('story/{userId}', function () {
+    return view('stories');
+});
+
 Route::get('post/{postId}', function () {
     return view('comments');
 });

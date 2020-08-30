@@ -182,7 +182,6 @@ class UserController extends Controller
         }
         
         $user = User::findOrFail($sessionUserId);
-        // dd($user);
         return $user; 
 
     }

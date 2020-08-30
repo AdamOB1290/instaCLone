@@ -15,19 +15,17 @@
               <i class="plusStory fas fa-plus-circle position-absolute text-primary"></i>
             </div>
           </div>
-
           <span class="story-username text-center">Your Story</span>
         </div>
-
         <div v-for="(page, key) in storyFeed" :key="key" class="d-flex position-relative">
-          <div v-for="(story, key) in page" :key="key" class="mx-1 d-flex flex-column align-items-center" >
+          <div @click="storyHref" v-for="(user, key) in page" :key="key" class="mx-1 d-flex flex-column align-items-center">
             <div class="gradiant_background d-flex flex-column">
               <div class="m-auto align-items-center d-flex justify-content-center">
-                <img  v-if="story.user.pfp_type == 'imageUrl'"  class="slider-image" :src="story.user.pfp"/>
-                <img v-else class="slider-image" :src="'storage/'+story.user.pfp" />
+                <img  v-if="user.pfp_type == 'imageUrl'" :data-userId="user.id" class="slider-image" :src="user.pfp"/>
+                <img v-else class="slider-image" :data-userId="user.id" :src="'storage/'+user.pfp" />
               </div>
             </div> 
-            <span class="story-username">{{story.user.username}}</span>
+            <span class="story-username">{{user.username}}</span>
           </div>
           <div class="storyObserver"><observer v-on:intersect="storyIntersected"/></div>
         </div>
@@ -38,17 +36,16 @@
       <div class="post_wrapper " v-for="(post, key) in page" :key="key">
         <div class="card rounded-0">
           <div class="card-head d-flex align-items-center border-down py-1">
-            <img
-              v-if="post.user.pfp_type == 'imageUrl'"
-              class="pfp card-img-top rounded-circle mr-2"
-              :src="post.user.pfp"
-            />
-            <img
-              v-else
-              class="pfp card-img-top rounded-circle mr-2"
-              :src="'storage/'+post.user.pfp"
-            />
+            <img v-if="post.user.pfp_type == 'imageUrl'" class="pfp card-img-top rounded-circle mr-2"
+              :src="post.user.pfp" />
+            <img v-else class="pfp card-img-top rounded-circle mr-2" :src="'storage/'+post.user.pfp"/>
             <span class="username font-weight-bold">{{post.user.username}}</span>
+            <i class="fas fa-ellipsis-h text-secondary ml-auto mr-2 pt-2" v-b-modal="'my_postModal'+post.id"></i>
+            <b-modal :id="'my_postModal'+post.id" :ref="'my_postModal'+post.id" class="settings_Modal" hide-header hide-footer >
+              <button :id="'postEditId'+post.id" :data-postId="post.id" @click="editPostDescription"  class="w-100 settings_btn px-5 py-2">Edit</button>
+              <button :id="'postShareStoryId'+post.id" :data-postId="post.id" @click="shareStory"  class="w-100 settings_btn px-5 py-2">Share as story</button>
+              <button :id="'postDeleteId'+post.id" :data-postId="post.id" @click="deletePost" class="w-100 settings_btn text-danger px-5 py-2 border-0">Delete</button>
+            </b-modal> 
           </div>
 
           <div class="card-body">
@@ -85,10 +82,15 @@
               <span v-if=" post.likes.length == 0" class="font-weight-bold">0 likes</span>
               
 
-              <div class="card-text">
+              <div class="card-text position-relative">
+                <span v-if="post.editState" :id="'cancelPostEditId'+post.id" :data-postId="post.id" @click="cancelEditPostDescription" class="cancel_edit post_cancel text-danger">Cancel</span>
                 <span class="description show_more">
                   <span class="username font-weight-bold">{{post.user.username}}</span>
-                  {{post.description}}
+                  <textarea v-if="post.editState"  v-model="post.description" @keydown.enter.exact.prevent 
+                    @keyup.enter.exact="submitEdit" :data-postId="post.id" cols="47" rows="5" class="mt-2 editTxt">
+                  </textarea>
+                  <span v-else>{{post.description}}</span>
+                  
                 </span>
                 <!-- this button shows/hides the description -->
                 <span :ref="'showMoreLess'+post.id" class="show_hide" @click="showHideDescription">{{ post.showStatus }}</span>
@@ -97,24 +99,15 @@
           </div>
 
           <div class="card-footer px-2 py-0">
-            <a
-              href
-              class="show_hide"
-              v-if="post.comments.length > 2"
-            >View All {{post.comments.length}} Comments</a>
-            <div
-              class="comments_wrapper"
-              v-for="(comment, key) in post.comments.slice(0, 2)"
-              :key="key"
-              @click="showHideComment"
-            >
-              <div class="d-flex">
-                <span class="comments show_more">
+            <a href class="show_hide" v-if="post.comments.length > 2" >View All {{post.comments.length}} Comments</a>
+            <div class="comments_wrapper" v-for="(comment, key) in post.comments.slice(0, 2)" :key="key" @click="showHideComment">
+              <div class="d-flex position-relative">
+                <span class="comments show_more pr-3">
                   <span class="username font-weight-bold">{{comment.username}}</span>
                   {{comment.content}}
                 </span>
                 <!-- like icon -->
-                <svg :id="'commentLikeId'+comment.id" :data-commentId="comment.id" @click="likeUnlikeComments" :fill="comment.likeColor"  class="comment_like_icon" aria-label="Like" viewBox="0 0 48 48" >
+                <svg :id="'commentLikeId'+comment.id" :data-commentId="comment.id" @click="likeUnlikeComments" :fill="comment.likeColor"  class="comment_like_icon postfeed" aria-label="Like" viewBox="0 0 48 48" >
                   <path :d="comment.likePath"></path>
                 </svg>
               </div> 
@@ -203,7 +196,6 @@
 <script>
 import Slick from 'vue-slick';
 import Observer from "./Observer";
-window.axios = require("axios");
 var moment = require("moment");
 
 // require('readmore-js');
@@ -215,6 +207,7 @@ export default {
     return {
       feedKey: 0,
       posts: [],
+      storyUsers: [],
       postsType: [],
       storiesType: [],
       postFeed: [],
@@ -238,7 +231,8 @@ export default {
       savedPosts: [],
       slide: 0,
       sliding: null,
-     
+      publicPath: 'http://localhost:8000/',
+
 
       users: [],
       userFeed: [],
@@ -408,8 +402,8 @@ export default {
         this.likeUnlikeComments = _.debounce(this.likeUnlikeComments, 300)
         this.saveUnsave = _.debounce(this.saveUnsave, 300)
         this.followUnfollow = _.debounce(this.followUnfollow, 300)
-
         this.likedPosts.push(...this.sessionUser.liked.posts);
+        
         
         if (this.sessionUser.favorites !== null) {
           this.savedPosts.push(...this.sessionUser.favorites);
@@ -422,8 +416,13 @@ export default {
           this.likedComments.push(...this.sessionUser.liked.comments);
           this.user_display = "d-none";
           this.posts = data.data;
-
+          this.storyUsers.push(...this.posts[0]['story_users'])
+          this.storyUsers.forEach(storyUser => {
+            storyUser.stories = []
+          })
+                
           this.posts.forEach((post) => {
+            post.editState = false
             if (post.likes == null) {
               post.likes = []
             }
@@ -449,11 +448,24 @@ export default {
               post.saveColor = "#262626";
             }
 
-            if (post.type == "post") {
+            if (post.type == "post" ) {
               this.postsType.push(post);
             } else if (post.type == "story") {
               this.storiesType.push(post);
+            } else if (post.type == "post/story" || post.type == "story/post") {
+              this.postsType.push(post);
+              this.storiesType.push(post);
             }
+
+            if (post.type == "story" || post.type == "post/story" || post.type == "story/post") {
+              this.storyUsers.forEach(storyUser => {
+                if (storyUser.id == post.user.id) {
+                  storyUser.stories.push(post)
+                }
+              });
+            }
+            
+            
 
             post.comments.forEach(comment => {
               if (this.likedComments.includes(comment.id)) {
@@ -468,8 +480,9 @@ export default {
 
             });
           });
+
           this.postFeed.push(this.postsType.slice(0, 10));
-          this.storyFeed.push(this.storiesType.slice(0, 10));
+          this.storyFeed.push(this.storyUsers.slice(0, 10));
 
        
 
@@ -679,9 +692,9 @@ export default {
     },
 
     storyIntersected () {
-      if (this.storyIterations < Math.floor(this.storiesType.length / 10)) {
+      if (this.storyIterations < Math.floor(this.storyUsers.length / 10)) {
         // push the next page ( of 10 stories) into the array feed
-        this.storyFeed.push(this.storiesType.slice(this.storySliceIndex, this.storySliceIndex + 10));
+        this.storyFeed.push(this.storyUsers.slice(this.storySliceIndex, this.storySliceIndex + 10));
 
         // increment the slice index to get the next page on the next iteration
         this.storySliceIndex += 10;
@@ -979,7 +992,6 @@ export default {
         url: 'posts',
         data: formData,
       }).then((response) => {
-        console.log(response);
         let post = response.data
         post.likes = []
         post.created_at = moment(post.created_at).fromNow();
@@ -1003,8 +1015,107 @@ export default {
       });
 
       
+    },
+
+    deletePost (event) {
+      var targetId = event.target.attributes[1].nodeValue;
+      console.log('posts/'+targetId);
+      axios({
+        method: 'delete',
+        url: 'posts/'+targetId,
+      }).then((response) => {
+        this.postFeed.forEach(page => {
+          page.forEach(post => {
+            if (targetId == post.id) {
+              let index = page.indexOf(post)
+              page.splice(index, 1)
+            }
+          });
+          
+        });
+        
+        $(this.$refs)[0]['my_postModal'+targetId][0].hide()         
+      })
+    },
+
+    editPostDescription(event) {
+      var targetId = event.target.attributes[1].nodeValue
+      this.postFeed.forEach(page => {
+        page.forEach(post => {
+          if (post.id == targetId) {
+            post.editState = true
+          } 
+        });
+      });
+      $(this.$refs)[0]['my_postModal'+targetId][0].hide() 
+      this.forceRerender()
+    },
+
+    cancelEditPostDescription(event) {
+      var targetId = event.target.attributes[1].nodeValue
+      this.postFeed.forEach(page => {
+        page.forEach(post => {
+          if (post.id == targetId) {
+            post.editState = false
+            
+          } 
+        });
+      });
+      $(this.$refs)[0]['my_postModal'+targetId][0].hide() 
+      this.forceRerender()
+    },
+
+    submitEdit (event) {
+      var targetId = event.target.attributes[0].nodeValue
+      var updatedPost = $(event.target)[0].value
+      axios({
+        method: 'patch',
+        url: 'posts/'+targetId,
+        data: {
+          description: updatedPost,
+          },
+      }).then((response) => {
+         console.log(response);
+        this.postFeed.forEach(page => {
+          page.forEach(post => {
+            if (post.id == targetId) {
+              post.editState = false
+              
+            } 
+          });
+        });
+        this.forceRerender()
+      })
+    },
+
+    shareStory (event) {
+      var targetId = event.target.attributes[1].nodeValue
+      var updatedType = 'post/story'
+      axios({
+        method: 'patch',
+        url: 'posts/'+targetId,
+        data: {
+          type: updatedType,
+          },
+      }).then((response) => {
+        console.log(response);
+        $(this.$refs)[0]['my_postModal'+targetId][0].hide() 
+      })
+
+
+
+    },
+
+    storyHref (event) {
+      var targetId = event.target.attributes[0].nodeValue
+      console.log(targetId);
+      console.log(this.publicPath);
+      window.location.replace(this.publicPath+'story/'+targetId);   
+      
+      // console.log('dfqsdfsd');
     }
   },
+
 
   components: {
     Observer,

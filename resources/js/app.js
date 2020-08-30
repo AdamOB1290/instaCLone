@@ -36,6 +36,7 @@ Vue.component('navbar', require('./components/Navbar.vue').default);
 Vue.component('vfooter', require('./components/Vfooter.vue').default);
 Vue.component('feed', require('./components/Feed.vue').default);
 Vue.component('comment', require('./components/Comments.vue').default);
+Vue.component('story', require('./components/stories.vue').default);
 
 var sessionUser = JSON.parse(document.querySelector("meta[name='session_user']").getAttribute('content'));
 if (typeof sessionUser.liked == 'string') {
@@ -83,9 +84,5 @@ const app = new Vue({
     components: {
 
     },
-
-    
-
-   
 });
 

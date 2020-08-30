@@ -26,7 +26,7 @@ class DeleteStory implements ShouldQueue
      */
     public function handle(PostCreated $event)
     {
-        sleep(10); // waits 10 seconds before executing the next line
+        sleep(120); // waits 10 seconds before executing the next line
 
         // if the post type is 'story' delete, if it's 'post/story' update
         if ($event->post->type == 'story') {

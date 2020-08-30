@@ -42,6 +42,7 @@ class PostController extends Controller
         if (isset($followedUsersIds) && (count($followedUsersIds) > 0)) {
 
             $posts = [];
+            $storyUsers = [];
 
             // loop through the followed users ids
             foreach ($followedUsersIds as $followedUserId ) {
@@ -89,6 +90,13 @@ class PostController extends Controller
                     // index it to post user
                     $post->user['pfp_type'] = 'localImage';
                 }
+                
+                if ($post->type == 'story' || $post->type == 'post/story' || $post->type == 'story/post') {
+                   if (array_search($post->user, $storyUsers) === false) {
+                       array_push($storyUsers, $post->user);
+                   }  
+                }
+                
 
                 // loop through the comments of every post
                 foreach ($post->comments as $comment) {
@@ -102,7 +110,8 @@ class PostController extends Controller
                 }
                 $post['session_user']= $sessionUser;
             }
-            
+            $posts[0]['story_users'] = $storyUsers;
+             
             // return view('posts.crud.index', compact('posts', 'followedUserIds'));
             // return response()->json(['posts'=> $posts]);
             return $posts;
@@ -180,7 +189,7 @@ class PostController extends Controller
         // dd($post);
         $this->storeMediaFile($post);
 
-        event(new PostCreated($post));
+        // event(new PostCreated($post));
 
         $user = User::findOrFail(Auth::user()->id);
 
@@ -295,12 +304,15 @@ class PostController extends Controller
     public function update(Post $post)
     {
 
-        $post->update($this->validatedData());
+        $post->update(request()->validate([
+            'description' => '',
+            'type' => '',
+            ]
+        ));
 
-        $this->storeMediaFile($post);
-        event(new PostCreated($post));
+        // event(new PostCreated($post));
 
-        return redirect("posts/" . $post->id)->with('success', 'Post Updated!');
+        // return redirect("posts/" . $post->id)->with('success', 'Post Updated!');
     }
 
     /**
@@ -330,12 +342,12 @@ class PostController extends Controller
             $post->delete();
         }
 
-        return redirect('/posts')->with('success', 'Post deleted!');
+        // return redirect('/posts')->with('success', 'Post deleted!');
     }
 
+    // optional validation function not used, ( unproccessed entity error with vue js)
     protected  function validatedData()
     {
-
         return tap(request()->validate([
             'user_id' => 'required',
             // 'cover' => 'image|max:5000', #more image validation rules: https://laraveldaily.com/four-laravel-validation-rules-for-images-and-photos/
@@ -344,13 +356,13 @@ class PostController extends Controller
             'media_file' => 'required|file|mimes:jpg,png,jpeg,gif,svg,mp4,jpeg,png,bmp,svg,avi,mkv,mpeg|max:20000 ',
             'type' => '',
         ]), 
-        // function () {
-            // if (request()->hasFile('media_file')) {
-            //     request()->validate([
-            //         'media_file' => 'file|mimes:jpg,png,jpeg,gif,svg,mp4,jpeg,png,bmp,svg,avi,mkv,mpeg|max:20000 ',
-            //     ]);
-            // }
-        // }
+        function () {
+            if (request()->hasFile('media_file')) {
+                request()->validate([
+                    'media_file' => 'file|mimes:jpg,png,jpeg,gif,svg,mp4,jpeg,png,bmp,svg,avi,mkv,mpeg|max:20000 ',
+                ]);
+            }
+        }
     );
 
     }

@@ -54,6 +54,10 @@
     font-weight: 500;
 }
 
+/* .storyHref{
+    color: none;
+} */
+
 .border-down{
     border-bottom: 0.5px solid #dee2e6 !important;
 }
@@ -197,11 +201,24 @@
 }
 
 .comment_like_icon{
-    height: 15px;
-    width: 25px;
+    height: 13px;
+    width: 15px;
     position: absolute;
+}
+
+.comment_like_icon.postfeed{
+    top: 5px;
+    right: -5px;
+}
+
+.comment_like_icon.commentfeed{
     top: 12px;
-    right: 0;
+    right: 10px;
+}
+
+.comment_like_icon.replyfeed{
+    top: 12px;
+    right: -14px;
 }
 
 @keyframes highlight {
@@ -253,6 +270,13 @@
     top: 8.5px;
     right: 30px;
   }
+
+  .cancel_edit.post_cancel{
+    top: 0;
+    right: 3px;
+  }
+
+
 
   .editTxt {
       font-size: 11px !important;
@@ -328,8 +352,11 @@
     transform: translateY(-50%);
     
   }
+
   .video.img,
   .preview.img {
     max-width: 100%;
     max-height: 500px;
   }
+
+  
