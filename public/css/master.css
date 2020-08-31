@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Cookie&display=swap');
 html{
-  /* height: 100vh; */
+  height: 100vh;
 }
 
 body{
@@ -31,6 +31,10 @@ font-size: 25px;
 
 main{
   padding: 40px 0;
+}
+
+.stories_main{
+  padding: 0 !important;
 }
 
 .footer_container {

@@ -32,11 +32,13 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+Vue.component('app', require('./components/App.vue').default);
 Vue.component('navbar', require('./components/Navbar.vue').default);
 Vue.component('vfooter', require('./components/Vfooter.vue').default);
 Vue.component('feed', require('./components/Feed.vue').default);
 Vue.component('comment', require('./components/Comments.vue').default);
-Vue.component('story', require('./components/stories.vue').default);
+Vue.component('story', require('./components/Stories.vue').default);
+Vue.component('ImgCropper', require('./components/ImageCropper.vue').default);
 
 var sessionUser = JSON.parse(document.querySelector("meta[name='session_user']").getAttribute('content'));
 if (typeof sessionUser.liked == 'string') {
@@ -76,7 +78,7 @@ const app = new Vue({
     el: '#app',
     data() {
         return {
-            
+            navbarState: true,
         }
     },
    

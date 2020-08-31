@@ -98,6 +98,13 @@
     /* visibility: hidden; */
 }
 
+/* bootstrap vue carousel */
+
+.carousel-indicators{
+  bottom:auto;
+  top: 0;
+}
+
 .welcome{
     padding-top: 15px;
   }

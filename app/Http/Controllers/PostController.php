@@ -181,7 +181,8 @@ class PostController extends Controller
         $post = Post::create(request()->validate([
             'user_id' => 'required',
             'description' => '',
-            'media_file' => 'required|file|mimes:jpg,png,jpeg,gif,svg,mp4,jpeg,png,bmp,svg,avi,mkv,mpeg|max:20000 ',
+            'media_file' => 'required',
+            // 'media_file' => 'required|mimes:jpg,png,jpeg,gif,svg,mp4,jpeg,png,bmp,svg,avi,mkv,mpeg|max:50000 ',
             'type' => 'required',
             ]
         ));

@@ -172,8 +172,8 @@
         <b-form-group>
           <div class="form-group">
             <input type="hidden" name="type" v-model="postForm.mediaType">
-            <b-form-file v-model="postForm.postMedia" @change="postPreview" name="media_file" id="file-default"></b-form-file>
-            <div class="previewWrapper d-flex justify-content-center align-items-center ">
+            <!-- <b-form-file v-model="postForm.postMedia" @change="postPreview" name="media_file" id="file-default"></b-form-file> -->
+            <!-- <div class="previewWrapper d-flex justify-content-center align-items-center ">
               <i class="fas fa-cloud-upload-alt"></i>
               <div>
                 <video class="video img" v-if="postForm.videoPreview" controls muted>
@@ -181,9 +181,10 @@
                 </video>
               </div>
               <div>
-                <img class="preview img" v-if="postForm.imgPreview" :src="postForm.imgPreview"/>
+                <img ref="imagePrev" class="preview img" v-if="postForm.imgPreview" :src="postForm.imgPreview"/>
               </div>
-            </div>
+            </div> -->
+            <ImgCropper></ImgCropper>
             <b-form-textarea v-model="postForm.postCaption" name="description" placeholder="Add a caption ..."  cols="30" rows="1" max-rows="10" class="form-control addPostTxt"></b-form-textarea>
             <button type="submit" class="btn btn-primary float-right">Submit</button>
           </div>
@@ -196,6 +197,10 @@
 <script>
 import Slick from 'vue-slick';
 import Observer from "./Observer";
+import VueAvatar from '../vue-avatar-editor/src/components/VueAvatar.vue'
+import VueAvatarScale from '../vue-avatar-editor/src/components/VueAvatarScale.vue'
+
+// import ImgCropper from "ImgCropper";
 var moment = require("moment");
 
 // require('readmore-js');
@@ -203,193 +208,206 @@ var moment = require("moment");
 // console.log(sortedObjs.reverse());
 
 export default {
+  // props:{
+  //   src:'storage/uploads/2ik06RaJYry8xcJXAW3cf9GWSbON3SaoIiHKjjUb.jpeg',
+  // },
   data() {
     return {
-      feedKey: 0,
-      posts: [],
-      storyUsers: [],
-      postsType: [],
-      storiesType: [],
-      postFeed: [],
-      postForm: {
-        postMedia: null,
-        imgPreview: null,
-        videoPreview: null,
-        postCaption: null,
-        mediaType: 'post',
-      },
-      storyFeed: [],
-      commentCount: 0,
-      observer: null,
-      postSliceIndex: 10,      
-      postIterations: 0,
-      storySliceIndex: 10,
-      storyIterations: 0,
-      sessionUser: null,
-      likedPosts: [],
-      likedComments: [],
-      savedPosts: [],
-      slide: 0,
-      sliding: null,
-      publicPath: 'http://localhost:8000/',
+      // General Data
+        slide: 0,
+        sliding: null,
+        publicPath: 'http://localhost:8000/',
+        observer: null,
+        sessionUser: null,
+
+      // Post Data
+        feedKey: 0,
+        postFeed: [],
+        posts: [],
+        postsType: [],
+        postForm: {
+          postMedia: null,
+          imgPreview: null,
+          videoPreview: null,
+          postCaption: null,
+          mediaType: 'post',
+        },
+        postSliceIndex: 10,      
+        postIterations: 0,
+        likedPosts: [],
+        savedPosts: [],
+
+      // Comment Data
+        commentCount: 0,
+        likedComments: [],
+
+      // Story Data
+        storyUsers: [],
+        storiesType: [],
+        storyFeed: [],
+        storySliceIndex: 10,
+        storyIterations: 0,
 
 
-      users: [],
-      userFeed: [],
-      slickForLoop: [],
-      post_display: "",
-      user_display: "",
-      followedUsers: [],
-      followUnfollowHtml:null,
-      userSliceIndex: 10,
-      userIterations: 0,
-      userSlickIterations: 0,
-      userTarget: 7,
+      // User Data
+        users: [],
+        userFeed: [],
+        slickForLoop: [],
+        post_display: '',
+        user_display: '',
+        followedUsers: [],
+        followUnfollowHtml:null,
+        userSliceIndex: 10,
+        userIterations: 0,
+        userSlickIterations: 0,
+        userTarget: 7,
+      
 
-      slickOptions: {
-        slidesToShow: 'auto',
-        slidesToScroll: 1,
-        arrows: false,
-        slickSetOption: true,
-        autoplay: false,
-        autoplaySpeed: 3000,
-        centerMode: false,
-        infinite: false,
-        responsive: [
+      // Slick Options
+        slickOptions: {
+          slidesToShow: 'auto',
+          slidesToScroll: 1,
+          arrows: false,
+          slickSetOption: true,
+          autoplay: false,
+          autoplaySpeed: 3000,
+          centerMode: false,
+          infinite: false,
+          responsive: [
 
-          // cards needs to be bigger through media queries
+            // cards needs to be bigger through media queries
 
-            // {
-            // breakpoint: 1024,
-            // settings: {
-            //   centerMode: true,
-            //   centerPadding: '40px',
-            //     slidesToShow: 3,
-            //     slidesToScroll: 3,
-            //     infinite: true,
-            // }
-            // },
-            // {
-            // breakpoint: 900,
-            // settings: {
-            //   centerMode: true,
-            //   centerPadding: '60px',
-            //     slidesToShow: 4,
-            //     slidesToScroll: 4
-            // }
-            // },
-            // {
-            // breakpoint: 800,
-            // settings: {
-            //   centerMode: true,
-            //   centerPadding: '60px',
-            //     slidesToShow: 3,
-            //     slidesToScroll: 3
-            // }
-            // },
-            // {
-            // breakpoint: 700,
-            // settings: {
-            //   centerMode: true,
-            //   centerPadding: '10px',
-            //     slidesToShow: 3,
-            //     slidesToScroll: 3
-            // }
-            // },
-            {
-            breakpoint: 600,
-            settings: {
-              centerMode: true,
-              centerPadding: '80px',
-                slidesToShow: 2,
-                slidesToScroll: 2
-            }
-            },
-            {
-            breakpoint: 560,
-            settings: {
-              centerMode: true,
-              centerPadding: '65px',
-                slidesToShow: 2,
-                slidesToScroll: 2
-            }
-            },
-            {
-            breakpoint: 520,
-            settings: {
-              centerMode: true,
-              centerPadding: '50px',
-                slidesToShow: 2,
-                slidesToScroll: 2
-            }
-            },
-            {
-            breakpoint: 480,
-            settings: {
-              centerMode: true,
-              centerPadding: '120px',
-                slidesToShow: 1,
-                slidesToScroll: 1
-            }
-            },
-            {
-            breakpoint: 430,
-            settings: {
-              centerMode: true,
-              centerPadding: '105px',
-                slidesToShow: 1,
-                slidesToScroll: 1
-            }
-            },
-            {
-            breakpoint: 400,
-            settings: {
-              centerMode: true,
-              centerPadding: '90px',
-                slidesToShow: 1,
-                slidesToScroll: 1
-            }
-            },
-            {
-            breakpoint: 370,
-            settings: {
-              centerMode: true,
-              centerPadding: '75px',
-                slidesToShow: 1,
-                slidesToScroll: 1
-            }
-            },
-            {
-            breakpoint: 340,
-            settings: {
-              centerMode: true,
-              centerPadding: '60px',
-                slidesToShow: 1,
-                slidesToScroll: 1
-            }
-            },
-            {
-            breakpoint: 310,
-            settings: {
-              centerMode: true,
-              centerPadding: '50px',
-                slidesToShow: 1,
-                slidesToScroll: 1
-            }
-            },
-            {
-            breakpoint: 290,
-            settings: {
-              centerMode: true,
-              centerPadding: '45px',
-                slidesToShow: 1,
-                slidesToScroll: 1
-            }
-            }
-        ]
-    
-          // Any other options that can be got from plugin documentation
-      },
+              // {
+              // breakpoint: 1024,
+              // settings: {
+              //   centerMode: true,
+              //   centerPadding: '40px',
+              //     slidesToShow: 3,
+              //     slidesToScroll: 3,
+              //     infinite: true,
+              // }
+              // },
+              // {
+              // breakpoint: 900,
+              // settings: {
+              //   centerMode: true,
+              //   centerPadding: '60px',
+              //     slidesToShow: 4,
+              //     slidesToScroll: 4
+              // }
+              // },
+              // {
+              // breakpoint: 800,
+              // settings: {
+              //   centerMode: true,
+              //   centerPadding: '60px',
+              //     slidesToShow: 3,
+              //     slidesToScroll: 3
+              // }
+              // },
+              // {
+              // breakpoint: 700,
+              // settings: {
+              //   centerMode: true,
+              //   centerPadding: '10px',
+              //     slidesToShow: 3,
+              //     slidesToScroll: 3
+              // }
+              // },
+              {
+              breakpoint: 600,
+              settings: {
+                centerMode: true,
+                centerPadding: '80px',
+                  slidesToShow: 2,
+                  slidesToScroll: 2
+              }
+              },
+              {
+              breakpoint: 560,
+              settings: {
+                centerMode: true,
+                centerPadding: '65px',
+                  slidesToShow: 2,
+                  slidesToScroll: 2
+              }
+              },
+              {
+              breakpoint: 520,
+              settings: {
+                centerMode: true,
+                centerPadding: '50px',
+                  slidesToShow: 2,
+                  slidesToScroll: 2
+              }
+              },
+              {
+              breakpoint: 480,
+              settings: {
+                centerMode: true,
+                centerPadding: '120px',
+                  slidesToShow: 1,
+                  slidesToScroll: 1
+              }
+              },
+              {
+              breakpoint: 430,
+              settings: {
+                centerMode: true,
+                centerPadding: '105px',
+                  slidesToShow: 1,
+                  slidesToScroll: 1
+              }
+              },
+              {
+              breakpoint: 400,
+              settings: {
+                centerMode: true,
+                centerPadding: '90px',
+                  slidesToShow: 1,
+                  slidesToScroll: 1
+              }
+              },
+              {
+              breakpoint: 370,
+              settings: {
+                centerMode: true,
+                centerPadding: '75px',
+                  slidesToShow: 1,
+                  slidesToScroll: 1
+              }
+              },
+              {
+              breakpoint: 340,
+              settings: {
+                centerMode: true,
+                centerPadding: '60px',
+                  slidesToShow: 1,
+                  slidesToScroll: 1
+              }
+              },
+              {
+              breakpoint: 310,
+              settings: {
+                centerMode: true,
+                centerPadding: '50px',
+                  slidesToShow: 1,
+                  slidesToScroll: 1
+              }
+              },
+              {
+              breakpoint: 290,
+              settings: {
+                centerMode: true,
+                centerPadding: '45px',
+                  slidesToShow: 1,
+                  slidesToScroll: 1
+              }
+              }
+          ]
+      
+            // Any other options that can be got from plugin documentation
+        },
     };
   },
 
@@ -545,18 +563,20 @@ export default {
   },
 
   mounted: function () {
-      // THIS.REFS.SHOWMORELESS NOT ACCESSIBLE
-      //  console.log(this.postFeed);            
-      //     console.log(this.$refs);
-      //     console.log(this.$refs['modal_post_form']);
+    this.$store.commit("changeState", true);
 
-      //     this.postFeed.forEach(page => {
-      //       page.forEach(post => {
-      //       console.log(this.$refs['showMoreLess3']);
-      //       console.log('showMoreLess'+post.id);
+    // THIS.REFS.SHOWMORELESS NOT ACCESSIBLE
+    //  console.log(this.postFeed);            
+    //     console.log(this.$refs);
+    //     console.log(this.$refs['modal_post_form']);
 
-      //       });
-      //     });
+    //     this.postFeed.forEach(page => {
+    //       page.forEach(post => {
+    //       console.log(this.$refs['showMoreLess3']);
+    //       console.log('showMoreLess'+post.id);
+
+    //       });
+    //     });
     this.posts.forEach((post) => {
             if (this.likedPosts.includes(post.id)) {
               post.likePath =
@@ -979,14 +999,58 @@ export default {
       this.feedKey += 1;  
     },
 
-    addPost(event) {
-      let formData = new FormData();
+    onChangeScale (scale) {
+      this.$refs.vueavatar.changeScale(scale)
+    },
 
-      formData.append('media_file', this.postForm.postMedia);
+    saveClicked(){
+      var img = this.$refs.vueavatar.getImageScaled()
+      // use img
+    },
+
+    onImageReady(scale){
+      this.$refs.vueavatarscale.setScale(scale)
+    },
+
+    dataURLToBlob(dataURL) {
+    var BASE64_MARKER = ';base64,';
+    if (dataURL.indexOf(BASE64_MARKER) == -1) {
+        var parts = dataURL.split(',');
+        var contentType = parts[0].split(':')[1];
+        var raw = parts[1];
+
+        return new Blob([raw], {type: contentType});
+    }
+
+    var parts = dataURL.split(BASE64_MARKER);
+    var contentType = parts[0].split(':')[1];
+    var raw = window.atob(parts[1]);
+    var rawLength = raw.length;
+
+    var uInt8Array = new Uint8Array(rawLength);
+
+    for (var i = 0; i < rawLength; ++i) {
+        uInt8Array[i] = raw.charCodeAt(i);
+    }
+
+    return new Blob([uInt8Array], {type: contentType});
+},
+/* End Utility function to convert a canvas to a BLOB      */
+
+
+    addPost(event) {
+      
+      this.postForm.postMedia= this.$store.state.image.srcFile
+      console.log(this.postForm.postMedia);
+      this.postForm.postMedia = this.dataURLToBlob(this.$store.state.image.croppedImage)  
+      console.log(this.postForm.postMedia);
+      
+      let formData = new FormData();
+      formData.append('media_file', this.$store.state.image.croppedImage);
       formData.append('description', this.postForm.postCaption);
       formData.append('type', this.postForm.mediaType);
       formData.append('user_id', this.sessionUser.id);
-            
+          
       axios({
         method: 'post',
         url: 'posts',
@@ -1001,7 +1065,6 @@ export default {
         post.savePath = "M43.5 48c-.4 0-.8-.2-1.1-.4L24 29 5.6 47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 1.2-.9 1.4-.2.1-.4.1-.6.1zM24 26c.8 0 1.6.3 2.2.9l15.8 16V3H6v39.9l15.8-16c.6-.6 1.4-.9 2.2-.9z";
         post.saveColor = "#262626";
       
-        console.log(post);
         this.$refs['modal_post_form'].hide()
         this.postFeed[0].splice(0, 0, post)
 
@@ -1019,7 +1082,6 @@ export default {
 
     deletePost (event) {
       var targetId = event.target.attributes[1].nodeValue;
-      console.log('posts/'+targetId);
       axios({
         method: 'delete',
         url: 'posts/'+targetId,
@@ -1075,7 +1137,6 @@ export default {
           description: updatedPost,
           },
       }).then((response) => {
-         console.log(response);
         this.postFeed.forEach(page => {
           page.forEach(post => {
             if (post.id == targetId) {
@@ -1098,7 +1159,6 @@ export default {
           type: updatedType,
           },
       }).then((response) => {
-        console.log(response);
         $(this.$refs)[0]['my_postModal'+targetId][0].hide() 
       })
 
@@ -1108,8 +1168,6 @@ export default {
 
     storyHref (event) {
       var targetId = event.target.attributes[0].nodeValue
-      console.log(targetId);
-      console.log(this.publicPath);
       window.location.replace(this.publicPath+'story/'+targetId);   
       
       // console.log('dfqsdfsd');
@@ -1120,6 +1178,8 @@ export default {
   components: {
     Observer,
     Slick,
+    VueAvatar,
+    VueAvatarScale
   },
 };
 </script>
