@@ -324,7 +324,6 @@ class PostController extends Controller
      */
     public function destroy(Request $request, Post $post)
     {
-        
         // check if it's both a post and a story
         if ($post->type == 'post/story' || $post->type == 'story/post') {
             // check if we want to delete post
@@ -344,6 +343,7 @@ class PostController extends Controller
         }
 
         // return redirect('/posts')->with('success', 'Post deleted!');
+        return $request;
     }
 
     // optional validation function not used, ( unproccessed entity error with vue js)
@@ -372,7 +372,8 @@ class PostController extends Controller
     {
         if (request()->has('media_file')) {
             $post->update([
-                'media_file' => request()->media_file->store('uploads', 'public')
+                'media_file' => request()->media_file
+                // store('uploads', 'public')
             ]);
         }
     }

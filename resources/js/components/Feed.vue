@@ -33,6 +33,7 @@
     </div>
 
     <div class="feed_wrapper " v-for="(page, key) in postFeed" :key="key" :class="post_display">
+      
       <div class="post_wrapper " v-for="(post, key) in page" :key="key">
         <div class="card rounded-0">
           <div class="card-head d-flex align-items-center border-down py-1">
@@ -172,6 +173,10 @@
         <b-form-group>
           <div class="form-group">
             <input type="hidden" name="type" v-model="postForm.mediaType">
+            <cld-image v-if="postForm.publicId" dpr="auto" responsive="width" width="auto" crop="scale" :publicId="postForm.publicId" class="my-2">
+              <cld-transformation border="3px_solid_rgb:00390b" radius="20" />
+              <cld-transformation quality="auto" fetchFormat="auto" />
+            </cld-image>
             <!-- <b-form-file v-model="postForm.postMedia" @change="postPreview" name="media_file" id="file-default"></b-form-file> -->
             <!-- <div class="previewWrapper d-flex justify-content-center align-items-center ">
               <i class="fas fa-cloud-upload-alt"></i>
@@ -184,13 +189,15 @@
                 <img ref="imagePrev" class="preview img" v-if="postForm.imgPreview" :src="postForm.imgPreview"/>
               </div>
             </div> -->
-            <ImgCropper></ImgCropper>
-            <b-form-textarea v-model="postForm.postCaption" name="description" placeholder="Add a caption ..."  cols="30" rows="1" max-rows="10" class="form-control addPostTxt"></b-form-textarea>
+            <!-- <ImgCropper></ImgCropper> -->
+            <b-form-select v-model="postForm.mediaType" :options="postForm.options" size="sm" class="my-2"></b-form-select>
+            <b-form-textarea v-model="postForm.postCaption" name="description" placeholder="Add a caption ..."  cols="30" rows="1" max-rows="10" class="form-control addPostTxt my-2"></b-form-textarea>
             <button type="submit" class="btn btn-primary float-right">Submit</button>
           </div>
         </b-form-group>
       </form>
     </b-modal> 
+    
   </div>
 </template>
 
@@ -227,15 +234,23 @@ export default {
         postsType: [],
         postForm: {
           postMedia: null,
+          publicId: null,
           imgPreview: null,
           videoPreview: null,
           postCaption: null,
-          mediaType: 'post',
+          urlImg:null,
+          mediaType: null,
+          options: [
+            { value: null , text: 'Select an option' },
+            { value: 'post', text: 'Publish as a Post' },
+            { value: 'story', text: 'Publish as a Story' },
+          ]
         },
         postSliceIndex: 10,      
         postIterations: 0,
         likedPosts: [],
         savedPosts: [],
+
 
       // Comment Data
         commentCount: 0,
@@ -565,6 +580,25 @@ export default {
   mounted: function () {
     this.$store.commit("changeState", true);
 
+    var widget = cloudinary.createUploadWidget( 
+    { cloudName: "resize", uploadPreset: "resize_preset", cropping: true },
+     (error, result) => { 
+         this.postForm.postMedia = result
+         if (typeof this.postForm.postMedia.info.files != 'undefined') {
+          this.postForm.publicId = this.postForm.postMedia.info.files[0].uploadInfo.public_id
+          this.postForm.fileName = this.postForm.postMedia.info.files[0].name
+          this.postForm.urlImg = this.postForm.postMedia.info.files[0].uploadInfo.url
+          this.$bvModal.show('modal_post_form')
+         }
+        
+        //  console.log(this.postForm.postMedia.info.files[0].uploadInfo.public_id);
+          // this.publicId = result.info.uploadInfo.publicId
+      
+     });
+
+    $('#openWidget').click(function() {
+      widget.open();
+    });
     // THIS.REFS.SHOWMORELESS NOT ACCESSIBLE
     //  console.log(this.postFeed);            
     //     console.log(this.$refs);
@@ -604,6 +638,7 @@ export default {
   },
 
   methods: {
+    
     // by default vues js @click has an event parameter from which we can access elements
     showHideDescription(event) {
       // check if the inner text of the element clicked equals 'show more'
@@ -1012,41 +1047,45 @@ export default {
       this.$refs.vueavatarscale.setScale(scale)
     },
 
+    /* End Utility function to convert a canvas to a BLOB */
     dataURLToBlob(dataURL) {
-    var BASE64_MARKER = ';base64,';
-    if (dataURL.indexOf(BASE64_MARKER) == -1) {
-        var parts = dataURL.split(',');
+        var BASE64_MARKER = ';base64,';
+        if (dataURL.indexOf(BASE64_MARKER) == -1) {
+            var parts = dataURL.split(',');
+            var contentType = parts[0].split(':')[1];
+            var raw = parts[1];
+
+            return new Blob([raw], {type: contentType});
+        }
+
+        var parts = dataURL.split(BASE64_MARKER);
         var contentType = parts[0].split(':')[1];
-        var raw = parts[1];
+        var raw = window.atob(parts[1]);
+        var rawLength = raw.length;
 
-        return new Blob([raw], {type: contentType});
-    }
+        var uInt8Array = new Uint8Array(rawLength);
 
-    var parts = dataURL.split(BASE64_MARKER);
-    var contentType = parts[0].split(':')[1];
-    var raw = window.atob(parts[1]);
-    var rawLength = raw.length;
+        for (var i = 0; i < rawLength; ++i) {
+            uInt8Array[i] = raw.charCodeAt(i);
+        }
 
-    var uInt8Array = new Uint8Array(rawLength);
-
-    for (var i = 0; i < rawLength; ++i) {
-        uInt8Array[i] = raw.charCodeAt(i);
-    }
-
-    return new Blob([uInt8Array], {type: contentType});
-},
-/* End Utility function to convert a canvas to a BLOB      */
-
+        return new Blob([uInt8Array], {type: contentType});
+    },
+     /* A Blob() is almost a File() - it's just missing the two properties below which we will add https://stackoverflow.com/questions/27159179/how-to-convert-blob-to-file-in-javascript */ 
+    blobToFile(theBlob, fileName) {
+      fileName= this.$store.state.image.srcFile.name
+      // theBlob.lastModifiedDate = new Date();
+      // theBlob.name = fileName;
+      var theFile = new File([theBlob], fileName, {lastModified: new Date()});
+      return theFile;
+    },
 
     addPost(event) {
       
-      this.postForm.postMedia= this.$store.state.image.srcFile
-      console.log(this.postForm.postMedia);
-      this.postForm.postMedia = this.dataURLToBlob(this.$store.state.image.croppedImage)  
-      console.log(this.postForm.postMedia);
-      
+      // let Blob = this.dataURLToBlob(this.$store.state.image.croppedImage) 
+      // this.postForm.postMedia = this.blobToFile(Blob)  
       let formData = new FormData();
-      formData.append('media_file', this.$store.state.image.croppedImage);
+      formData.append('media_file', this.postForm.urlImg);
       formData.append('description', this.postForm.postCaption);
       formData.append('type', this.postForm.mediaType);
       formData.append('user_id', this.sessionUser.id);
@@ -1085,6 +1124,9 @@ export default {
       axios({
         method: 'delete',
         url: 'posts/'+targetId,
+        data: {
+          'type':'post'
+        },
       }).then((response) => {
         this.postFeed.forEach(page => {
           page.forEach(post => {

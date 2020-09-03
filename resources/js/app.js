@@ -69,8 +69,11 @@ window.axios = require('axios')
 window.Fire = new Vue()
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-
 Vue.use(VueRouter)
+import Cloudinary from "cloudinary-vue";
+Vue.use(Cloudinary, {
+  configuration: { cloudName: "resize" }
+});
 
 
 const app = new Vue({

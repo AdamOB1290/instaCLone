@@ -410,6 +410,7 @@
                     this.loadImage(e.target.result)
                 };
                 reader.readAsDataURL(files[0]);
+                // send to feed.vue
                 this.$store.commit("changeImgSrc", files[0]);
             }
 		},

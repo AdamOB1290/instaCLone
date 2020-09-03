@@ -18,7 +18,7 @@
     <script src="https://cdn.jsdelivr.net/npm/glider-js@1/glider.min.js"></script>
     <script src="{{ asset('js/app.js') }}" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.7/cropper.min.js" integrity="sha512-N4T9zTrqZUWCEhVU2uD0m47ADCWYRfEGNQ+dx/lYdQvOn+5FJZxcyHOY68QKsjTEC7Oa234qhXFhjPGQu6vhqg==" crossorigin="anonymous"></script>
-
+    <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
     
 
     <!-- Fonts -->
@@ -35,7 +35,7 @@
     
 </head>
 <body style="font-weight:500!important">
-    <div id="app" class="h-100">
+    <div id="app" class=" h-100">
         {{-- @include('nav') --}}
         <navbar></navbar>
         <main class="h-100 main">

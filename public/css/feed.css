@@ -100,11 +100,141 @@
 
 /* bootstrap vue carousel */
 
-.carousel-indicators{
-  bottom:auto;
-  top: 0;
+.storyHeader{
+  height: 10%;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  /* padding-top: 50px !important;
+  margin-top: 50px; */
+
 }
 
+.carousel{
+  position: relative;
+  height: 100%;
+}
+.carousel_wrapper .pfp{
+  width: 40px;
+  height: 40px;
+}
+
+.carousel_wrapper .username{
+  font-size: 15px;
+  color: white;
+}
+
+
+.carousel_wrapper{
+  background:#262626 !important
+}
+
+.carousel_max_width{
+  height: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+
+.carousel-control-prev,.carousel-control-next{
+  position: absolute;
+  height: fit-content;
+  width: fit-content;
+  top: 50% !important;
+}
+.carousel-control-next{
+  right: -12% !important;
+}
+.carousel-control-prev{
+  left: -12% !important;
+}
+
+.storySettings {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%); 
+  right: 5%;
+  color: rgb(168, 167, 167);
+  font-size: 20px;
+}
+
+.storySettings:hover {
+  color: white;
+}
+
+/* ANIMATABLE CLOSE ICON WITH PSEUDO ELEMENTS */
+
+.close {
+  position: absolute;
+  top: 41%;
+  transform: translateY(-50%);
+  right: 3%;
+  opacity: 1 !important;
+  transition: all .3s;
+}
+
+.close:before, .close:after {
+  position: absolute;
+  /* top: 50%;
+transform: translateY(-50%);
+  left: 0; */
+  content: ' ';
+  height: 20px;
+  width: 3px;
+  background-color: rgb(168, 167, 167);
+}
+.close:before {
+  transform: rotate(45deg);
+  transition: all .3s;
+}
+.close:after {
+  transform: rotate(-45deg);
+  transition: all .3s;
+}
+.close:hover:before, .close:hover:after {
+  background-color: white;
+}
+
+.close:hover:before {
+  transform: rotate(135deg);
+  transition: all .3s;
+}
+.close:hover:after {
+  transform: rotate(45deg);
+  transition: all .3s;
+}
+
+.carousel-indicators{
+  bottom:auto;
+  top: 3.5%;
+}
+
+.carousel-inner,
+.carousel-item {
+  height: 100%;
+
+}
+
+.img_carousel_wrapper {
+  height: 90%;
+}
+
+.helper {
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+}
+.stories_images {
+  vertical-align: middle;
+  width: 100%;
+}
+
+.cld-image.my-2{
+ margin: 0 !important;
+}
+
+
+/* User wrapper follow */
 .welcome{
     padding-top: 15px;
   }
@@ -237,133 +367,133 @@
     }
 }
   
-  .highlight {
-    animation: highlight 2s;
-    border-radius: 2%;
-  }
+.highlight {
+  animation: highlight 2s;
+  border-radius: 2%;
+}
 
-  .modal {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-  }
+.modal {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
 
-  .modal-content{
-    border-radius: 12px !important;
-  }
+.modal-content{
+  border-radius: 12px !important;
+}
 
-  .modal-body{
-    padding: 0 !important;
-  }
+.modal-body{
+  padding: 0 !important;
+}
 
-  .settings_btn {
-    font-size: 13px;
-    font-weight: 700;
-    background: none;
-    border: none;
-    border-bottom: 0.1px solid #0000005e;
-    
-  }
-
-  .settings_btn:focus {
-    
-    outline: none !important;
-
-  }
-
-  .cancel_edit{
-    position: absolute;
-    font-weight: 700;
-    top: 8.5px;
-    right: 30px;
-  }
-
-  .cancel_edit.post_cancel{
-    top: 0;
-    right: 3px;
-  }
-
-
-
-  .editTxt {
-      font-size: 11px !important;
-  }
-
-  .addComment_form{
-    position: fixed!important;
-    width: 100%;
-    z-index: 1;  
-    bottom: 25px;
-  }
-
-  /* HIDE SHOW FORM EFFECT */
-
-  /* .hideForm {
-    bottom:-40px;
-    visibility: hidden;
-    transition: bottom 2s , visibility 10s 2s;
-  }
-
-  .showForm {
-    bottom:40px;
-    visibility: visible;
-    transition: bottom 2s, visibility 10s 2s;
-  } */
+.settings_btn {
+  font-size: 13px;
+  font-weight: 700;
+  background: none;
+  border: none;
+  border-bottom: 0.1px solid #0000005e;
   
+}
 
-  .addComment_form textarea {
-    width: 100% !important;
-    font-size: 13px !important;
-    padding:  12px 40px 0 49px !important;
-    line-height: 12px;
-    border-radius: 0;
-  }
-
-  .addComment_form textarea:focus {
-    box-shadow: none ;
-  }
-
-  .submitComment {
-    position: absolute !important;
-    right: 5% !important;
-    top: 50% !important;
-    transform: translateY(-51%) !important;
-    font-size: 13px !important;
-    font-weight: 700 !important;
-    color: rgba(var(--d69,0,149,246),1) !important;
-    outline: none;
-  }
-
-  .pfp_form{
-    position: absolute;
-    left: 5%;
-    top: 50%;
-    transform: translateY(-51%);
-    border-radius: 50%;
-    height: 27px;
-    width: 27px;
-  }
-
-  .previewWrapper {
-    background: rgb(192, 192, 192);
-    height: 150px;
-    position: relative;
-    
-  }
-
-  .fa-cloud-upload-alt{
-    color: white;
-    font-size: 4em;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    
-  }
-
-  .video.img,
-  .preview.img {
-    max-width: 100%;
-    max-height: 500px;
-  }
-
+.settings_btn:focus {
   
+  outline: none !important;
+
+}
+
+.cancel_edit{
+  position: absolute;
+  font-weight: 700;
+  top: 8.5px;
+  right: 30px;
+}
+
+.cancel_edit.post_cancel{
+  top: 0;
+  right: 3px;
+}
+
+
+
+.editTxt {
+    font-size: 11px !important;
+}
+
+.addComment_form{
+  position: fixed!important;
+  width: 100%;
+  z-index: 1;  
+  bottom: 25px;
+}
+
+/* HIDE SHOW FORM EFFECT */
+
+/* .hideForm {
+  bottom:-40px;
+  visibility: hidden;
+  transition: bottom 2s , visibility 10s 2s;
+}
+
+.showForm {
+  bottom:40px;
+  visibility: visible;
+  transition: bottom 2s, visibility 10s 2s;
+} */
+
+
+.addComment_form textarea {
+  width: 100% !important;
+  font-size: 13px !important;
+  padding:  12px 40px 0 49px !important;
+  line-height: 12px;
+  border-radius: 0;
+}
+
+.addComment_form textarea:focus {
+  box-shadow: none ;
+}
+
+.submitComment {
+  position: absolute !important;
+  right: 5% !important;
+  top: 50% !important;
+  transform: translateY(-51%) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: rgba(var(--d69,0,149,246),1) !important;
+  outline: none;
+}
+
+.pfp_form{
+  position: absolute;
+  left: 5%;
+  top: 50%;
+  transform: translateY(-51%);
+  border-radius: 50%;
+  height: 27px;
+  width: 27px;
+}
+
+.previewWrapper {
+  background: rgb(192, 192, 192);
+  height: 150px;
+  position: relative;
+  
+}
+
+.fa-cloud-upload-alt{
+  color: white;
+  font-size: 4em;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  
+}
+
+.video.img,
+.preview.img {
+  max-width: 100%;
+  max-height: 500px;
+}
+
+

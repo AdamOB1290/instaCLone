@@ -60,8 +60,8 @@ export default {
         var img = this.$refs.vueavatar.getImageScaled()
         console.log(this.$refs.vueavatar);
         this.croppedImage = img.toDataURL()
+        // send to feed.vue
         this.$store.commit("changeCroppedImage", this.croppedImage);
-        // console.log(this.croppedImage);
     }, 
 
     onImageReady(scale){
