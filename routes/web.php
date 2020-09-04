@@ -22,10 +22,14 @@ Route::get('/view', function () {
 Route::resource('users', 'UserController');
 
 Route::resource('chats', 'ChatController');
+Route::get('/contacts', 'ContactController@get');
+Route::get('/conversation/{id}', 'ContactController@getMessagesFor');
+Route::post('/conversation/send', 'ContactController@send');
 
 Route::resource('posts', 'PostController'); #->except('create');
 Route::get('post/comments/{postId}','PostController@show')->name('posts.show');
 Route::get('posts/create/{type}', 'PostController@create')->name('posts.create');
+
 
 Route::resource('comments', 'CommentController'); #->except('create');
 // Route::get('post/comments/store/{parentId?}/{postId?}', 'CommentController@store')->name('comments.store');
@@ -60,6 +64,11 @@ Route::get('story/{userId}', function () {
 Route::get('post/{postId}', function () {
     return view('comments');
 });
+
+Route::get('chat', function () {
+    return view('chats');
+});
+
 
 
 Auth::routes();

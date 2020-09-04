@@ -39,6 +39,9 @@ Vue.component('feed', require('./components/Feed.vue').default);
 Vue.component('comment', require('./components/Comments.vue').default);
 Vue.component('story', require('./components/Stories.vue').default);
 Vue.component('ImgCropper', require('./components/ImageCropper.vue').default);
+Vue.component('chat', require('./components/Chat.vue').default);
+Vue.component('conversation', require('./components/Conversation.vue').default);
+Vue.component('contactList', require('./components/ContactList.vue').default);
 
 var sessionUser = JSON.parse(document.querySelector("meta[name='session_user']").getAttribute('content'));
 if (typeof sessionUser.liked == 'string') {
