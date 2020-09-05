@@ -41,6 +41,8 @@ class MessageSent implements ShouldBroadcast
     // bradcastWith is the correct spelling
     public function bradcastWith()
     {
+        $this->chat['sender'] = $this->chat->sender;
+        // $this->chat->load('sender');
         return ['messages' => $this->chat];
     }
 

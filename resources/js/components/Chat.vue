@@ -23,9 +23,26 @@ export default {
             contacts: [],
         }
     },
+    
+    mounted() {
+        // IF ERROR : Failed to connect to Pusher -----> SOLUTION = https://github.com/beyondcode/laravel-websockets/issues/152
+
+        // listens and receives data from MessageSent laravel event
+        // when a message is sent, laravel Echo displays it dynamically to the receiver
+         Echo.private('messages.'+this.user.id)
+         .listen('MessageSent', (e) => {
+            this.handleIncoming(e.chat);
+        })
+
+        axios.get('/contacts')
+        .then((response) => {
+            this.contacts = response.data
+        })
+    },
 
     methods: {
         startConversationWith(contact) {
+            this.updateUnreadCount(contact.id, true)
             axios.get('/conversation/'+contact.id)
             .then((response) => {
                 this.messages = response.data
@@ -39,32 +56,34 @@ export default {
         },
 
         handleIncoming (message) {
-            if (this.selectedContact && message.sender_id == this.selectedContact.id) {
+            // checks if selected contact is not null
+            // and if it's id matches message.sender_id
+            if (this.selectedContact && (message.sender_id == this.selectedContact.id)) {
                 this.saveNewMessage(message)
                 return;
             }
+            console.log(message);
+            this.updateUnreadCount(message.sender_id, false)
+        },
 
-            alert(message.content);
-        }
+        updateUnreadCount(selectedContactId, reset) {
+            this.contacts = this.contacts.map((contact) => {
+                if (contact.id !== selectedContactId) {
+                    return contact;
+                }
+
+                if (reset) {
+                    contact.unread = 0;
+                } else {
+                    contact.unread += 1;
+                }
+                
+                return contact
+            })
+        },
 
     },
 
-    mounted() {
-        // console.log(`messages${this.user.id}`);
-        // console.log('messages'+this.user.id);
-        // IF ERROR : Failed to connect to Pusher -----> SOLUTION = https://github.com/beyondcode/laravel-websockets/issues/152
-        
-         Echo.private('messages.'+this.user.id)
-         .listen('MessageSent', (e) => {
-            this.handleIncoming(e.chat);
-
-        })
-
-        axios.get('/contacts')
-        .then((response) => {
-            this.contacts = response.data
-        })
-    },
     components : {
         Conversation,
         ContactList,
