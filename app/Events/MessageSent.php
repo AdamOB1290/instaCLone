@@ -3,6 +3,7 @@
 namespace App\Events;
 
 use App\Chat;
+use Exception;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -24,6 +25,7 @@ class MessageSent implements ShouldBroadcast
      */
     public function __construct(Chat $chat)
     {
+        
         $this->chat=$chat;
         
     }
@@ -38,12 +40,14 @@ class MessageSent implements ShouldBroadcast
         return new PrivateChannel('messages.' . $this->chat->receiver_id);
     }
 
-    // bradcastWith is the correct spelling
-    public function bradcastWith()
+    // broadcastWith is the correct spelling
+    public function broadcastWith()
     {
-        $this->chat['sender'] = $this->chat->sender;
-        // $this->chat->load('sender');
-        return ['messages' => $this->chat];
+        // $this->chat['sender'] = $this->chat->sender;
+        $this->chat->load('sender');
+        
+        return ['messages' => $this->chat]; 
+
     }
 
 }

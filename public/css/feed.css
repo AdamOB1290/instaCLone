@@ -19,11 +19,58 @@
     height: 35px;
 }
 
+.post_feed_video {
+  max-width: 100%;
+}
+
 .feed_wrapper .card .card-head .pfp,
-.comments_wrapper .pfp{
+.comments_wrapper .pfp,
+.message_feed_wrapper .pfp
+{
     width: 25px; 
     height: 25px;
 }
+
+.sharePost_Modal{
+  height: 100%;
+  width: 100%;
+}
+
+.sharePost_Modal .modal-dialog {
+  height: 100%;
+  margin: 0 !important;
+  width: 100%;
+}
+
+.sharePost_Modal .modal-content{
+  height: 100%;
+  border-radius: 0 !important;
+}
+
+.sharePost_Modal .modal-body{
+  height: 100%;
+}
+
+.sharePostUl{
+  overflow-x: hidden !important;
+  list-style-type: none;
+  padding: 30px;
+  overflow: scroll;
+  height: 100%;
+}
+
+.sharePostUl  li{
+  padding: 5px 0;
+  font-size: 14px !important;
+
+}
+
+.sharePostUl .pfp
+{
+    width: 45px; 
+    height: 45px;
+}
+
 
 .feed_wrapper .card .card-body{
     padding: 0;
@@ -44,6 +91,11 @@
 
 /* Stories */
 /* GlIDER JS */
+
+.glider, .glider-contain {
+  margin: 0 !important;
+  max-width: 280px;
+}
 
 .glider::-webkit-scrollbar {
     display: none;
@@ -162,18 +214,24 @@
   color: white;
 }
 
-/* ANIMATABLE CLOSE ICON WITH PSEUDO ELEMENTS */
+/* ANIMATABLE CLOSE_icon ICON WITH PSEUDO ELEMENTS */
 
-.close {
+.close_icon {
   position: absolute;
-  top: 41%;
-  transform: translateY(-50%);
-  right: 3%;
   opacity: 1 !important;
   transition: all .3s;
 }
+.storyHeader .close_icon {
+  top: 41%;
+  transform: translateY(-50%);
+  right: 3%;
+}
+.sharePost_Modal .close_icon {
+  top: 41%;
+  right: 3%;
+}
 
-.close:before, .close:after {
+.close_icon:before, .close_icon:after {
   position: absolute;
   /* top: 50%;
 transform: translateY(-50%);
@@ -183,23 +241,23 @@ transform: translateY(-50%);
   width: 3px;
   background-color: rgb(168, 167, 167);
 }
-.close:before {
+.close_icon:before {
   transform: rotate(45deg);
   transition: all .3s;
 }
-.close:after {
+.close_icon:after {
   transform: rotate(-45deg);
   transition: all .3s;
 }
-.close:hover:before, .close:hover:after {
+.close_icon:hover:before, .close_icon:hover:after {
   background-color: white;
 }
 
-.close:hover:before {
+.close_icon:hover:before {
   transform: rotate(135deg);
   transition: all .3s;
 }
-.close:hover:after {
+.close_icon:hover:after {
   transform: rotate(45deg);
   transition: all .3s;
 }
@@ -372,17 +430,17 @@ transform: translateY(-50%);
   border-radius: 2%;
 }
 
-.modal {
+.settings_Modal {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
 }
 
-.modal-content{
+.settings_Modal .modal-content{
   border-radius: 12px !important;
 }
 
-.modal-body{
+.settings_Modal .modal-body{
   padding: 0 !important;
 }
 

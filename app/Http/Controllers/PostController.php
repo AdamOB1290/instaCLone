@@ -8,6 +8,7 @@ use App\Post;
 use App\User;
 use Illuminate\Http\Request;
 use App\Events\PostCreated;
+use finfo;
 use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
@@ -20,23 +21,42 @@ class PostController extends Controller
     public function index(Request $request)
     {
 
+        // session('user_id')
+        $followedUsersIds = Auth::user()->followed;
+
+        $followedUsers = User::findOrFail($followedUsersIds);
+
         $sessionUser = User::findOrFail(Auth::user()->id);
 
         // check if the profile picture of the session user is a url
-        if (filter_var($sessionUser->pfp, FILTER_VALIDATE_URL)) {
+        // if (filter_var($sessionUser->pfp, FILTER_VALIDATE_URL)) {
 
-            // index it to session user
-            $sessionUser['pfp_type'] = 'imageUrl';
-        } else { // else it means it's a local file
+        //     // index it to session user
+        //     $sessionUser['pfp_type'] = 'imageUrl';
+        // } else { // else it means it's a local file
 
-            // index it to session user
-            $sessionUser['pfp_type'] = 'localImage';
-        }
+        //     // index it to session user
+        //     $sessionUser['pfp_type'] = 'localImage';
+        // }
+
+        // foreach ($followedUsers as $followedUser) {
+        //     if (filter_var($followedUser->pfp, FILTER_VALIDATE_URL)) {
+
+        //         // index it to session user
+        //         $followedUser['pfp_type'] = 'imageUrl';
+        //     } else { // else it means it's a local file
+    
+        //         // index it to session user
+        //         $followedUser['pfp_type'] = 'localImage';
+        //     }
+        // }
+
+        $sessionUser['followed_users'] = $followedUsers;
+
         $request->session()->put('session_user', $sessionUser);
         
         
-        // session('user_id')
-        $followedUsersIds = Auth::user()->followed;
+        
         
         // if session user has followed other users 
         if (isset($followedUsersIds) && (count($followedUsersIds) > 0)) {
@@ -60,36 +80,46 @@ class PostController extends Controller
             foreach ($posts as $post) {
 
                 // check if the media file of each post is a url
-                if (filter_var($post->media_file, FILTER_VALIDATE_URL)) {
+                // if (filter_var($post->media_file, FILTER_VALIDATE_URL)) {
+                    
+                    // $buffer = file_get_contents($post->media_file);
+                    // $finfo = new finfo(FILEINFO_MIME_TYPE);
+                    // $mediaType= '$finfo->buffer($buffer)';
+                    
+                    
+                    // if(strstr($mediaType, "image/")) {
+                    //     // index it to post
+                    //     $post['media_type'] = 'imageUrl';
+                    // } else if(strstr($mediaType, "video/")) {
+                    //     // index it to post
+                    //     $post['media_type'] = 'videoUrl';
+                    // }
+                // } else { // else it means it's a local file
 
-                    // index it to post
-                    $post['media_type'] = 'imageUrl';
-                } else { // else it means it's a local file
+                //     // check if the local file is an image
+                //     if (strstr(mime_content_type('storage/' . $post->media_file), "image/")) {
 
-                    // check if the local file is an image
-                    if (strstr(mime_content_type('storage/' . $post->media_file), "image/")) {
+                //         // index it to post
+                //         $post['media_type'] = 'localImage';
 
-                        // index it to post
-                        $post['media_type'] = 'localImage';
+                //         // else check if the local file is a video
+                //     } elseif (strstr(mime_content_type('storage/' . $post->media_file), "video/")) {
 
-                        // else check if the local file is a video
-                    } elseif (strstr(mime_content_type('storage/' . $post->media_file), "video/")) {
-
-                        // index it to post
-                        $post['media_type'] = 'localVideo';
-                    }
-                }
+                //         // index it to post
+                //         $post['media_type'] = 'localVideo';
+                //     }
+                // }
 
                 // check if the profile picture of the post user is a url
-                if (filter_var($post->user->pfp, FILTER_VALIDATE_URL)) {
+                // if (filter_var($post->user->pfp, FILTER_VALIDATE_URL)) {
 
-                    // index it to post user
-                    $post->user['pfp_type'] = 'imageUrl';
-                } else { // else it means it's a local file
+                //     // index it to post user
+                //     $post->user['pfp_type'] = 'imageUrl';
+                // } else { // else it means it's a local file
 
-                    // index it to post user
-                    $post->user['pfp_type'] = 'localImage';
-                }
+                //     // index it to post user
+                //     $post->user['pfp_type'] = 'localImage';
+                // }
                 
                 if ($post->type == 'story' || $post->type == 'post/story' || $post->type == 'story/post') {
                    if (array_search($post->user, $storyUsers) === false) {
@@ -114,6 +144,7 @@ class PostController extends Controller
              
             // return view('posts.crud.index', compact('posts', 'followedUserIds'));
             // return response()->json(['posts'=> $posts]);
+            
             return $posts;
             
 
@@ -122,29 +153,29 @@ class PostController extends Controller
             $users = User::all();
             foreach ($users as $user) {
                 // check if the profile picture of the post user is a url
-                if (filter_var($user->pfp, FILTER_VALIDATE_URL)) {
+                // if (filter_var($user->pfp, FILTER_VALIDATE_URL)) {
 
-                    // index it to post user
-                    $user['pfp_type'] = 'imageUrl';
-                } else { // else it means it's a local file
+                //     // index it to post user
+                //     $user['pfp_type'] = 'imageUrl';
+                // } else { // else it means it's a local file
 
-                    // index it to post user
-                    $user['pfp_type'] = 'localImage';
-                }
+                //     // index it to post user
+                //     $user['pfp_type'] = 'localImage';
+                // }
 
-                foreach ($user->posts as $post) {
-                    if (filter_var($post->media_file, FILTER_VALIDATE_URL)) {
+                // foreach ($user->posts as $post) {
+                //     if (filter_var($post->media_file, FILTER_VALIDATE_URL)) {
 
-                        // index it to post
-                        $post['media_type'] = 'imageUrl';
+                //         // index it to post
+                //         $post['media_type'] = 'imageUrl';
 
-                        // else it means it's a local file, check if the local file is an image
-                    } elseif (strstr(mime_content_type('storage/' . $post->media_file), "image/")) {
+                //         // else it means it's a local file, check if the local file is an image
+                //     } elseif (strstr(mime_content_type('storage/' . $post->media_file), "image/")) {
 
-                        // index it to post
-                        $post['media_type'] = 'localImage';
-                    }
-                }
+                //         // index it to post
+                //         $post['media_type'] = 'localImage';
+                //     }
+                // }
 
                 $user['top_posts'] = $user->posts;
                 $user['session_user']= $sessionUser;
@@ -182,6 +213,7 @@ class PostController extends Controller
             'user_id' => 'required',
             'description' => '',
             'media_file' => 'required',
+            'media_type' => 'required',
             // 'media_file' => 'required|mimes:jpg,png,jpeg,gif,svg,mp4,jpeg,png,bmp,svg,avi,mkv,mpeg|max:50000 ',
             'type' => 'required',
             ]
@@ -197,36 +229,42 @@ class PostController extends Controller
         $post['user'] = $user;
         $post['comments'] = [];
         
-        if (filter_var($post->media_file, FILTER_VALIDATE_URL)) {
+        // if (filter_var($post->media_file, FILTER_VALIDATE_URL)) {
 
-            // index it to post
-            $post['media_type'] = 'imageUrl';
-        } else { // else it means it's a local file
+        //     if(is_array(getimagesize($post->media_file))) {
+        //         // index it to post
+        //         $post['media_type'] = 'imageUrl';
+        //     } 
+        //     // else {
+        //     //     // index it to post
+        //     //     $post['media_type'] = 'videoUrl';
+        //     // }
+        // } else { // else it means it's a local file
 
-            // check if the local file is an image
-            if (strstr(mime_content_type('storage/' . $post->media_file), "image/")) {
+        //     // check if the local file is an image
+        //     if (strstr(mime_content_type('storage/' . $post->media_file), "image/")) {
 
-                // index it to post
-                $post['media_type'] = 'localImage';
+        //         // index it to post
+        //         $post['media_type'] = 'localImage';
 
-                // else check if the local file is a video
-            } elseif (strstr(mime_content_type('storage/' . $post->media_file), "video/")) {
+        //         // else check if the local file is a video
+        //     } elseif (strstr(mime_content_type('storage/' . $post->media_file), "video/")) {
 
-                // index it to post
-                $post['media_type'] = 'localVideo';
-            }
-        }
+        //         // index it to post
+        //         $post['media_type'] = 'localVideo';
+        //     }
+        // }
 
         // check if the profile picture of the post user is a url
-        if (filter_var($post->user->pfp, FILTER_VALIDATE_URL)) {
+        // if (filter_var($post->user->pfp, FILTER_VALIDATE_URL)) {
 
-            // index it to post user
-            $post->user['pfp_type'] = 'imageUrl';
-        } else { // else it means it's a local file
+        //     // index it to post user
+        //     $post->user['pfp_type'] = 'imageUrl';
+        // } else { // else it means it's a local file
 
-            // index it to post user
-            $post->user['pfp_type'] = 'localImage';
-        }
+        //     // index it to post user
+        //     $post->user['pfp_type'] = 'localImage';
+        // }
         
         return $post;
     }
@@ -242,15 +280,15 @@ class PostController extends Controller
         $sessionUser = User::findOrFail(Auth::user()->id);
 
         // check if the profile picture of the session user is a url
-        if (filter_var($sessionUser->pfp, FILTER_VALIDATE_URL)) {
+        // if (filter_var($sessionUser->pfp, FILTER_VALIDATE_URL)) {
 
-            // index it to session user
-            $sessionUser['pfp_type'] = 'imageUrl';
-        } else { // else it means it's a local file
+        //     // index it to session user
+        //     $sessionUser['pfp_type'] = 'imageUrl';
+        // } else { // else it means it's a local file
 
-            // index it to session user
-            $sessionUser['pfp_type'] = 'localImage';
-        }
+        //     // index it to session user
+        //     $sessionUser['pfp_type'] = 'localImage';
+        // }
         $request->session()->put('session_user', $sessionUser);
 
         
@@ -260,15 +298,15 @@ class PostController extends Controller
         
         foreach ($post->comments as $comment) {
             // check if the profile picture of the post user is a url
-            if (filter_var($comment->user->pfp, FILTER_VALIDATE_URL)) {
+            // if (filter_var($comment->user->pfp, FILTER_VALIDATE_URL)) {
 
-                // index it to comment user
-                $comment->user['pfp_type'] = 'imageUrl';
-            } else { // else it means it's a local file
+            //     // index it to comment user
+            //     $comment->user['pfp_type'] = 'imageUrl';
+            // } else { // else it means it's a local file
 
-                // index it to comment user
-                $comment->user['pfp_type'] = 'localImage';
-            }
+            //     // index it to comment user
+            //     $comment->user['pfp_type'] = 'localImage';
+            // }
             $comment['user'] = $comment->user;
    
         }
@@ -353,7 +391,7 @@ class PostController extends Controller
             'user_id' => 'required',
             // 'cover' => 'image|max:5000', #more image validation rules: https://laraveldaily.com/four-laravel-validation-rules-for-images-and-photos/
             // 'title' => 'max:255',
-            'description' => '',
+            'description' => 'required',
             'media_file' => 'required|file|mimes:jpg,png,jpeg,gif,svg,mp4,jpeg,png,bmp,svg,avi,mkv,mpeg|max:20000 ',
             'type' => '',
         ]), 

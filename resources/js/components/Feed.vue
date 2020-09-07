@@ -1,17 +1,18 @@
 <template>
   <div key="feedKey" class="h-100">
-    <div v-if="posts.length > 0" class="glider story_slider border-down pb-1" :class="post_display">
+
+    <storyGlider :sessionUser="sessionUser" 
+    :storyFeed="storyFeed" :storyUsers="storyUsers" 
+    v-if="posts.length > 0" :class="post_display">
+    </storyGlider>
+
+    <!-- <div v-if="posts.length > 0" class="glider story_slider border-down pb-1" :class="post_display">
       <div class="story_wrapper d-flex px-2 my-1">
         <div class="float-left d-flex flex-column align-items-center mr-1">
           <div class="gradiant_background d-flex">
-            <!-- why do we need both m-auto and dflex to center the image  -->
+            why do we need both m-auto and dflex to center the image 
             <div class="m-auto d-flex align-items-center justify-content-center position-relative">
-              <img
-                v-if="sessionUser.pfp_type == 'imageUrl'"
-                class="slider-image"
-                :src="sessionUser.pfp"
-              />
-              <img v-else-if=" sessionUser.pfp_type == 'localImage'" class="slider-image" :src="'storage/'+sessionUser.pfp" />
+              <img class="slider-image" :src="sessionUser.pfp" />
               <i class="plusStory fas fa-plus-circle position-absolute text-primary"></i>
             </div>
           </div>
@@ -21,8 +22,7 @@
           <div @click="storyHref" v-for="(user, key) in page" :key="key" class="mx-1 d-flex flex-column align-items-center">
             <div class="gradiant_background d-flex flex-column">
               <div class="m-auto align-items-center d-flex justify-content-center">
-                <img  v-if="user.pfp_type == 'imageUrl'" :data-userId="user.id" class="slider-image" :src="user.pfp"/>
-                <img v-else class="slider-image" :data-userId="user.id" :src="'storage/'+user.pfp" />
+                <img :data-userId="user.id" class="slider-image" :src="user.pfp"/>
               </div>
             </div> 
             <span class="story-username">{{user.username}}</span>
@@ -30,19 +30,19 @@
           <div class="storyObserver"><observer v-on:intersect="storyIntersected"/></div>
         </div>
       </div>
-    </div>
+    </div> -->
+    
+    
 
-    <div class="feed_wrapper " v-for="(page, key) in postFeed" :key="key" :class="post_display">
+    <div  class="feed_wrapper " v-for="(page, key) in postFeed" :key="key" :class="post_display">
       
       <div class="post_wrapper " v-for="(post, key) in page" :key="key">
         <div class="card rounded-0">
           <div class="card-head d-flex align-items-center border-down py-1">
-            <img v-if="post.user.pfp_type == 'imageUrl'" class="pfp card-img-top rounded-circle mr-2"
-              :src="post.user.pfp" />
-            <img v-else class="pfp card-img-top rounded-circle mr-2" :src="'storage/'+post.user.pfp"/>
+            <img class="pfp card-img-top rounded-circle mr-2" :src="post.user.pfp"/>
             <span class="username font-weight-bold">{{post.user.username}}</span>
             <i class="fas fa-ellipsis-h text-secondary ml-auto mr-2 pt-2" v-b-modal="'my_postModal'+post.id"></i>
-            <b-modal :id="'my_postModal'+post.id" :ref="'my_postModal'+post.id" class="settings_Modal" hide-header hide-footer >
+            <b-modal modal-class="settings_Modal" :id="'my_postModal'+post.id" :ref="'my_postModal'+post.id"  hide-header hide-footer >
               <button :id="'postEditId'+post.id" :data-postId="post.id" @click="editPostDescription"  class="w-100 settings_btn px-5 py-2">Edit</button>
               <button :id="'postShareStoryId'+post.id" :data-postId="post.id" @click="shareStory"  class="w-100 settings_btn px-5 py-2">Share as story</button>
               <button :id="'postDeleteId'+post.id" :data-postId="post.id" @click="deletePost" class="w-100 settings_btn text-danger px-5 py-2 border-0">Delete</button>
@@ -50,11 +50,10 @@
           </div>
 
           <div class="card-body">
-            <video v-if="post.media_type == 'localVideo'" controls muted class>
-              <source :src="'storage/'+post.media_file"  />
+            <img  v-if="post.media_type == 'image'" class="card-img-top rounded-0" :src="post.media_file"/>
+            <video v-else-if="post.media_type == 'video'" class="post_feed_video" controls muted>
+              <source :src="post.media_file"  />
             </video>
-            <img  v-else-if="post.media_type == 'imageUrl'" class="card-img-top rounded-0" :src="post.media_file"/>
-            <img v-else class="card-img-top rounded-0" :src="'storage/'+post.media_file" />
             <div class="px-2">
               <div class="interaction_buttons pt-2 d-flex">
                 <!-- like icon -->
@@ -69,9 +68,23 @@
                     </svg> 
                   </a>
                 <!-- direct message icon -->
-                <svg aria-label="Share Post" class="_8-yf5 mr-3" fill="#262626" height="24" viewBox="0 0 48 48" width="24">
+                <svg v-b-modal="'my_sharePostModal'+post.id" aria-label="Share Post" class="_8-yf5 mr-3" fill="#262626" height="24" viewBox="0 0 48 48" width="24">
                   <path d="M47.8 3.8c-.3-.5-.8-.8-1.3-.8h-45C.9 3.1.3 3.5.1 4S0 5.2.4 5.7l15.9 15.6 5.5 22.6c.1.6.6 1 1.2 1.1h.2c.5 0 1-.3 1.3-.7l23.2-39c.4-.4.4-1 .1-1.5zM5.2 6.1h35.5L18 18.7 5.2 6.1zm18.7 33.6l-4.4-18.4L42.4 8.6 23.9 39.7z"/>
                 </svg>
+
+                <b-modal :id="'my_sharePostModal'+post.id" :ref="'my_sharePostModal'+post.id"  modal-class="sharePost_Modal"  hide-header hide-footer >
+                    <ul class="sharePostUl position-relative">
+                      <span class="close_icon"></span> 
+                      <li v-for="(followedUser, key) in followedUsers" :key="key" class="d-flex justify-content-between">
+                        <div  class="" >
+                          <img class="pfp card-img-top rounded-circle mr-2" :src="followedUser.pfp"/>
+                          <span class="username font-weight-bold">{{followedUser.username}}</span>
+                        </div>
+                        <button :id="'postShareId'+post.id" :data-contactId="followedUser.id" :data-postId="post.id" @click="sendPost" class="btn-primary py-1 px-4  border-0 rounded  h-25 align-self-center">Send</button>
+                      </li>
+                    </ul>
+                    
+                </b-modal> 
 
                 <!-- save icon -->
                 <svg :id="'postSaveId'+post.id" :data-postId="post.id" @click="saveUnsave" aria-label="Save" class="ml-auto" :fill="post.saveColor" height="24" viewBox="0 0 48 48" width="24">
@@ -121,62 +134,32 @@
       <observer v-on:intersect="postIntersected" />
     </div>
 
-    <div class="welcome follow_suggestions text-center mb-0" :class="user_display">
-      <h5>Welcome to Instaclone</h5>
-      <p class="welcome_message mx-4 my-0">Follow people to start seeing the photos and videos they share.</p>
-    </div>
-
-    
-    <!-- <div  class="d-flex">
-      <slick ref="slick" :options="slickOptions" v-for="(user, key) in userFeed" :key="key" ><span>1</span></slick>
-    </div>
-     -->
-    <slick ref="slick" :options="slickOptions"  v-for="(page, key) in slickForLoop " :key="key" :class="user_display" class="pt-3 pb-5 follow_suggestions d-flex justify-content-center align-items-center">
-      
-      <div v-for="(user, key) in userFeed" :key="key" class="user_wrapper py-2 px-1 position-relative">
-        <!-- on 'intersect' event trigger, apply 'intersected' function -->
-        <observer class="position-absolute" :id="'slickOsberver'+user.id" :data-slickIndex="key" v-on:intersect="reInit" />
-        <div class="card py-2 px-1 border-0 mx-1">
-
-          <div class="card-head d-flex flex-column align-items-center justify-content-center" >
-            <img v-if="user.pfp_type == 'imageUrl'" class="suggestion_pfp rounded-circle"  :src="user.pfp"/>
-            <img v-else class="suggestion_pfp rounded-circle"  :src="'storage/'+user.pfp"/>
-            <span class="suggestion_username font-weight-bold">{{user.username}}</span>
-            
-          </div>
-
-          <div class="card-body">
-            <p  class="suggestion_text">{{user.bio}}</p>
-            <div class="d-flex justify-content-center align-items-center image_wrapper">
-              <div v-for="(post, key) in user.top_posts.slice(0,3)" :key="key" class="image_div">
-                <img v-if="post.media_type == 'imageUrl'" class="suggestion_images rounded-0"  :src="post.media_file"/>
-                <img v-else-if="post.media_type == 'localImage'"  class="suggestion_images rounded-0"   :src="'storage/'+post.media_file"/>
-              </div>
-            </div>
-            
-          </div>
-
-          <div class="card-footer">
-            <span class="suggestion_text">Instaclone recommended</span>
-
-            <button :id="'userId'+user.id" :data-userId="user.id" @click="followUnfollow" class="btn btn-primary" v-text="followUnfollowHtml"></button>
-          </div>
-                  
-        </div>
-        
-      </div>
-      
-    </slick>
+    <followUsers 
+    :sessionUser="sessionUser" 
+    :userFeed="userFeed" 
+    :users="users" 
+    :followedUsersId="followedUsersId"  
+    :followUnfollowHtml="followUnfollowHtml">
+    </followUsers>
     
     <b-modal id="modal_post_form" ref="modal_post_form" class="settings_Modal" title="Add a Post" hide-footer>
+      <validation :errors="validationErrors" v-if="validationErrors"></validation>
       <form class="addPost_form" @submit.prevent="addPost" method="post" action="" enctype="multipart/form-data">
         <b-form-group>
-          <div class="form-group">
+          <div class="form-group d-flex flex-column">
             <input type="hidden" name="type" v-model="postForm.mediaType">
-            <cld-image v-if="postForm.publicId" dpr="auto" responsive="width" width="auto" crop="scale" :publicId="postForm.publicId" class="my-2">
+            <cld-image v-if="postForm.resourceType == 'image'" dpr="auto" responsive="width" width="auto" crop="scale" :publicId="postForm.publicId" class="my-2">
               <cld-transformation border="3px_solid_rgb:00390b" radius="20" />
               <cld-transformation quality="auto" fetchFormat="auto" />
             </cld-image>
+            <!-- <cld-video v-else-if="postForm.resourceType == 'video'" cloudName="my_cloud" :publicId="postForm.publicId">
+              <cld-transformation border="3px_solid_rgb:00390b" radius="20" />
+              <cld-transformation quality="auto" fetchFormat="auto" />
+            </cld-video> -->
+            <video class="video img ml-auto bg-dark" v-else-if="postForm.resourceType == 'video'" controls muted>
+              <source :src="postForm.urlImg"/>
+            </video>
+
             <!-- <b-form-file v-model="postForm.postMedia" @change="postPreview" name="media_file" id="file-default"></b-form-file> -->
             <!-- <div class="previewWrapper d-flex justify-content-center align-items-center ">
               <i class="fas fa-cloud-upload-alt"></i>
@@ -202,10 +185,12 @@
 </template>
 
 <script>
-import Slick from 'vue-slick';
 import Observer from "./Observer";
-import VueAvatar from '../vue-avatar-editor/src/components/VueAvatar.vue'
-import VueAvatarScale from '../vue-avatar-editor/src/components/VueAvatarScale.vue'
+import VueAvatar from '../vue-avatar-editor/src/components/VueAvatar.vue';
+import VueAvatarScale from '../vue-avatar-editor/src/components/VueAvatarScale.vue';
+import ValidationErrors from './ValidationErrors';
+import StoryGlider from './StoryGlider';
+import FollowUsers from './FollowUsers';
 
 // import ImgCropper from "ImgCropper";
 var moment = require("moment");
@@ -226,6 +211,7 @@ export default {
         publicPath: 'http://localhost:8000/',
         observer: null,
         sessionUser: null,
+        validationErrors: '',
 
       // Post Data
         feedKey: 0,
@@ -235,13 +221,14 @@ export default {
         postForm: {
           postMedia: null,
           publicId: null,
+          resourceType:null,
           imgPreview: null,
           videoPreview: null,
-          postCaption: null,
+          postCaption: '',
           urlImg:null,
-          mediaType: null,
+          mediaType: '',
           options: [
-            { value: null , text: 'Select an option' },
+            { value: '' , text: 'Select an option' },
             { value: 'post', text: 'Publish as a Post' },
             { value: 'story', text: 'Publish as a Story' },
           ]
@@ -260,170 +247,17 @@ export default {
         storyUsers: [],
         storiesType: [],
         storyFeed: [],
-        storySliceIndex: 10,
-        storyIterations: 0,
 
 
       // User Data
         users: [],
         userFeed: [],
-        slickForLoop: [],
         post_display: '',
         user_display: '',
         followedUsers: [],
-        followUnfollowHtml:null,
-        userSliceIndex: 10,
-        userIterations: 0,
-        userSlickIterations: 0,
-        userTarget: 7,
-      
-
-      // Slick Options
-        slickOptions: {
-          slidesToShow: 'auto',
-          slidesToScroll: 1,
-          arrows: false,
-          slickSetOption: true,
-          autoplay: false,
-          autoplaySpeed: 3000,
-          centerMode: false,
-          infinite: false,
-          responsive: [
-
-            // cards needs to be bigger through media queries
-
-              // {
-              // breakpoint: 1024,
-              // settings: {
-              //   centerMode: true,
-              //   centerPadding: '40px',
-              //     slidesToShow: 3,
-              //     slidesToScroll: 3,
-              //     infinite: true,
-              // }
-              // },
-              // {
-              // breakpoint: 900,
-              // settings: {
-              //   centerMode: true,
-              //   centerPadding: '60px',
-              //     slidesToShow: 4,
-              //     slidesToScroll: 4
-              // }
-              // },
-              // {
-              // breakpoint: 800,
-              // settings: {
-              //   centerMode: true,
-              //   centerPadding: '60px',
-              //     slidesToShow: 3,
-              //     slidesToScroll: 3
-              // }
-              // },
-              // {
-              // breakpoint: 700,
-              // settings: {
-              //   centerMode: true,
-              //   centerPadding: '10px',
-              //     slidesToShow: 3,
-              //     slidesToScroll: 3
-              // }
-              // },
-              {
-              breakpoint: 600,
-              settings: {
-                centerMode: true,
-                centerPadding: '80px',
-                  slidesToShow: 2,
-                  slidesToScroll: 2
-              }
-              },
-              {
-              breakpoint: 560,
-              settings: {
-                centerMode: true,
-                centerPadding: '65px',
-                  slidesToShow: 2,
-                  slidesToScroll: 2
-              }
-              },
-              {
-              breakpoint: 520,
-              settings: {
-                centerMode: true,
-                centerPadding: '50px',
-                  slidesToShow: 2,
-                  slidesToScroll: 2
-              }
-              },
-              {
-              breakpoint: 480,
-              settings: {
-                centerMode: true,
-                centerPadding: '120px',
-                  slidesToShow: 1,
-                  slidesToScroll: 1
-              }
-              },
-              {
-              breakpoint: 430,
-              settings: {
-                centerMode: true,
-                centerPadding: '105px',
-                  slidesToShow: 1,
-                  slidesToScroll: 1
-              }
-              },
-              {
-              breakpoint: 400,
-              settings: {
-                centerMode: true,
-                centerPadding: '90px',
-                  slidesToShow: 1,
-                  slidesToScroll: 1
-              }
-              },
-              {
-              breakpoint: 370,
-              settings: {
-                centerMode: true,
-                centerPadding: '75px',
-                  slidesToShow: 1,
-                  slidesToScroll: 1
-              }
-              },
-              {
-              breakpoint: 340,
-              settings: {
-                centerMode: true,
-                centerPadding: '60px',
-                  slidesToShow: 1,
-                  slidesToScroll: 1
-              }
-              },
-              {
-              breakpoint: 310,
-              settings: {
-                centerMode: true,
-                centerPadding: '50px',
-                  slidesToShow: 1,
-                  slidesToScroll: 1
-              }
-              },
-              {
-              breakpoint: 290,
-              settings: {
-                centerMode: true,
-                centerPadding: '45px',
-                  slidesToShow: 1,
-                  slidesToScroll: 1
-              }
-              }
-          ]
-      
-            // Any other options that can be got from plugin documentation
-        },
-    };
+        followedUsersId: [],
+        followUnfollowHtml:null,      
+    }
   },
 
   created: function () {
@@ -434,21 +268,22 @@ export default {
         this.likeUnlikePosts = _.debounce(this.likeUnlikePosts, 300)
         this.likeUnlikeComments = _.debounce(this.likeUnlikeComments, 300)
         this.saveUnsave = _.debounce(this.saveUnsave, 300)
-        this.followUnfollow = _.debounce(this.followUnfollow, 300)
-        this.likedPosts.push(...this.sessionUser.liked.posts);
-        
+        this.likedPosts.push(...this.sessionUser.liked.posts)
+        this.followedUsers.push(...this.sessionUser.followed_users)
         
         if (this.sessionUser.favorites !== null) {
           this.savedPosts.push(...this.sessionUser.favorites);
         }
         if (this.sessionUser.followed !== null) {
-          this.followedUsers.push(...this.sessionUser.followed);        
+          this.followedUsersId.push(...this.sessionUser.followed);        
         }
 
         if (typeof data.data[0].username == "undefined") {
           this.likedComments.push(...this.sessionUser.liked.comments);
           this.user_display = "d-none";
+
           this.posts = data.data;
+
           this.storyUsers.push(...this.posts[0]['story_users'])
           this.storyUsers.forEach(storyUser => {
             storyUser.stories = []
@@ -481,15 +316,12 @@ export default {
               post.saveColor = "#262626";
             }
 
-            if (post.type == "post" ) {
+            // We are getting all the posts with type " post "
+            if (post.type == "post" || post.type == "post/story" || post.type == "story/post") {
               this.postsType.push(post);
-            } else if (post.type == "story") {
-              this.storiesType.push(post);
-            } else if (post.type == "post/story" || post.type == "story/post") {
-              this.postsType.push(post);
-              this.storiesType.push(post);
-            }
+            } 
 
+            // We are getting all the posts with type " story "
             if (post.type == "story" || post.type == "post/story" || post.type == "story/post") {
               this.storyUsers.forEach(storyUser => {
                 if (storyUser.id == post.user.id) {
@@ -540,7 +372,7 @@ export default {
                 )
             }
 
-            if (this.followedUsers.includes(user.id)) {
+            if (this.followedUsersId.includes(user.id)) {
               this.followUnfollowHtml = "Unfollow"          
             } else {
               this.followUnfollowHtml = "Follow"         
@@ -550,8 +382,6 @@ export default {
 
           this.userFeed.push(...this.users.slice(0, 10));
 
-          // to fire the slick forloop once
-          this.slickForLoop=[1]
           
         }
         
@@ -584,16 +414,18 @@ export default {
     { cloudName: "resize", uploadPreset: "resize_preset", cropping: true },
      (error, result) => { 
          this.postForm.postMedia = result
-         if (typeof this.postForm.postMedia.info.files != 'undefined') {
-          this.postForm.publicId = this.postForm.postMedia.info.files[0].uploadInfo.public_id
-          this.postForm.fileName = this.postForm.postMedia.info.files[0].name
-          this.postForm.urlImg = this.postForm.postMedia.info.files[0].uploadInfo.url
+         if (typeof result.info.files != 'undefined') {
+          this.postForm.publicId = result.info.files[0].uploadInfo.public_id
+          this.postForm.resourceType = result.info.files[0].uploadInfo.resource_type
+          this.postForm.fileName = result.info.files[0].name
+          this.postForm.urlImg = result.info.files[0].uploadInfo.url
           this.$bvModal.show('modal_post_form')
          }
         
-        //  console.log(this.postForm.postMedia.info.files[0].uploadInfo.public_id);
+
           // this.publicId = result.info.uploadInfo.publicId
-      
+              //  console.log(result.info.files[0].uploadInfo.resource_type);
+
      });
 
     $('#openWidget').click(function() {
@@ -691,76 +523,6 @@ export default {
 
       
       
-    },
-
-    reInit() {
-      if (this.userSlickIterations == this.userTarget  ) {
-        this.userTarget +=10
-        if (this.userIterations < Math.floor(this.users.length / 10)) {
-        // push the next page ( of 10 users) into the array feed
-        this.userFeed.push(...this.users.slice(this.userSliceIndex, this.userSliceIndex + 10))
-
-        // increment the slice index to get the next page on the next iteration
-        this.userSliceIndex += 10
-
-        // // increment the iteration
-        this.userIterations++
-
-        
-        
-        
-      }
-      let currIndex = this.$refs.slick[0].currentSlide()
-      this.$refs.slick[0].destroy();
-      this.$nextTick(() => {
-        this.$refs.slick[0].create();
-        let slickElement = this.$refs.slick[0];
-        slickElement.goTo(currIndex, true);
-
-      });
-      }
-      
-      this.userSlickIterations++
-    },
-
-    userIntersected () {
-      
-      if (this.userIterations < Math.floor(this.users.length / 10)) {
-        // push the next page ( of 10 users) into the array feed
-        this.userFeed.push(...this.users.slice(this.userSliceIndex, this.userSliceIndex + 1));
-
-        // increment the slice index to get the next page on the next iteration
-        this.userSliceIndex += 1;
-
-        // increment the iteration
-        this.userIterations++;
-       
-   
-        
-      // console.log(this.$refs);
-        // console.log('iteration :'+this.iterations);
-        // console.log('limit :'+Math.ceil(this.posts.length / 10));
-        // console.log(this.iterations < Math.ceil(this.posts.length / 10));
-        
-        
-      }
-    },
-
-    storyIntersected () {
-      if (this.storyIterations < Math.floor(this.storyUsers.length / 10)) {
-        // push the next page ( of 10 stories) into the array feed
-        this.storyFeed.push(this.storyUsers.slice(this.storySliceIndex, this.storySliceIndex + 10));
-
-        // increment the slice index to get the next page on the next iteration
-        this.storySliceIndex += 10;
-
-        // increment the iteration
-        this.storyIterations++;
-
-        // console.log('iteration :'+this.iterations);
-        // console.log('limit :'+Math.ceil(this.posts.length / 10));
-        // console.log(this.iterations < Math.ceil(this.posts.length / 10));
-      }
     },
 
     likeUnlikePosts(event) {
@@ -912,65 +674,6 @@ export default {
         }
     },
 
-    followUnfollow(event) {
-      let userFollowId;
-
-      if (typeof $(event.target).attr("id") == 'undefined') {
-        userFollowId = $(event.target.parentElement).attr("id");
-      } else {
-        userFollowId = $(event.target).attr("id");
-      }
-
-      //  check if the post is already liked by the user
-      if (this.followedUsers.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))) {
-          // apply the laravel unlike function
-          axios
-            .get(
-              "users/" +
-                $("#" + userFollowId)[0].attributes[1].nodeValue +
-                "/" +
-                this.sessionUser.id +
-                "/unfollow"
-            )
-            .then((response) => {
-              
-              // get the index of the user id we want to delete
-              let index = this.followedUsers.indexOf(
-                parseInt($("#" + userFollowId)[0].attributes[1].nodeValue)
-              );
-
-              if (this.followedUsers.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))){
-                //  remove it from the followedUsers array
-                this.followedUsers.splice(index, 1)
-                $("#" + userFollowId)[0].innerHTML = 'Follow' 
-               
-              }
-              
-              
-            });
-      } else {
-        // apply the laravel follow function
-        axios
-          .get("users/" + $("#" + userFollowId)[0].attributes[1].nodeValue + "/" + this.$sessionUser.id + "/follow" )
-          .then((response) => {
-            
-            if (!this.followedUsers.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))){
-                // add the user id to the followedUsers array
-                this.followedUsers.push(
-                  parseInt($("#" + userFollowId)[0].attributes[1].nodeValue)
-                )
-                $("#" + userFollowId)[0].innerHTML = 'Unfollow' 
-                               
-
-              }
-            
-          });
-                 
-         
-          
-      }
-    },
-
     saveUnsave(event) {
       let postSaveId; 
 
@@ -1047,7 +750,7 @@ export default {
       this.$refs.vueavatarscale.setScale(scale)
     },
 
-    /* End Utility function to convert a canvas to a BLOB */
+    /*NOT USED End Utility function to convert a canvas to a BLOB */
     dataURLToBlob(dataURL) {
         var BASE64_MARKER = ';base64,';
         if (dataURL.indexOf(BASE64_MARKER) == -1) {
@@ -1071,7 +774,7 @@ export default {
 
         return new Blob([uInt8Array], {type: contentType});
     },
-     /* A Blob() is almost a File() - it's just missing the two properties below which we will add https://stackoverflow.com/questions/27159179/how-to-convert-blob-to-file-in-javascript */ 
+     /*NOT USED A Blob() is almost a File() - it's just missing the two properties below which we will add https://stackoverflow.com/questions/27159179/how-to-convert-blob-to-file-in-javascript */ 
     blobToFile(theBlob, fileName) {
       fileName= this.$store.state.image.srcFile.name
       // theBlob.lastModifiedDate = new Date();
@@ -1086,6 +789,7 @@ export default {
       // this.postForm.postMedia = this.blobToFile(Blob)  
       let formData = new FormData();
       formData.append('media_file', this.postForm.urlImg);
+      formData.append('media_type', this.postForm.resourceType);
       formData.append('description', this.postForm.postCaption);
       formData.append('type', this.postForm.mediaType);
       formData.append('user_id', this.sessionUser.id);
@@ -1111,8 +815,12 @@ export default {
         this.postForm.videoPreview = null;
         this.postForm.postCaption = ''
 
-      }).catch((err) => {
-        console.log("ERRRR:: ",err.response.data);
+      }).catch((error) => {
+        console.log("ERRRR:: ",error.response.errors);
+        if (error.response.status == 422){
+        this.validationErrors = error.response.data.errors;
+        }
+
 
       });
 
@@ -1191,6 +899,20 @@ export default {
       })
     },
 
+    sendPost (event) {
+      var targetcontactId = event.target.attributes[1].nodeValue
+      var targetPostId = event.target.attributes[2].nodeValue
+
+      axios.post('/conversation/send', {
+          contactId: targetcontactId,
+          sharedPostId: targetPostId
+      }).then((response)=>{
+        // $(this.$refs)[0]['my_sharePostModal'+targetPostId][0].hide() 
+      }).catch((err) => {
+      });
+
+    },
+
     shareStory (event) {
       var targetId = event.target.attributes[1].nodeValue
       var updatedType = 'post/story'
@@ -1208,20 +930,17 @@ export default {
 
     },
 
-    storyHref (event) {
-      var targetId = event.target.attributes[0].nodeValue
-      window.location.replace(this.publicPath+'story/'+targetId);   
-      
-      // console.log('dfqsdfsd');
-    }
+    
   },
 
 
   components: {
     Observer,
-    Slick,
     VueAvatar,
-    VueAvatarScale
+    VueAvatarScale,
+    ValidationErrors,
+    StoryGlider,
+    FollowUsers,
   },
 };
 </script>

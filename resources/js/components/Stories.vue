@@ -16,14 +16,12 @@
       <b-carousel-slide v-for="(story, key) in storyUser.stories" :key="key">
          <template v-slot:img class="position-relative">
            <div class="storyHeader d-flex align-items-center border-down py-1 px-2">
-                <img v-if="storyUser.pfp_type == 'imageUrl'" class="pfp card-img-top rounded-circle mr-2"
-                  :src="storyUser.pfp" />
-                <img v-else class="pfp card-img-top rounded-circle mr-2" :src="`${publicPath}storage/`+storyUser.pfp"/>
+                <img class="pfp card-img-top rounded-circle mr-2" :src="storyUser.pfp" />
                 <span class="username font-weight-bold">{{storyUser.username}}</span>
                 <i class="fas fa-ellipsis-h ml-auto mr-2 pt-2 storySettings" v-b-modal="'my_storyModal'+story.id"></i>
-                <a :href="publicPath+'feeds'"><span class="close"></span></a>
+                <a :href="publicPath+'feeds'"><span class="close_icon"></span></a>
             </div>
-            <b-modal :id="'my_storyModal'+story.id" :ref="'my_storyModal'+story.id" class="settings_Modal" hide-header hide-footer >
+            <b-modal modal-class="settings_Modal" :id="'my_storyModal'+story.id" :ref="'my_storyModal'+story.id"  hide-header hide-footer >
               <button :id="'storyShareStoryId'+story.id" :data-storyId="story.id" @click="sharePost"  class="w-100 settings_btn px-5 py-2">Share as post</button>
               <button :id="'storyDeleteId'+story.id" :data-storyId="story.id" @click="deleteStory" class="w-100 settings_btn text-danger px-5 py-2 border-0">Delete</button>
             </b-modal> 

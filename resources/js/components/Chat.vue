@@ -29,9 +29,9 @@ export default {
 
         // listens and receives data from MessageSent laravel event
         // when a message is sent, laravel Echo displays it dynamically to the receiver
-         Echo.private('messages.'+this.user.id)
+        Echo.private('messages.'+this.user.id)
          .listen('MessageSent', (e) => {
-            this.handleIncoming(e.chat);
+            this.handleIncoming(e.messages);
         })
 
         axios.get('/contacts')
@@ -62,13 +62,13 @@ export default {
                 this.saveNewMessage(message)
                 return;
             }
-            console.log(message);
-            this.updateUnreadCount(message.sender_id, false)
+            
+            this.updateUnreadCount(message.sender, false)
         },
 
-        updateUnreadCount(selectedContactId, reset) {
+        updateUnreadCount(selectedContact, reset) {
             this.contacts = this.contacts.map((contact) => {
-                if (contact.id !== selectedContactId) {
+                if (contact.id !== selectedContact.id) {
                     return contact;
                 }
 

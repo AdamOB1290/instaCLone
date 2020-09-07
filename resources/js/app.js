@@ -36,29 +36,34 @@ Vue.component('app', require('./components/App.vue').default);
 Vue.component('navbar', require('./components/Navbar.vue').default);
 Vue.component('vfooter', require('./components/Vfooter.vue').default);
 Vue.component('feed', require('./components/Feed.vue').default);
+Vue.component('storyGlider', require('./components/StoryGlider.vue').default);
+Vue.component('followUsers', require('./components/FollowUsers.vue').default);
+Vue.component('validation', require('./components/ValidationErrors.vue').default); 
 Vue.component('comment', require('./components/Comments.vue').default);
 Vue.component('story', require('./components/Stories.vue').default);
 Vue.component('ImgCropper', require('./components/ImageCropper.vue').default);
 Vue.component('chat', require('./components/Chat.vue').default);
 Vue.component('conversation', require('./components/Conversation.vue').default);
 Vue.component('contactList', require('./components/ContactList.vue').default);
+Vue.component("observer", require('./components/Observer.vue').default);
+Vue.component("observer", require('./components/Observer.vue').default);
+Vue.component("slick", require('vue-slick').default);
+// var sessionUser = JSON.parse(document.querySelector("meta[name='session_user']").getAttribute('content'));
+// if (typeof sessionUser.liked == 'string') {
+//     var liked = JSON.parse(sessionUser.liked);
+//     var notification_preferences = JSON.parse(sessionUser.notification_preferences);
+//     var favorites = JSON.parse(sessionUser.favorites);
+//     var followed = JSON.parse(sessionUser.followed);
+//     var followers = JSON.parse(sessionUser.followers);
+//     sessionUser.liked = liked;
+//     sessionUser.notification_preferences = notification_preferences;
+//     sessionUser.favorites = favorites;
+//     sessionUser.followed = followed;
+//     sessionUser.followers = followers;
+// }
 
-var sessionUser = JSON.parse(document.querySelector("meta[name='session_user']").getAttribute('content'));
-if (typeof sessionUser.liked == 'string') {
-    var liked = JSON.parse(sessionUser.liked);
-    var notification_preferences = JSON.parse(sessionUser.notification_preferences);
-    var favorites = JSON.parse(sessionUser.favorites);
-    var followed = JSON.parse(sessionUser.followed);
-    var followers = JSON.parse(sessionUser.followers);
-    sessionUser.liked = liked;
-    sessionUser.notification_preferences = notification_preferences;
-    sessionUser.favorites = favorites;
-    sessionUser.followed = followed;
-    sessionUser.followers = followers;
-}
-
-// console.log(sessionUser);
-Vue.prototype.$sessionUser = sessionUser
+// // console.log(sessionUser);
+// Vue.prototype.$sessionUser = sessionUser
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

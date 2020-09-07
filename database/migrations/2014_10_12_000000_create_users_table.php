@@ -24,7 +24,7 @@ class CreateUsersTable extends Migration
             $table->string('role')->default('user');
             $table->json('followers')->nullable();
             $table->json('followed')->nullable();
-            $table->string('pfp')->nullable()->default('uploads/default_pic.jpg');
+            $table->string('pfp')->default('https://res.cloudinary.com/resize/image/upload/v1599491685/default_pic.png');
             $table->string('username')->nullable();
             $table->string('password');
             $table->string('website')->nullable();

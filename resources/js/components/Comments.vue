@@ -3,9 +3,7 @@
       <div class="comments_wrapper mb-5" v-for="(commentPage, key) in commentFeed" :key="key">
         <div v-for="(comment, key) in commentPage" :key="key">
           <div class="comments d-flex position-relative show_more p-2" >
-            <img v-if="comment.user.pfp_type == 'imageUrl'" class="pfp card-img-top rounded-circle mr-2"
-              :src="comment.user.pfp"/>
-            <img v-else class="pfp card-img-top rounded-circle mr-2" :src="`${publicPath}storage/`+comment.user.pfp"/>
+            <img class="pfp card-img-top rounded-circle mr-2" :src="comment.user.pfp"/>
            
             <div class="pr-3 pl-1">
               <span class="username font-weight-bold pb-2">{{comment.user.username}}</span>
@@ -36,9 +34,7 @@
           <div v-if="comment.replies.length > 0" class="reply_wrapper mx-4" :class="reply_display">
             <div  v-for="(reply, key) in comment.replyFeed" :key="key">
               <div class="replys d-flex position-relative show_more p-2">
-                <img v-if="reply.user.pfp_type == 'imageUrl'" class="pfp card-img-top rounded-circle mr-2"
-                  :src="reply.user.pfp"/>
-                <img v-else class="pfp card-img-top rounded-circle mr-2" :src="`${publicPath}storage/`+reply.user.pfp"/>
+                <img class="pfp card-img-top rounded-circle mr-2" :src="reply.user.pfp"/>
               <div>
                   <span class="username font-weight-bold pb-2">{{reply.user.username}}</span>
                   <textarea  v-if="reply.editState" v-model="reply.content" @keydown.enter.exact.prevent 
@@ -76,8 +72,7 @@
         <input type="hidden" name="original_comment_id" id="parent_comment_id" v-model.trim="addCommentForm.originalCommentId">
         <input type="hidden" name="post_id" id="post_id" v-model.trim="postId">
         <div class="form-group position-relative d-flex justify-content-center"> 
-            <img v-if="sessionUser.pfp_type == 'imageUrl'" class="pfp_form" :src="sessionUser.pfp"/>
-            <img v-else class="pfp_form" :src="`${publicPath}storage/`+sessionUser.pfp"/>   
+            <img class="pfp_form" :src="sessionUser.pfp"/>
             <b-form-textarea ref="commentForm" placeholder="Add a comment ..." v-model="addCommentForm.commentBody" cols="30" rows="1" max-rows="10" class="form-control addCommentTxt" name="content" id="content" ></b-form-textarea>
             <button type="submit" class="btn btn-primary-outline submitComment p-0">Post</button>
             <p class="text-danger"></p>

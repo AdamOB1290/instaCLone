@@ -1,9 +1,26 @@
 <template>
     <div class="message_feed_wrapper" ref="message_feed_wrapper">
         <ul v-if="contact">
-            <li v-for="message in messages" :key="message.id" :class="`message ${message.receiver_id == contact.id ? 'sent' : 'received'}`">
-                <div class="text">
-                    {{message.content}}
+            <li v-for="message in messages" :key="message.id" :class="`message_wrapper ${message.receiver_id == contact.id ? 'sent' : 'received'}`">
+                <div class="message">
+                    <div v-if="message.shared_post">
+                        <div class="d-flex align-items-center border-down pb-1 px-3">
+                            <img class="pfp card-img-top rounded-circle mr-2" :src="message.shared_post.user.pfp" />
+                            <span class="username font-weight-bold">{{message.shared_post.user.username}}</span>
+                        </div>
+                        <div  class="sharedPost">
+                            <video v-if="message.shared_post.media_type == 'video'" controls muted class>
+                                <source :src="'storage/'+message.shared_post.media_file"  />
+                            </video>
+                            <img  v-else-if="message.shared_post.media_type == 'image'" class="card-img-top rounded-0" :src="message.shared_post.media_file"/>
+                                <span class="msg_description px-3 pt-1">
+                                    <span class="username font-weight-bold float-left">{{message.shared_post.user.username }}</span>
+                                    {{message.shared_post.description}}
+                                </span>
+                        </div>
+                    </div>
+                    <div v-else class="text px-3" >{{message.content}}</div>
+                    
                 </div>
             </li>
         </ul>
@@ -59,25 +76,35 @@ export default {
         list-style-type: none;
         padding: 5px;
         li {
-            &.message {
+            &.message_wrapper {
                 margin: 10px 0;
                 width: 100%;
-                .text {
+                .message {
                     max-width: 200px;
                     border-radius: 12px;
-                    padding: 10px 17px 14px;
+                    padding: 7px 0 10px;
                     display: inline-block;
+
+                    .msg_description {
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 2; /* number of lines to show */
+                        -webkit-box-orient: vertical;
+                    }
                 }
+                
+
                 &.received {
                     text-align: left;
-                    .text {
+                    .message {
                         background: #81c4f9;
 
                     }
                 }
                 &.sent {
                     text-align: right;
-                    .text {
+                    .message {
                         background: #b2b2b2;
                         text-align: left;
                     }

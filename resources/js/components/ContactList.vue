@@ -1,11 +1,10 @@
 <template>
     <div class="contact_list_wrapper">
         <ul>
-            <li v-for="contact in sortedContacts" :key="contact.id" @click="selectContact(contact)" :class="{ 'selected': contact == selected}" >
+            <li v-for="contact in sortedContacts" :key="contact.id" :id="'li'+contact.id" @click="selectContact(contact)" :class="{ 'selected': contact == selected}" >
                 <div class="avatar">
-                    <img v-if="contact.pfp_type == 'imageUrl'" class=""
+                    <img class=""
                   :src="contact.pfp" :alt="contact.name"/>
-                <img v-else class="" :src="'storage/'+contact.pfp" :alt="contact.name"/>
                 </div>
                 <div class="contact">
                     <p class="name">{{contact.name}}</p>
@@ -34,6 +33,7 @@ export default {
     methods: {
         selectContact(contact) {
             this.selected = contact
+            $('.contact_list_wrapper').animate({scrollTop: 0}, 100);
             this.$emit('selected', contact)
         }
     },

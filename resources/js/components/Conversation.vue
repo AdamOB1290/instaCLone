@@ -33,7 +33,7 @@ export default {
             }
 
             axios.post('/conversation/send', {
-                contact_id: this.contact.id,
+                contactId: this.contact.id,
                 text: text
             }).then((response)=>{
                 this.$emit('newMessage', response.data);
