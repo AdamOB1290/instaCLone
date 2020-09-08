@@ -6,9 +6,8 @@
         </div>
 
             <slick ref="slick" :options="slickOptions"  v-for="(page, key) in slickForLoop " :key="key" class="pt-3 pb-5 follow_suggestions d-flex justify-content-center align-items-center">
-      
+
                 <div v-for="(user, key) in userFeed" :key="key" class="user_wrapper py-2 px-1 position-relative">
-                    <!-- on 'intersect' event trigger, apply 'intersected' function -->
                     <observer class="position-absolute" :id="'slickOsberver'+user.id" :data-slickIndex="key" v-on:intersect="reInit" />
                     <div class="card py-2 px-1 border-0 mx-1">
 
@@ -41,6 +40,10 @@
             </slick>
 
 
+      
+                <div id="SLICKNONE" class="bg-dark text-center text-white" >{{sessionUser.name}}</div>
+
+
     </div>
 </template>
 
@@ -50,6 +53,23 @@ import Observer from "./Observer";
 
 export default {
     props: ['sessionUser','userFeed','users','followedUsersId','followUnfollowHtml'],
+    // props: {
+    //     sessionUser: {
+    //         type: Object,
+    //     },
+    //     userFeed: {
+    //         type: Array,
+    //     },
+    //     users: {
+    //         type: Array,
+    //     },
+    //     followedUsersId: {
+    //         type: Array,
+    //     },
+    //     followUnfollowHtml: {
+    //         type: String,
+    //     },
+    // },
 
     data(){
         return {
@@ -218,15 +238,17 @@ export default {
     created: function () {
         this.followUnfollow = _.debounce(this.followUnfollow, 300)
 
-
-
-
         // to fire the slick forloop once
         this.slickForLoop=[1]
     },
 
+    
+    mounted: function() {
+    },
+
     methods: {
         followUnfollow(event) {
+            console.log(this.sessionUser);
             let userFollowId;
 
             if (typeof $(event.target).attr("id") == 'undefined') {
@@ -265,7 +287,7 @@ export default {
             } else {
                 // apply the laravel follow function
                 axios
-                .get("users/" + $("#" + userFollowId)[0].attributes[1].nodeValue + "/" + this.$sessionUser.id + "/follow" )
+                .get("users/" + $("#" + userFollowId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/follow" )
                 .then((response) => {
                     
                     if (!this.followedUsersId.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))){
@@ -285,9 +307,7 @@ export default {
             }
         },
 
-
-    
-    reInit() {
+        reInit() {
       if (this.userSlickIterations == this.userTarget  ) {
         this.userTarget +=10
         if (this.userIterations < Math.floor(this.users.length / 10)) {
@@ -314,7 +334,7 @@ export default {
       this.userSlickIterations++
     },
 
-    userIntersected () {
+        userIntersected () {
       
       if (this.userIterations < Math.floor(this.users.length / 10)) {
         // push the next page ( of 10 users) into the array feed
@@ -336,10 +356,12 @@ export default {
         
       }
     },
+    
     },
 
     computed: {
     },
+
 
     component: {
         Slick,

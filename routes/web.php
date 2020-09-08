@@ -69,6 +69,10 @@ Route::get('chat', function () {
     return view('chats');
 });
 
+Route::get('profile', function () {
+    return view('profile');
+});
+
 
 
 Auth::routes();

@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Comment;
 use App\Events\UserFollowed;
+use App\Post;
 use Illuminate\Http\Request;
 use App\User;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -15,10 +18,84 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
+        $sessionUser = Auth::user();
+        $favoritePosts = [];
+        $followedUsers = [];
+        $following = [];
+        $likedPosts = [];
+        $likedPostsIds = $sessionUser->liked['posts'];
+        $likedComments = [];
+        $likedCommentsIds = $sessionUser->liked['posts'];
+
+        if(isset($sessionUser->favorites)){
+            foreach ($sessionUser->favorites as $favoriteId) {
+                $favoritePost = Post::findOrFail($favoriteId);
+                array_push($favoritePosts, $favoritePost);
+            }
+            $sessionUser['favorite_posts'] = $favoritePosts;
+        } else {
+            $sessionUser['favorite_posts'] = [];
+        }
+
+        if(count($likedPostsIds) > 0){
+            foreach ($likedPostsIds as $likedPostId) {
+                $likedPost = Post::findOrFail($likedPostId);
+                array_push($likedPosts, $likedPost);
+            }
+            $sessionUser['liked_posts'] = $likedPosts;
+        } else {
+            $sessionUser['liked_posts'] = [];
+        }
+
+        if(count($likedCommentsIds) > 0){
+            foreach ($likedCommentsIds as $likedCommentId) {
+                $likedComment = Comment::findOrFail($likedCommentId);
+                $likedComment['user'] = $likedComment->user;
+                array_push($likedComments, $likedComment);
+
+            }
+            $sessionUser['liked_comments'] = $likedComments;
+        } else {
+            $sessionUser['liked_comments'] = [];
+        }
+
+        if(isset($sessionUser->followed)){
+            foreach ($sessionUser->followed as $followedId) {
+                $followedUser = User::findOrFail($followedId);
+                array_push($followedUsers, $followedUser);
+            }
+            $sessionUser['followedUsers'] = $followedUsers;
+        } else {
+            $sessionUser['followedUsers'] = [];
+        }
+
+        if(isset($sessionUser->followers)){
+            foreach ($sessionUser->followers as $followersId) {
+                $follower = User::findOrFail($followersId);
+                array_push($following, $follower);
+            }
+            $sessionUser['following'] = $following;
+        } else {
+            $sessionUser['following'] = [];
+        }
+
+
+        if(isset($sessionUser->posts)){
+            $sessionUser['posts'] = $sessionUser->post;
+        } else {
+            $sessionUser['posts'] = [];
+        }
+
+        // if($sessionUser->followers == null){
+        //     $sessionUser['followers'] = [];
+        // } 
+
+        // if($sessionUser->followed  == null){
+        //     $sessionUser['followed'] = [];
+        // } 
 
         // return view('users.crud.index', compact('users'));
-        return $users;
+        return $sessionUser;
     }
 
     /**

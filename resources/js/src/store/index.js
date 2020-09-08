@@ -12,7 +12,8 @@ export default new Vuex.Store({
     },
     user: {
       username: 'matt',
-      fullName: 'Matt Maribojoc'
+      fullName: 'Matt Maribojoc',
+      sessionUser: null,
     },
     componentState: {
       navbar: true,
@@ -38,6 +39,9 @@ export default new Vuex.Store({
     },
     changeCroppedImage (state, payload){
       state.image.croppedImage = payload
+    },
+    changeSessionUser (state, payload){
+      state.user.sessionUser = payload
     },
     
  },

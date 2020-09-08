@@ -36,6 +36,7 @@ Vue.component('app', require('./components/App.vue').default);
 Vue.component('navbar', require('./components/Navbar.vue').default);
 Vue.component('vfooter', require('./components/Vfooter.vue').default);
 Vue.component('feed', require('./components/Feed.vue').default);
+Vue.component('profile', require('./components/Profile.vue').default);
 Vue.component('storyGlider', require('./components/StoryGlider.vue').default);
 Vue.component('followUsers', require('./components/FollowUsers.vue').default);
 Vue.component('validation', require('./components/ValidationErrors.vue').default); 

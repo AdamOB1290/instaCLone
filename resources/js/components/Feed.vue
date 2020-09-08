@@ -1,9 +1,12 @@
 <template>
   <div key="feedKey" class="h-100">
 
-    <storyGlider :sessionUser="sessionUser" 
-    :storyFeed="storyFeed" :storyUsers="storyUsers" 
-    v-if="posts.length > 0" :class="post_display">
+    <storyGlider 
+    :sessionUser="sessionUser" 
+    :storyFeed="storyFeed" 
+    :storyUsers="storyUsers" 
+    v-if="posts.length > 0" 
+    :class="post_display">
     </storyGlider>
 
     <!-- <div v-if="posts.length > 0" class="glider story_slider border-down pb-1" :class="post_display">
@@ -83,7 +86,6 @@
                         <button :id="'postShareId'+post.id" :data-contactId="followedUser.id" :data-postId="post.id" @click="sendPost" class="btn-primary py-1 px-4  border-0 rounded  h-25 align-self-center">Send</button>
                       </li>
                     </ul>
-                    
                 </b-modal> 
 
                 <!-- save icon -->
@@ -139,8 +141,9 @@
     :userFeed="userFeed" 
     :users="users" 
     :followedUsersId="followedUsersId"  
-    :followUnfollowHtml="followUnfollowHtml">
+    :followUnfollowHtml="followUnfollowHtml" >
     </followUsers>
+    
     
     <b-modal id="modal_post_form" ref="modal_post_form" class="settings_Modal" title="Add a Post" hide-footer>
       <validation :errors="validationErrors" v-if="validationErrors"></validation>
@@ -185,6 +188,7 @@
 </template>
 
 <script>
+import Slick from 'vue-slick';
 import Observer from "./Observer";
 import VueAvatar from '../vue-avatar-editor/src/components/VueAvatar.vue';
 import VueAvatarScale from '../vue-avatar-editor/src/components/VueAvatarScale.vue';
@@ -205,6 +209,9 @@ export default {
   // },
   data() {
     return {
+
+      updateFeed: 0,
+
       // General Data
         slide: 0,
         sliding: null,
@@ -269,7 +276,6 @@ export default {
         this.likeUnlikeComments = _.debounce(this.likeUnlikeComments, 300)
         this.saveUnsave = _.debounce(this.saveUnsave, 300)
         this.likedPosts.push(...this.sessionUser.liked.posts)
-        this.followedUsers.push(...this.sessionUser.followed_users)
         
         if (this.sessionUser.favorites !== null) {
           this.savedPosts.push(...this.sessionUser.favorites);
@@ -279,6 +285,7 @@ export default {
         }
 
         if (typeof data.data[0].username == "undefined") {
+          this.followedUsers.push(...this.sessionUser.followed_users)
           this.likedComments.push(...this.sessionUser.liked.comments);
           this.user_display = "d-none";
 
@@ -354,7 +361,7 @@ export default {
         } else {
           this.post_display = "d-none";
           this.users = data.data;
-
+          
           this.users.forEach(user => {
             if (user.top_posts.length == 0) {
               user.top_posts.push(
@@ -390,24 +397,11 @@ export default {
   },
 
   updated: function () {
-    axios
-      .get("posts")
-      .then((data) => {  
-        if (typeof data.data[0].username == "undefined") {
-          
-          this.posts = data.data;
-          
-        } else {
-          
-          this.users = data.data;
-          
-        }
-        
-      })
-      .catch((err) => {});
+    // this.updatefeed()
   },
 
   mounted: function () {
+    this.updateFeed =1
     this.$store.commit("changeState", true);
 
     var widget = cloudinary.createUploadWidget( 
@@ -470,6 +464,28 @@ export default {
   },
 
   methods: {
+    updatefeed() {
+      if (this.updateFeed) {
+        axios
+        .get("posts")
+        .then((data) => {  
+          this.updateFeed =0
+          if (typeof data.data[0].username == "undefined") {
+            
+            this.posts = data.data;
+            
+          } else {
+            
+            this.users = data.data;
+            
+          }
+          
+        })
+        .catch((err) => {});
+      }
+      
+    },
+    
     
     // by default vues js @click has an event parameter from which we can access elements
     showHideDescription(event) {
@@ -542,7 +558,7 @@ export default {
         if (this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
             // apply the laravel unlike function
             axios
-              .get("posts/" +$("#" + postLikeId)[0].attributes[1].nodeValue +"/" +this.$sessionUser.id +"/unlike")
+              .get("posts/" +$("#" + postLikeId)[0].attributes[1].nodeValue +"/" +this.sessionUser.id +"/unlike")
               .then((response) => {
                 if (this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
 
@@ -571,7 +587,7 @@ export default {
         } else {
           // apply the laravel like function
           axios
-            .get("posts/" + $("#" + postLikeId)[0].attributes[1].nodeValue + "/" + this.$sessionUser.id + "/like")
+            .get("posts/" + $("#" + postLikeId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/like")
             .then((response) => {
               if (!this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
                 // add the post id to the likedPosts array
@@ -614,7 +630,7 @@ export default {
         if (this.likedComments.includes(parseInt($("#" + commentLikeId)[0].attributes[1].nodeValue))) {
             // apply the laravel unlike function
             axios
-              .get("post/comments/" +$("#" + commentLikeId)[0].attributes[1].nodeValue +"/" +this.$sessionUser.id +"/unlike")
+              .get("post/comments/" +$("#" + commentLikeId)[0].attributes[1].nodeValue +"/" +this.sessionUser.id +"/unlike")
               .then((response) => {
                 if (this.likedComments.includes(parseInt($("#" + commentLikeId)[0].attributes[1].nodeValue))) {
 
@@ -647,7 +663,7 @@ export default {
         } else {
           // apply the laravel like function
           axios
-            .get("post/comments/" + $("#" + commentLikeId)[0].attributes[1].nodeValue + "/" + this.$sessionUser.id + "/like")
+            .get("post/comments/" + $("#" + commentLikeId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/like")
             .then((response) => {
               if (!this.likedComments.includes(parseInt($("#" + commentLikeId)[0].attributes[1].nodeValue))) {
                 // add the post id to the this.likedComments array
@@ -687,7 +703,7 @@ export default {
       //  check if the post is already saved by the user
       if ( this.savedPosts.includes( parseInt($("#" + postSaveId)[0].attributes[1].nodeValue))) {
         // apply the laravel unSave function
-        axios.get("posts/" + $("#" + postSaveId)[0].attributes[1].nodeValue + "/" + this.$sessionUser.id + "/unfavorite")
+        axios.get("posts/" + $("#" + postSaveId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/unfavorite")
           .then((response) => {
             if ( this.savedPosts.includes( parseInt($("#" + postSaveId)[0].attributes[1].nodeValue))){
               // get the index of the post id we want to delete
@@ -705,7 +721,7 @@ export default {
           });
       } else {
         // apply the laravel Save function
-        axios.get("posts/" + $("#" + postSaveId)[0].attributes[1].nodeValue + "/" + this.$sessionUser.id + "/favorite")
+        axios.get("posts/" + $("#" + postSaveId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/favorite")
           .then((response) => {
             if ( !this.savedPosts.includes( parseInt($("#" + postSaveId)[0].attributes[1].nodeValue))){
               // add the post id to the savedPosts array
@@ -935,6 +951,7 @@ export default {
 
 
   components: {
+    Slick,
     Observer,
     VueAvatar,
     VueAvatarScale,

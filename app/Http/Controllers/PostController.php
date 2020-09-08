@@ -20,14 +20,7 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
-
-        // session('user_id')
-        $followedUsersIds = Auth::user()->followed;
-
-        $followedUsers = User::findOrFail($followedUsersIds);
-
-        $sessionUser = User::findOrFail(Auth::user()->id);
-
+        
         // check if the profile picture of the session user is a url
         // if (filter_var($sessionUser->pfp, FILTER_VALIDATE_URL)) {
 
@@ -51,7 +44,22 @@ class PostController extends Controller
         //     }
         // }
 
-        $sessionUser['followed_users'] = $followedUsers;
+        
+        $sessionUser = User::findOrFail(Auth::user()->id);
+
+        if (isset(Auth::user()->followed)) {
+            $followedUsersIds = Auth::user()->followed;
+            $followedUsers = User::findOrFail($followedUsersIds);
+            $sessionUser['followed_users'] = $followedUsers;
+        } else {
+            $followedUsersIds = null;
+            $sessionUser['followed_users'] = null;
+        }
+        
+        
+
+
+        
 
         $request->session()->put('session_user', $sessionUser);
         

@@ -3,7 +3,7 @@
       <div class="comments_wrapper mb-5" v-for="(commentPage, key) in commentFeed" :key="key">
         <div v-for="(comment, key) in commentPage" :key="key">
           <div class="comments d-flex position-relative show_more p-2" >
-            <img class="pfp card-img-top rounded-circle mr-2" :src="comment.user.pfp"/>
+            <img class="pfp rounded-circle mr-2" :src="comment.user.pfp"/>
            
             <div class="pr-3 pl-1">
               <span class="username font-weight-bold pb-2">{{comment.user.username}}</span>
@@ -33,9 +33,9 @@
           <div v-if="comment.replies.length > 0" class="text-secondary text-center" @click="Expand_Collapse">{{replyStatus}}</div>
           <div v-if="comment.replies.length > 0" class="reply_wrapper mx-4" :class="reply_display">
             <div  v-for="(reply, key) in comment.replyFeed" :key="key">
-              <div class="replys d-flex position-relative show_more p-2">
-                <img class="pfp card-img-top rounded-circle mr-2" :src="reply.user.pfp"/>
-              <div>
+                  <div class="replys d-flex position-relative show_more p-2">
+                    <img class="pfp rounded-circle mr-2" :src="reply.user.pfp"/>
+                  <div>
                   <span class="username font-weight-bold pb-2">{{reply.user.username}}</span>
                   <textarea  v-if="reply.editState" v-model="reply.content" @keydown.enter.exact.prevent 
                   @keyup.enter.exact="submitEdit" :data-commentId="reply.id" 
@@ -227,7 +227,7 @@ export default {
         //  check if the comment is already liked by the user
         if (this.likedComments.includes(parseInt($("#" + commentLikeId)[0].attributes[1].nodeValue))) {
             // apply the laravel unlike function
-            axios.get("comments/" +$("#" + commentLikeId)[0].attributes[1].nodeValue +"/" + this.$sessionUser.id + "/unlike")
+            axios.get("comments/" +$("#" + commentLikeId)[0].attributes[1].nodeValue +"/" + this.sessionUser.id + "/unlike")
               .then((response) => {
               if (this.likedComments.includes(parseInt($("#" + commentLikeId)[0].attributes[1].nodeValue))){
                 // get the index of the comment id we want to delete
@@ -265,7 +265,7 @@ export default {
         } else {
           // apply the laravel like function
           axios
-            .get("comments/" + $("#" + commentLikeId)[0].attributes[1].nodeValue + "/" + this.$sessionUser.id + "/like")
+            .get("comments/" + $("#" + commentLikeId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/like")
             .then((response) => {
             if (!this.likedComments.includes(parseInt($("#" + commentLikeId)[0].attributes[1].nodeValue))){
 
