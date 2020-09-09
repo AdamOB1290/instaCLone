@@ -139,21 +139,24 @@ class User extends Authenticatable
 
     }
 
-    public function dynamicFollow($idToAdd, $idToReceive, $storage)
+    public function dynamicFollow($idToAdd, $sessionUserId, $storage)
     {
 
         // Fetch from database the user who will receive the id
-        $sessionUser = User::findorFail($idToReceive);
+        $sessionUser = User::findorFail($sessionUserId);
+
+        
 
         // Fetch the user's attribute who will store the id and assign it to a variable $followedUsers
         $followedUsers = $sessionUser->$storage;
 
-        
            // if $followedUsers is not an array, create an array with the $idToAdd
             if ($followedUsers == null) {
                 $followedUsers = [(int)$idToAdd];
             } else { // if $followedUsers is already an array, push the $idToAdd
-                if (array_search((int)$idToAdd, $followedUsers) !== false) {
+                
+                if (array_search((int)$idToAdd, $followedUsers) == false) {
+                    
                     array_push($followedUsers, (int)$idToAdd);
                 }
 
@@ -165,11 +168,11 @@ class User extends Authenticatable
         $sessionUser->save(); 
     }
 
-    public function dynamicUnfollow($idToRemove, $idToReceive, $storage)
+    public function dynamicUnfollow($idToRemove, $sessionUserId, $storage)
     {
 
         // Fetch from database the user who will receive the id
-        $sessionUser = User::findorFail($idToReceive);
+        $sessionUser = User::findorFail($sessionUserId);
 
         // Fetch the user's attribute who will store the id and assign it to a variable $followedUsers
         $followedUsers = $sessionUser->$storage;

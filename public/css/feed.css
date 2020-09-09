@@ -74,6 +74,10 @@
     padding: 0;
 }
 
+.feed_wrapper .card .card-body img{
+  width: 100%;
+}
+
 .feed_wrapper .card .show_more{
     overflow: hidden;
     text-overflow: ellipsis;

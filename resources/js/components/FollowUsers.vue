@@ -248,7 +248,6 @@ export default {
 
     methods: {
         followUnfollow(event) {
-            console.log(this.sessionUser);
             let userFollowId;
 
             if (typeof $(event.target).attr("id") == 'undefined') {

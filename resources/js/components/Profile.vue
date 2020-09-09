@@ -154,9 +154,6 @@ export default {
                 userFollowId = $(event.target).attr("id");
             }
 
-            console.log(this.sessionUser.followed);
-            console.log(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue));
-
             //  check if the post is already liked by the user
             if (this.sessionUser.followed.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))) {
                 // apply the laravel unlike function

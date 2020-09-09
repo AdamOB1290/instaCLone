@@ -116,11 +116,9 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-
         $user = User::create($this->validateCreateRequest());
 
         $this->storeImage($user);
-
         return redirect('/users');
     }
 
@@ -156,20 +154,27 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(User $user)
+    public function update(Request $request, User $user)
     {
+        // array_filter($request->all());
 
-        $user->update($this->validateUpdateRequest());
+        
+        $user->update(
+            $request->validate([
+                'name' => 'required_without_all:username,email,bio,birthdate,phone_number,gender',
+                'email' => 'required_without_all:name,username,bio,birthdate,phone_number,gender',
+                'birthdate' => 'required_without_all:name,username,email,bio,phone_number,gender',
+                'bio' => 'required_without_all:name,username,email,birthdate,phone_number,gender',
+                'username' => 'required_without_all:name,email,bio,birthdate,phone_number,gender',
+                'gender' => 'required_without_all:name,username,email,bio,birthdate,phone_number',
+                'phone_number' => 'required_without_all:name,username,email,bio,birthdate,gender',
+                // 'password' => 'required|min:8|confirmed',
+                ]),
+        );  
+        // $this->storeImage($user);
 
-        $this->storeImage($user);
-        return redirect("users");
+        return $user;
     }
-
-
-
-
-
-
 
     /**
      * Remove the specified resource from storage.
@@ -204,27 +209,33 @@ class UserController extends Controller
     private function validateUpdateRequest()
     {
         return
-            tap(request()->validate([
-                'name' => 'required|max:255',
-                'birthdate' => 'required|date_format:d-m-Y|before:today',
-                'email' => 'required|email',
-                // 'email' => 'required|email|unique:users,email',
-                // 'username' => 'required|unique:users,username',
-                // 'password' => 'required|min:8|confirmed',
-            ]), function () {
-                if (request()->hasFile('pfp')) {
-                    request()->validate([
-                        'pfp' => 'file|image|max:5000',
-                    ]);
-                }
-            });
+        tap(request()->validate([
+            'birthdate' => 'required_without_all:name,username,email,bio,phone_number,gender',
+            'bio' => 'required_without_all:name,username,email,birthdate,phone_number,gender',
+            'username' => 'required_without_all:name,email,bio,birthdate,phone_number,gender',
+            'gender' => 'required_without_all:name,username,email,bio,birthdate,phone_number',
+            'phone_number' => 'required_without_all:name,username,email,bio,birthdate,gender',
+            // 'password' => 'required|min:8|confirmed',
+            ]), 
+                function () {
+                    if (request()->hasAny('name')) {
+                        request()->validate([
+                            'name' => 'required_without_all:username,email,bio,birthdate,phone_number,gender',
+                        ]);
+                    }
+                    if (request()->hasAny('email')) {
+                        request()->validate([
+                            'email' => 'required_without_all:name,username,bio,birthdate,phone_number,gender',
+                        ]);
+                    }
+        });
     }
 
     private function storeImage($user)
     {
         if (request()->has('pfp')) {
             $user->update([
-                'pfp' => request()->pfp->store('uploads', 'public'),
+                'pfp' => request()->pfp
             ]);
         }
     }
@@ -246,7 +257,6 @@ class UserController extends Controller
         event(new UserFollowed($user));
         // unset($user['followerId']);
         $user = User::findOrFail($sessionUserId);
-        // dd($user);
         return $user; 
     }
 

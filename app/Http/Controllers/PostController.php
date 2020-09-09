@@ -216,6 +216,7 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
+
         // $post = Post::create($this->validatedData());
         $post = Post::create(request()->validate([
             'user_id' => 'required',
@@ -227,7 +228,7 @@ class PostController extends Controller
             ]
         ));
 
-        // dd($post);
+        
         $this->storeMediaFile($post);
 
         // event(new PostCreated($post));
@@ -350,13 +351,12 @@ class PostController extends Controller
      */
     public function update(Post $post)
     {
-
+        
         $post->update(request()->validate([
             'description' => '',
             'type' => '',
             ]
         ));
-
         // event(new PostCreated($post));
 
         // return redirect("posts/" . $post->id)->with('success', 'Post Updated!');

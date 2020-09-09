@@ -42,7 +42,7 @@
       <div class="post_wrapper " v-for="(post, key) in page" :key="key">
         <div class="card rounded-0">
           <div class="card-head d-flex align-items-center border-down py-1">
-            <img class="pfp card-img-top rounded-circle mr-2" :src="post.user.pfp"/>
+            <img class="pfp  rounded-circle mr-2" :src="post.user.pfp"/>
             <span class="username font-weight-bold">{{post.user.username}}</span>
             <i class="fas fa-ellipsis-h text-secondary ml-auto mr-2 pt-2" v-b-modal="'my_postModal'+post.id"></i>
             <b-modal modal-class="settings_Modal" :id="'my_postModal'+post.id" :ref="'my_postModal'+post.id"  hide-header hide-footer >
@@ -53,7 +53,7 @@
           </div>
 
           <div class="card-body">
-            <img  v-if="post.media_type == 'image'" class="card-img-top rounded-0" :src="post.media_file"/>
+            <img  v-if="post.media_type == 'image'" class=" rounded-0" :src="post.media_file"/>
             <video v-else-if="post.media_type == 'video'" class="post_feed_video" controls muted>
               <source :src="post.media_file"  />
             </video>
@@ -80,7 +80,7 @@
                       <span class="close_icon"></span> 
                       <li v-for="(followedUser, key) in followedUsers" :key="key" class="d-flex justify-content-between">
                         <div  class="" >
-                          <img class="pfp card-img-top rounded-circle mr-2" :src="followedUser.pfp"/>
+                          <img class="pfp  rounded-circle mr-2" :src="followedUser.pfp"/>
                           <span class="username font-weight-bold">{{followedUser.username}}</span>
                         </div>
                         <button :id="'postShareId'+post.id" :data-contactId="followedUser.id" :data-postId="post.id" @click="sendPost" class="btn-primary py-1 px-4  border-0 rounded  h-25 align-self-center">Send</button>
@@ -141,7 +141,8 @@
     :userFeed="userFeed" 
     :users="users" 
     :followedUsersId="followedUsersId"  
-    :followUnfollowHtml="followUnfollowHtml" >
+    :followUnfollowHtml="followUnfollowHtml"
+    v-if="posts.length == 0">
     </followUsers>
     
     
@@ -809,7 +810,6 @@ export default {
       formData.append('description', this.postForm.postCaption);
       formData.append('type', this.postForm.mediaType);
       formData.append('user_id', this.sessionUser.id);
-          
       axios({
         method: 'post',
         url: 'posts',
@@ -871,12 +871,15 @@ export default {
       this.postFeed.forEach(page => {
         page.forEach(post => {
           if (post.id == targetId) {
+            
             post.editState = true
+            console.log(post.editState);
           } 
         });
       });
       $(this.$refs)[0]['my_postModal'+targetId][0].hide() 
-      this.forceRerender()
+      this.updatefeed()
+      // this.forceRerender()
     },
 
     cancelEditPostDescription(event) {
