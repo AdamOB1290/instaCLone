@@ -8,6 +8,7 @@ use App\Post;
 use Illuminate\Http\Request;
 use App\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -18,84 +19,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $sessionUser = Auth::user();
-        $favoritePosts = [];
-        $followedUsers = [];
-        $following = [];
-        $likedPosts = [];
-        $likedPostsIds = $sessionUser->liked['posts'];
-        $likedComments = [];
-        $likedCommentsIds = $sessionUser->liked['posts'];
-
-        if(isset($sessionUser->favorites)){
-            foreach ($sessionUser->favorites as $favoriteId) {
-                $favoritePost = Post::findOrFail($favoriteId);
-                array_push($favoritePosts, $favoritePost);
-            }
-            $sessionUser['favorite_posts'] = $favoritePosts;
-        } else {
-            $sessionUser['favorite_posts'] = [];
-        }
-
-        if(count($likedPostsIds) > 0){
-            foreach ($likedPostsIds as $likedPostId) {
-                $likedPost = Post::findOrFail($likedPostId);
-                array_push($likedPosts, $likedPost);
-            }
-            $sessionUser['liked_posts'] = $likedPosts;
-        } else {
-            $sessionUser['liked_posts'] = [];
-        }
-
-        if(count($likedCommentsIds) > 0){
-            foreach ($likedCommentsIds as $likedCommentId) {
-                $likedComment = Comment::findOrFail($likedCommentId);
-                $likedComment['user'] = $likedComment->user;
-                array_push($likedComments, $likedComment);
-
-            }
-            $sessionUser['liked_comments'] = $likedComments;
-        } else {
-            $sessionUser['liked_comments'] = [];
-        }
-
-        if(isset($sessionUser->followed)){
-            foreach ($sessionUser->followed as $followedId) {
-                $followedUser = User::findOrFail($followedId);
-                array_push($followedUsers, $followedUser);
-            }
-            $sessionUser['followedUsers'] = $followedUsers;
-        } else {
-            $sessionUser['followedUsers'] = [];
-        }
-
-        if(isset($sessionUser->followers)){
-            foreach ($sessionUser->followers as $followersId) {
-                $follower = User::findOrFail($followersId);
-                array_push($following, $follower);
-            }
-            $sessionUser['following'] = $following;
-        } else {
-            $sessionUser['following'] = [];
-        }
-
-
-        if(isset($sessionUser->posts)){
-            $sessionUser['posts'] = $sessionUser->post;
-        } else {
-            $sessionUser['posts'] = [];
-        }
-
-        // if($sessionUser->followers == null){
-        //     $sessionUser['followers'] = [];
-        // } 
-
-        // if($sessionUser->followed  == null){
-        //     $sessionUser['followed'] = [];
-        // } 
-
-        // return view('users.crud.index', compact('users'));
-        return $sessionUser;
+        
     }
 
     /**
@@ -131,6 +55,83 @@ class UserController extends Controller
     public function show(User $user)
     {
         
+        $favoritePosts = [];
+        $followedUsers = [];
+        $following = [];
+        $likedPosts = [];
+        $likedPostsIds = $user->liked['posts'];
+        $likedComments = [];
+        $likedCommentsIds = $user->liked['posts'];
+
+        if(isset($user->favorites)){
+            foreach ($user->favorites as $favoriteId) {
+                $favoritePost = Post::findOrFail($favoriteId);
+                array_push($favoritePosts, $favoritePost);
+            }
+            $user['favorite_posts'] = $favoritePosts;
+        } else {
+            $user['favorite_posts'] = [];
+        }
+
+        if(count($likedPostsIds) > 0){
+            foreach ($likedPostsIds as $likedPostId) {
+                $likedPost = Post::findOrFail($likedPostId);
+                array_push($likedPosts, $likedPost);
+            }
+            $user['liked_posts'] = $likedPosts;
+        } else {
+            $user['liked_posts'] = [];
+        }
+
+        if(count($likedCommentsIds) > 0){
+            foreach ($likedCommentsIds as $likedCommentId) {
+                $likedComment = Comment::findOrFail($likedCommentId);
+                $likedComment['user'] = $likedComment->user;
+                array_push($likedComments, $likedComment);
+
+            }
+            $user['liked_comments'] = $likedComments;
+        } else {
+            $user['liked_comments'] = [];
+        }
+
+        if(isset($user->followed)){
+            foreach ($user->followed as $followedId) {
+                $followedUser = User::findOrFail($followedId);
+                array_push($followedUsers, $followedUser);
+            }
+            $user['followedUsers'] = $followedUsers;
+        } else {
+            $user['followedUsers'] = [];
+        }
+
+        if(isset($user->followers)){
+            foreach ($user->followers as $followersId) {
+                $follower = User::findOrFail($followersId);
+                array_push($following, $follower);
+            }
+            $user['following'] = $following;
+        } else {
+            $user['following'] = [];
+        }
+
+
+        if(isset($user->posts)){
+            $user['posts'] = $user->post;
+        } else {
+            $user['posts'] = [];
+        }
+
+        // if($user->followers == null){
+        //     $user['followers'] = [];
+        // } 
+
+        // if($user->followed  == null){
+        //     $user['followed'] = [];
+        // } 
+
+        // return view('users.crud.index', compact('users'));
+        
         // return view('users.crud.show', compact('user'));
         return $user;
     }
@@ -156,21 +157,33 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        // array_filter($request->all());
-
+        $request->merge([
+            'password' => Hash::make($request->password),
+        ]);
         
         $user->update(
             $request->validate([
-                'name' => 'required_without_all:username,email,bio,birthdate,phone_number,gender',
-                'email' => 'required_without_all:name,username,bio,birthdate,phone_number,gender',
-                'birthdate' => 'required_without_all:name,username,email,bio,phone_number,gender',
-                'bio' => 'required_without_all:name,username,email,birthdate,phone_number,gender',
-                'username' => 'required_without_all:name,email,bio,birthdate,phone_number,gender',
-                'gender' => 'required_without_all:name,username,email,bio,birthdate,phone_number',
-                'phone_number' => 'required_without_all:name,username,email,bio,birthdate,gender',
+                'name' => 'required_without_all:username,email,bio,birthdate,phone_number,gender, password,pfp',
+                'email' => 'required_without_all:name,username,bio,birthdate,phone_number,gender, password,pfp',
+                'birthdate' => 'required_without_all:name,username,email,bio,phone_number,gender, password,pfp',
+                'bio' => 'required_without_all:name,username,email,birthdate,phone_number,gender, password,pfp',
+                'username' => 'required_without_all:name,email,bio,birthdate,phone_number,gender, password,pfp',
+                'gender' => 'required_without_all:name,username,email,bio,birthdate,phone_number, password,pfp',
+                'phone_number' => 'required_without_all:name,username,email,bio,birthdate,gender, password,pfp',
+                'password' => 'required_without_all:name,username,email,bio,birthdate,gender,phone_number,pfp',
+                'pfp' => 'required_without_all:name,username,email,bio,birthdate,gender,phone_number,password',
                 // 'password' => 'required|min:8|confirmed',
                 ]),
         );  
+        // 'name' => '',
+        //         'email' => '',
+        //         'birthdate' => '',
+        //         'bio' => '',
+        //         'username' => '',
+        //         'gender' => '',
+        //         'phone_number' => '',
+        //         'password' => '',
+        //         'pfp' => '',
         // $this->storeImage($user);
 
         return $user;

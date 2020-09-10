@@ -42,8 +42,8 @@
       <div class="post_wrapper " v-for="(post, key) in page" :key="key">
         <div class="card rounded-0">
           <div class="card-head d-flex align-items-center border-down py-1">
-            <img class="pfp  rounded-circle mr-2" :src="post.user.pfp"/>
-            <span class="username font-weight-bold">{{post.user.username}}</span>
+            <img @click="goToProfile" :data-userId="post.user.id" class="pfp  rounded-circle mr-2" :src="post.user.pfp"/>
+            <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{post.user.username}}</span>
             <i class="fas fa-ellipsis-h text-secondary ml-auto mr-2 pt-2" v-b-modal="'my_postModal'+post.id"></i>
             <b-modal modal-class="settings_Modal" :id="'my_postModal'+post.id" :ref="'my_postModal'+post.id"  hide-header hide-footer >
               <button :id="'postEditId'+post.id" :data-postId="post.id" @click="editPostDescription"  class="w-100 settings_btn px-5 py-2">Edit</button>
@@ -80,8 +80,8 @@
                       <span class="close_icon"></span> 
                       <li v-for="(followedUser, key) in followedUsers" :key="key" class="d-flex justify-content-between">
                         <div  class="" >
-                          <img class="pfp  rounded-circle mr-2" :src="followedUser.pfp"/>
-                          <span class="username font-weight-bold">{{followedUser.username}}</span>
+                          <img @click="goToProfile" :data-userId="post.user.id" class="pfp  rounded-circle mr-2" :src="followedUser.pfp"/>
+                          <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{followedUser.username}}</span>
                         </div>
                         <button :id="'postShareId'+post.id" :data-contactId="followedUser.id" :data-postId="post.id" @click="sendPost" class="btn-primary py-1 px-4  border-0 rounded  h-25 align-self-center">Send</button>
                       </li>
@@ -101,7 +101,7 @@
               <div class="card-text position-relative">
                 <span v-if="post.editState" :id="'cancelPostEditId'+post.id" :data-postId="post.id" @click="cancelEditPostDescription" class="cancel_edit post_cancel text-danger">Cancel</span>
                 <span class="description show_more">
-                  <span class="username font-weight-bold">{{post.user.username}}</span>
+                  <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{post.user.username}}</span>
                   <textarea v-if="post.editState"  v-model="post.description" @keydown.enter.exact.prevent 
                     @keyup.enter.exact="submitEdit" :data-postId="post.id" cols="47" rows="5" class="mt-2 editTxt">
                   </textarea>
@@ -119,7 +119,7 @@
             <div class="comments_wrapper" v-for="(comment, key) in post.comments.slice(0, 2)" :key="key" @click="showHideComment">
               <div class="d-flex position-relative">
                 <span class="comments show_more pr-3">
-                  <span class="username font-weight-bold">{{comment.username}}</span>
+                  <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{comment.username}}</span>
                   {{comment.content}}
                 </span>
                 <!-- like icon -->
@@ -404,6 +404,8 @@ export default {
   mounted: function () {
     this.updateFeed =1
     this.$store.commit("changeState", true);
+    this.$store.commit("changeHomeIcon", true);
+
 
     var widget = cloudinary.createUploadWidget( 
     { cloudName: "resize", uploadPreset: "resize_preset", cropping: true },
@@ -949,6 +951,10 @@ export default {
 
     },
 
+    goToProfile(event) {
+      var userId = event.target.attributes[0].nodeValue;
+      window.location.replace(this.publicPath+'profile/'+userId)
+    },
     
   },
 

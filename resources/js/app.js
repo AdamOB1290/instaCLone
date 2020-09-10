@@ -35,6 +35,7 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 Vue.component('app', require('./components/App.vue').default);
 Vue.component('navbar', require('./components/Navbar.vue').default);
 Vue.component('vfooter', require('./components/Vfooter.vue').default);
+Vue.component("login", require('./components/Login.vue').default);
 Vue.component('feed', require('./components/Feed.vue').default);
 Vue.component('profile', require('./components/Profile.vue').default);
 Vue.component('edit-profile', require('./components/EditProfile.vue').default);
@@ -66,9 +67,12 @@ Vue.component("slick", require('vue-slick').default);
 
 // // console.log(sessionUser);
 // Vue.prototype.$sessionUser = sessionUser
+if ( document.querySelector("meta[name='session_user_id']") != null ) {
+   var sessionUserId = document.querySelector("meta[name='session_user_id']").getAttribute('content')
+    Vue.prototype.$sessionUserId = sessionUserId 
+}
 
-var sessionUserId = document.querySelector("meta[name='session_user_id']").getAttribute('content');
-Vue.prototype.$sessionUserId = sessionUserId
+
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

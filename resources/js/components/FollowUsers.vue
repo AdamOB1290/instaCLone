@@ -12,8 +12,8 @@
                     <div class="card py-2 px-1 border-0 mx-1">
 
                     <div class="card-head d-flex flex-column align-items-center justify-content-center" >
-                        <img class="suggestion_pfp rounded-circle"  :src="user.pfp"/>
-                        <span class="suggestion_username font-weight-bold">{{user.username}}</span>
+                        <img @click="goToProfile" :data-userId="user.id" class="suggestion_pfp rounded-circle"  :src="user.pfp"/>
+                        <span @click="goToProfile" :data-userId="user.id" class="suggestion_username font-weight-bold">{{user.username}}</span>
                         
                     </div>
 
@@ -356,6 +356,10 @@ export default {
       }
     },
     
+        goToProfile(event) {
+        var userId = event.target.attributes[0].nodeValue;
+        window.location.replace(this.publicPath+'profile/'+userId)
+        },    
     },
 
     computed: {

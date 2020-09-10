@@ -58,3 +58,22 @@ main{
 .v_footer{
   height: 40px;
 }
+
+.footer_pfp{
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+}
+
+.v_footer .dropdown-toggle{
+  padding: 0 ;
+  margin-bottom: 2px;
+}
+
+.v_footer .dropdown-item.text-danger:active{
+  background: red ;
+  color: white !important;
+}
+.v_footer .dropdown-menu{
+  min-width: 0;
+}

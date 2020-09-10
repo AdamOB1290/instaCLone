@@ -3,10 +3,10 @@
       <div class="comments_wrapper mb-5" v-for="(commentPage, key) in commentFeed" :key="key">
         <div v-for="(comment, key) in commentPage" :key="key">
           <div class="comments d-flex position-relative show_more p-2" >
-            <img class="pfp rounded-circle mr-2" :src="comment.user.pfp"/>
+            <img @click="goToProfile" :data-userId="comment.user.id" class="pfp rounded-circle mr-2" :src="comment.user.pfp"/>
            
             <div class="pr-3 pl-1">
-              <span class="username font-weight-bold pb-2">{{comment.user.username}}</span>
+              <span @click="goToProfile" :data-userId="comment.user.id" class="username font-weight-bold pb-2">{{comment.user.username}}</span>
               <textarea v-if="comment.editState"  v-model="comment.content" @keydown.enter.exact.prevent 
               @keyup.enter.exact="submitEdit" :data-commentId="comment.id"
                cols="35" rows="5" class="mt-2 editTxt">
@@ -513,7 +513,10 @@ export default {
           return dateArray
     },
     
-    
+    goToProfile(event) {
+      var userId = event.target.attributes[0].nodeValue
+      window.location.replace(this.publicPath+'profile/'+userId)
+    },    
     
   },
 

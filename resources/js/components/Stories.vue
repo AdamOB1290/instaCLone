@@ -16,8 +16,8 @@
       <b-carousel-slide v-for="(story, key) in storyUser.stories" :key="key">
          <template v-slot:img class="position-relative">
            <div class="storyHeader d-flex align-items-center border-down py-1 px-2">
-                <img class="pfp card-img-top rounded-circle mr-2" :src="storyUser.pfp" />
-                <span class="username font-weight-bold">{{storyUser.username}}</span>
+                <img @click="goToProfile" :data-userId="storyUser.id" class="pfp card-img-top rounded-circle mr-2" :src="storyUser.pfp" />
+                <span @click="goToProfile" :data-userId="storyUser.id" class="username font-weight-bold">{{storyUser.username}}</span>
                 <i class="fas fa-ellipsis-h ml-auto mr-2 pt-2 storySettings" v-b-modal="'my_storyModal'+story.id"></i>
                 <a :href="publicPath+'feeds'"><span class="close_icon"></span></a>
             </div>
@@ -193,6 +193,10 @@
         })
       },
 
+      goToProfile(event) {
+        var userId = event.target.attributes[0].nodeValue;
+        window.location.replace(this.publicPath+'profile/'+userId)
+      },
     },
 
     

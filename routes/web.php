@@ -55,30 +55,30 @@ Route::get('users/{user}/{sessionUser}/{index}/notification_preference', 'UserCo
 
 Route::get('feeds', function () {
     return view('feed');
-});
+})->middleware('auth');
 
 Route::get('story/{userId}', function () {
     return view('stories');
-});
+})->middleware('auth');
 
 Route::get('post/{postId}', function () {
     return view('comments');
-});
+})->middleware('auth');
 
 Route::get('chat', function () {
     return view('chats');
-});
+})->middleware('auth');
 
-Route::get('profile', function () {
+Route::get('profile/{userId}', function () {
     return view('profile');
-});
+})->middleware('auth');
 
 Route::get('profile/edit', function () {
     return view('editProfile');
-});
+})->middleware('auth');
 
 
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+// Route::get('/home', 'HomeController@index')->name('home');

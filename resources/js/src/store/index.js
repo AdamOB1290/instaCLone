@@ -22,6 +22,9 @@ export default new Vuex.Store({
       srcFile: null,
       croppedImage : null,
     },
+    iconState: {
+      home : false,
+    },
  },
  getters: {},
  mutations: {
@@ -42,6 +45,9 @@ export default new Vuex.Store({
     },
     changeSessionUser (state, payload){
       state.user.sessionUser = payload
+    },
+    changeHomeIcon (state, payload){
+      state.iconState.home = payload
     },
     
  },
