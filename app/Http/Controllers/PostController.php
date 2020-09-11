@@ -288,22 +288,22 @@ class PostController extends Controller
     {
         $sessionUser = User::findOrFail(Auth::user()->id);
 
-        // check if the profile picture of the session user is a url
-        // if (filter_var($sessionUser->pfp, FILTER_VALIDATE_URL)) {
+        if (isset(Auth::user()->followed)) {
+            $followedUsersIds = Auth::user()->followed;
+            $followedUsers = User::findOrFail($followedUsersIds);
+            $sessionUser['followed_users'] = $followedUsers;
+        } else {
+            $followedUsersIds = null;
+            $sessionUser['followed_users'] = null;
+        }
 
-        //     // index it to session user
-        //     $sessionUser['pfp_type'] = 'imageUrl';
-        // } else { // else it means it's a local file
-
-        //     // index it to session user
-        //     $sessionUser['pfp_type'] = 'localImage';
-        // }
         $request->session()->put('session_user', $sessionUser);
 
         
 
 
         $post = Post::findOrFail($postId);
+        $user = User::findOrFail($post->user_id);
         
         foreach ($post->comments as $comment) {
             // check if the profile picture of the post user is a url
@@ -326,8 +326,11 @@ class PostController extends Controller
         
         $post['comments']= $post->comments;
         $post['session_user']= $sessionUser;
+        $post['user']=$user;
 
         // return view("posts.crud.show", compact('post'));
+
+        
         return $post;
     }
 

@@ -27,7 +27,7 @@ Route::get('/conversation/{id}', 'ContactController@getMessagesFor');
 Route::post('/conversation/send', 'ContactController@send');
 
 Route::resource('posts', 'PostController'); #->except('create');
-Route::get('post/comments/{postId}','PostController@show')->name('posts.show');
+// Route::get('post/comments/{postId}','PostController@show')->name('posts.show');
 Route::get('posts/create/{type}', 'PostController@create')->name('posts.create');
 
 
@@ -55,27 +55,27 @@ Route::get('users/{user}/{sessionUser}/{index}/notification_preference', 'UserCo
 
 Route::get('feeds', function () {
     return view('feed');
-})->middleware('auth');
+});
 
 Route::get('story/{userId}', function () {
     return view('stories');
-})->middleware('auth');
+});
 
 Route::get('post/{postId}', function () {
     return view('comments');
-})->middleware('auth');
+});
 
 Route::get('chat', function () {
     return view('chats');
-})->middleware('auth');
+});
 
-Route::get('profile/{userId}', function () {
+Route::get('{userId}/profile', function () {
     return view('profile');
-})->middleware('auth');
+});
 
 Route::get('profile/edit', function () {
     return view('editProfile');
-})->middleware('auth');
+});
 
 
 

@@ -19,6 +19,9 @@ class UserController extends Controller
      */
     public function index()
     {
+        $user = Auth::user();
+
+        return $user;
         
     }
 
@@ -157,9 +160,7 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $request->merge([
-            'password' => Hash::make($request->password),
-        ]);
+        
         
         $user->update(
             $request->validate([
@@ -175,6 +176,10 @@ class UserController extends Controller
                 // 'password' => 'required|min:8|confirmed',
                 ]),
         );  
+
+        $request->merge([
+            'password' => Hash::make($request->password),
+        ]);
         // 'name' => '',
         //         'email' => '',
         //         'birthdate' => '',

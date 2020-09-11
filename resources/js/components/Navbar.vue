@@ -24,7 +24,7 @@
     },
 
     mounted: function () {
-
+        
         },
 
     

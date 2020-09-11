@@ -195,7 +195,7 @@
 
       goToProfile(event) {
         var userId = event.target.attributes[0].nodeValue;
-        window.location.replace(this.publicPath+'profile/'+userId)
+        window.location.replace(this.publicPath+userId+'/profile')
       },
     },
 

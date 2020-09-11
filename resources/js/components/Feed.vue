@@ -1,5 +1,6 @@
 <template>
-  <div key="feedKey" class="h-100">
+  <div key="feedKey" class="h-100 mt-3 mb-5">
+    
 
     <storyGlider 
     :sessionUser="sessionUser" 
@@ -8,7 +9,7 @@
     v-if="posts.length > 0" 
     :class="post_display">
     </storyGlider>
-
+<searchComponent :postFeed="posts" ></searchComponent>
     <!-- <div v-if="posts.length > 0" class="glider story_slider border-down pb-1" :class="post_display">
       <div class="story_wrapper d-flex px-2 my-1">
         <div class="float-left d-flex flex-column align-items-center mr-1">
@@ -65,7 +66,7 @@
                 </svg>
 
                 <!-- comment icon -->
-                  <a :href="'http://localhost:8000/post/'+post.id">
+                  <a :href="publicPath+'post/'+post.id">
                     <svg :id="'postCommentId'+post.id" :data-postId="post.id" aria-label="Comment" class="_8-yf5 mr-3" fill="#262626" height="24" viewBox="0 0 48 48" width="24">
                       <path clip-rule="evenodd" d="M47.5 46.1l-2.8-11c1.8-3.3 2.8-7.1 2.8-11.1C47.5 11 37 .5 24 .5S.5 11 .5 24 11 47.5 24 47.5c4 0 7.8-1 11.1-2.8l11 2.8c.8.2 1.6-.6 1.4-1.4zm-3-22.1c0 4-1 7-2.6 10-.2.4-.3.9-.2 1.4l2.1 8.4-8.3-2.1c-.5-.1-1-.1-1.4.2-1.8 1-5.2 2.6-10 2.6-11.4 0-20.6-9.2-20.6-20.5S12.7 3.5 24 3.5 44.5 12.7 44.5 24z" fill-rule="evenodd"/>
                     </svg> 
@@ -77,14 +78,15 @@
 
                 <b-modal :id="'my_sharePostModal'+post.id" :ref="'my_sharePostModal'+post.id"  modal-class="sharePost_Modal"  hide-header hide-footer >
                     <ul class="sharePostUl position-relative">
-                      <span class="close_icon"></span> 
-                      <li v-for="(followedUser, key) in followedUsers" :key="key" class="d-flex justify-content-between">
+                      <span  @click="$bvModal.hide('my_sharePostModal'+post.id)" class="close_icon"></span> 
+                      <!-- <li v-for="(followedUser, key) in followedUsers" :key="key" class="d-flex justify-content-between">
                         <div  class="" >
                           <img @click="goToProfile" :data-userId="post.user.id" class="pfp  rounded-circle mr-2" :src="followedUser.pfp"/>
                           <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{followedUser.username}}</span>
                         </div>
                         <button :id="'postShareId'+post.id" :data-contactId="followedUser.id" :data-postId="post.id" @click="sendPost" class="btn-primary py-1 px-4  border-0 rounded  h-25 align-self-center">Send</button>
-                      </li>
+                      </li> -->
+                      <searchComponent :followedUsers="followedUsers" :post="post"></searchComponent>
                     </ul>
                 </b-modal> 
 
@@ -196,6 +198,7 @@ import VueAvatarScale from '../vue-avatar-editor/src/components/VueAvatarScale.v
 import ValidationErrors from './ValidationErrors';
 import StoryGlider from './StoryGlider';
 import FollowUsers from './FollowUsers';
+import SearchComponent from './SearchComponent';
 
 // import ImgCropper from "ImgCropper";
 var moment = require("moment");
@@ -920,20 +923,6 @@ export default {
       })
     },
 
-    sendPost (event) {
-      var targetcontactId = event.target.attributes[1].nodeValue
-      var targetPostId = event.target.attributes[2].nodeValue
-
-      axios.post('/conversation/send', {
-          contactId: targetcontactId,
-          sharedPostId: targetPostId
-      }).then((response)=>{
-        // $(this.$refs)[0]['my_sharePostModal'+targetPostId][0].hide() 
-      }).catch((err) => {
-      });
-
-    },
-
     shareStory (event) {
       var targetId = event.target.attributes[1].nodeValue
       var updatedType = 'post/story'
@@ -953,7 +942,7 @@ export default {
 
     goToProfile(event) {
       var userId = event.target.attributes[0].nodeValue;
-      window.location.replace(this.publicPath+'profile/'+userId)
+      window.location.replace(this.publicPath+userId+'/profile')
     },
     
   },
@@ -967,6 +956,7 @@ export default {
     ValidationErrors,
     StoryGlider,
     FollowUsers,
+    SearchComponent,
   },
 };
 </script>

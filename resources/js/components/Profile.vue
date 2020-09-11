@@ -124,7 +124,8 @@ export default {
     },
 
     created: function () {
-        this.userId = window.location.href.split("/")[4];
+        this.userId = window.location.href.split("/")[3];
+        // console.log(this.userId);
         this.followUnfollow = _.debounce(this.followUnfollow, 300)
         axios
         .get(this.publicPath+"users/"+this.userId)
@@ -144,7 +145,6 @@ export default {
             }
                 
             });
-            console.log(this.user);
         })
         .catch((err) => {});
     },

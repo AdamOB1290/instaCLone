@@ -3,12 +3,12 @@
         <ul v-if="contact">
             <li v-for="message in messages" :key="message.id" :class="`message_wrapper ${message.receiver_id == contact.id ? 'sent' : 'received'}`">
                 <div class="message">
-                    <div v-if="message.shared_post">
+                    <div @click="goToPost" :data-postId="message.shared_post.id" v-if="message.shared_post">
                         <div class="d-flex align-items-center border-down pb-1 px-3">
-                            <img class="pfp card-img-top rounded-circle mr-2" :src="message.shared_post.user.pfp" />
+                            <img class="pfp rounded-circle mr-2" :src="message.shared_post.user.pfp" />
                             <span class="username font-weight-bold">{{message.shared_post.user.username}}</span>
                         </div>
-                        <div  class="sharedPost">
+                        <div class="sharedPost">
                             <video v-if="message.shared_post.media_type == 'video'" controls muted class>
                                 <source :src="'storage/'+message.shared_post.media_file"  />
                             </video>
@@ -41,6 +41,7 @@ export default {
 
     data(){
         return {
+            publicPath: 'http://localhost:8000/',
         }
     },
 
@@ -49,6 +50,10 @@ export default {
             setTimeout(() => {
                 this.$refs.message_feed_wrapper.scrollTop = this.$refs.message_feed_wrapper.scrollHeight - this.$refs.message_feed_wrapper.clientHeight 
             }, 50)
+        },
+        goToPost(event) {
+            let postId= event.target.parentElement.parentElement.attributes[1].nodeValue
+            window.location.replace(this.publicPath+'post/'+postId)
         },
     },
 

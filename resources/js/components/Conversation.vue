@@ -1,6 +1,7 @@
 <template>
     <div class="conversation_wrapper">
-        <h1>{{ contact ? contact.name : 'Select a Contact'}}</h1>
+        <h1 v-if="!contact" >Select a Contact</h1>
+        <h1 v-else @click="goToProfile" :data-userId="contact.id" >{{contact.name}} </h1>
         <MessagesFeed :contact="contact" :messages="messages"/>
         <MessageComposer @send="sendMessage"/>
     </div>
@@ -23,6 +24,7 @@ export default {
 
     data(){
         return {
+            publicPath: 'http://localhost:8000/',
         }
     },
 
@@ -41,7 +43,13 @@ export default {
                 console.log(err);
             });
 
-        }
+        },
+
+         goToProfile(event) {
+            var userId = event.target.attributes[1].nodeValue;
+            window.location.replace(this.publicPath+userId+'/profile')
+        },
+
     },
 
     mounted() {

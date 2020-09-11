@@ -49,7 +49,7 @@ Vue.component('chat', require('./components/Chat.vue').default);
 Vue.component('conversation', require('./components/Conversation.vue').default);
 Vue.component('contactList', require('./components/ContactList.vue').default);
 Vue.component("observer", require('./components/Observer.vue').default);
-Vue.component("observer", require('./components/Observer.vue').default);
+Vue.component("searchComponent", require('./components/SearchComponent.vue').default);
 Vue.component("slick", require('vue-slick').default);
 // var sessionUser = JSON.parse(document.querySelector("meta[name='session_user']").getAttribute('content'));
 // if (typeof sessionUser.liked == 'string') {

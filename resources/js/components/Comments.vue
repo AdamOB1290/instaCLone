@@ -1,6 +1,76 @@
 <template>
-    <div :key = "commentKey">
-      <div class="comments_wrapper mb-5" v-for="(commentPage, key) in commentFeed" :key="key">
+    <div class="post_comment_wrapper" :key = "commentKey">
+      <div class="post-head d-flex align-items-center border-down py-1">
+        <img @click="goToProfile" :data-userId="post.user.id" class="pfp  rounded-circle mr-2" :src="post.user.pfp"/>
+        <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{post.user.username}}</span>
+        <i class="fas fa-ellipsis-h text-secondary ml-auto mr-2 pt-2" v-b-modal="'my_postModal'+post.id"></i>
+        <b-modal modal-class="settings_Modal" :id="'my_postModal'+post.id" :ref="'my_postModal'+post.id"  hide-header hide-footer centered >
+          <button :id="'postEditId'+post.id" :data-postId="post.id" @click="editPostDescription"  class="w-100 settings_btn px-5 py-2">Edit</button>
+          <button :id="'postShareStoryId'+post.id" :data-postId="post.id" @click="shareStory"  class="w-100 settings_btn px-5 py-2">Share as story</button>
+          <button :id="'postDeleteId'+post.id" :data-postId="post.id" @click="deletePost" class="w-100 settings_btn text-danger px-5 py-2 border-0">Delete</button>
+        </b-modal> 
+      </div>
+      <div class="post-body" >
+        <img  v-if="post.media_type == 'image'" class=" rounded-0" :src="post.media_file"/>
+        <video v-else-if="post.media_type == 'video'" class="post_feed_video" controls muted>
+          <source :src="post.media_file"  />
+        </video>
+        <div class="px-2">
+          <div class="interaction_buttons pt-2 d-flex">
+            <!-- like icon -->
+            <svg :id="'postLikeId'+post.id" :data-postId="post.id" @click="likeUnlikePosts" :fill="post.likeColor" aria-label="Like" class="mr-3" height="24" viewBox="0 0 48 48" width="24" data-objectType='posts'>
+              <path :d="post.likePath" />
+            </svg>
+
+            <!-- comment icon -->
+              <svg @click="focusCommentInput" :id="'postCommentId'+post.id" :data-postId="post.id" aria-label="Comment" class="_8-yf5 mr-3" fill="#262626" height="24" viewBox="0 0 48 48" width="24">
+                <path clip-rule="evenodd" d="M47.5 46.1l-2.8-11c1.8-3.3 2.8-7.1 2.8-11.1C47.5 11 37 .5 24 .5S.5 11 .5 24 11 47.5 24 47.5c4 0 7.8-1 11.1-2.8l11 2.8c.8.2 1.6-.6 1.4-1.4zm-3-22.1c0 4-1 7-2.6 10-.2.4-.3.9-.2 1.4l2.1 8.4-8.3-2.1c-.5-.1-1-.1-1.4.2-1.8 1-5.2 2.6-10 2.6-11.4 0-20.6-9.2-20.6-20.5S12.7 3.5 24 3.5 44.5 12.7 44.5 24z" fill-rule="evenodd"/>
+              </svg> 
+           
+            <!-- direct message icon -->
+            <svg v-b-modal="'my_sharePostModal'+post.id" aria-label="Share Post" class="_8-yf5 mr-3" fill="#262626" height="24" viewBox="0 0 48 48" width="24">
+              <path d="M47.8 3.8c-.3-.5-.8-.8-1.3-.8h-45C.9 3.1.3 3.5.1 4S0 5.2.4 5.7l15.9 15.6 5.5 22.6c.1.6.6 1 1.2 1.1h.2c.5 0 1-.3 1.3-.7l23.2-39c.4-.4.4-1 .1-1.5zM5.2 6.1h35.5L18 18.7 5.2 6.1zm18.7 33.6l-4.4-18.4L42.4 8.6 23.9 39.7z"/>
+            </svg>
+
+            <b-modal :id="'my_sharePostModal'+post.id" :ref="'my_sharePostModal'+post.id"  modal-class="sharePost_Modal"  hide-header hide-footer >
+                <ul class="sharePostUl position-relative">
+                  <span  @click="$bvModal.hide('my_sharePostModal'+post.id)" class="close_icon"></span> 
+                  <li v-for="(followedUser, key) in followedUsers" :key="key" class="d-flex justify-content-between">
+                    <div  class="" >
+                      <img @click="goToProfile" :data-userId="post.user.id" class="pfp  rounded-circle mr-2" :src="followedUser.pfp"/>
+                      <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{followedUser.username}}</span>
+                    </div>
+                    <button :id="'postShareId'+post.id" :data-contactId="followedUser.id" :data-postId="post.id" @click="sendPost" class="btn-primary py-1 px-4  border-0 rounded  h-25 align-self-center">Send</button>
+                  </li>
+                </ul>
+            </b-modal> 
+
+            <!-- save icon -->
+            <svg :id="'postSaveId'+post.id" :data-postId="post.id" @click="saveUnsave" aria-label="Save" class="ml-auto" :fill="post.saveColor" height="24" viewBox="0 0 48 48" width="24">
+              <path :d="post.savePath" />
+            </svg>
+          </div>
+          
+          <span v-if=" post.likes.length != 0" class="font-weight-bold">{{post.likes.length}} likes</span>
+          <span v-if=" post.likes.length == 0" class="font-weight-bold">0 likes</span>
+          
+
+          <div class="card-text position-relative">
+            <span v-if="post.editState" :id="'cancelPostEditId'+post.id" :data-postId="post.id" @click="cancelEditPostDescription" class="cancel_edit post_cancel text-danger">Cancel</span>
+            <span class="description show_more">
+              <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{post.user.username}}</span>
+              <textarea v-if="post.editState"  v-model="post.description" @keydown.enter.exact.prevent 
+                @keyup.enter.exact="submitEdit" :data-postId="post.id" cols="47" rows="5" class="mt-2 editTxt">
+              </textarea>
+              <span v-else>{{post.description}}</span>
+              
+            </span>
+            <!-- this button shows/hides the description -->
+            <span :ref="'showMoreLess'+post.id" class="show_hide" @click="showHideDescription">{{ post.showStatus }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="comments_wrapper" v-for="(commentPage, key) in commentFeed" :key="key">
         <div v-for="(comment, key) in commentPage" :key="key">
           <div class="comments d-flex position-relative show_more p-2" >
             <img @click="goToProfile" :data-userId="comment.user.id" class="pfp rounded-circle mr-2" :src="comment.user.pfp"/>
@@ -18,7 +88,7 @@
               <span v-if=" comment.likes.length == 0" class="text-secondary ml-2">0 likes</span>
               <span :id="'commentReplyId'+comment.id" :data-commentId="comment.id" :data-username="comment.user.username" :data-originalCommentId="comment.id" @click="commentReply" class="text-secondary ml-2">Reply</span>
               <i class="fas fa-ellipsis-h text-secondary ml-2"  v-b-modal="'my_commentModal'+comment.id"></i>
-              <b-modal :id="'my_commentModal'+comment.id" :ref="'my_commentModal'+comment.id" class="settings_Modal" hide-header hide-footer >
+              <b-modal :id="'my_commentModal'+comment.id" :ref="'my_commentModal'+comment.id" modal-class="settings_Modal" hide-header hide-footer centered>
                 <button :id="'commentEditId'+comment.id" :data-commentId="comment.id" @click="editComment"  class="w-100 settings_btn px-5 py-2">Edit</button>
                 <button :id="'commentDeleteId'+comment.id" :data-commentId="comment.id" @click="deleteComment" class="w-100 settings_btn text-danger px-5 py-2 border-0" >Delete</button>
               </b-modal>
@@ -26,11 +96,11 @@
             </div>
             <span v-if="comment.editState" :id="'cancelCommentEditId'+comment.id" :data-commentId="comment.id" @click="cancelEditComment" class="cancel_edit text-danger ml-2">Cancel</span>
             <!-- like icon -->
-            <svg :id="'commentLikeId'+comment.id" :data-commentId="comment.id" @click="likeUnlike" :fill="comment.likeColor"  class="comment_like_icon commentfeed" aria-label="Like" viewBox="0 0 48 48" >
+            <svg :id="'commentLikeId'+comment.id" :data-commentId="comment.id" @click="likeUnlikeComments" :fill="comment.likeColor"  class="comment_like_icon commentfeed" aria-label="Like" viewBox="0 0 48 48" data-objectType='post/comments'>
               <path :d="comment.likePath"></path>
             </svg>
           </div>
-          <div v-if="comment.replies.length > 0" class="text-secondary text-center" @click="Expand_Collapse">{{replyStatus}}</div>
+          <div v-if="comment.replies.length > 0" class="text-secondary text-center" @click="Expand_Collapse">View Replies</div>
           <div v-if="comment.replies.length > 0" class="reply_wrapper mx-4" :class="reply_display">
             <div  v-for="(reply, key) in comment.replyFeed" :key="key">
                   <div class="replys d-flex position-relative show_more p-2">
@@ -48,14 +118,14 @@
                   <span v-if=" reply.likes.length == 0" class="text-secondary ml-2">0 likes</span>
                   <span :id="'commentReplyId'+comment.id" :data-commentId="reply.id" :data-username="reply.user.username" :data-originalCommentId="reply.original_comment_id" @click="commentReply" class="text-secondary ml-2">Reply</span>
                   <i class="fas fa-ellipsis-h text-secondary ml-2"  v-b-modal="'my_replyModal'+reply.id"></i>
-                  <b-modal :id="'my_replyModal'+reply.id" :ref="'my_commentModal'+reply.id" class="settings_Modal" hide-header hide-footer >
+                  <b-modal :id="'my_replyModal'+reply.id" :ref="'my_commentModal'+reply.id" modal-class="settings_Modal" hide-header hide-footer centered>
                     <button :id="'replyEditId'+reply.id" :data-replyId="reply.id" @click="editComment"  class="w-100 settings_btn px-5 py-2">Edit</button>
                     <button :id="'replyDeleteId'+reply.id" :data-replyId="reply.id" @click="deleteComment" class="w-100 settings_btn text-danger px-5 py-2 border-0" >Delete</button>
                   </b-modal> 
                 </div>
                 <span v-if="reply.editState" :id="'cancelReplyEditId'+comment.id" :data-replyId="reply.id" @click="cancelEditComment" class="cancel_edit text-danger ml-2">Cancel</span>
                 <!-- like icon -->
-                <svg :id="'commentLikeId'+reply.id" :data-replyId="reply.id" @click="likeUnlike" :fill="reply.likeColor"  class="comment_like_icon replyfeed" aria-label="Like" viewBox="0 0 48 48" >
+                <svg :id="'commentLikeId'+reply.id" :data-replyId="reply.id" @click="likeUnlikeComments" :fill="reply.likeColor"  class="comment_like_icon replyfeed" aria-label="Like" viewBox="0 0 48 48" data-objectType='post/comments'>
                   <path :d="reply.likePath"></path>
                 </svg>
               </div>
@@ -89,12 +159,11 @@ var moment = require("moment");
 export default {
   data() {
     return {
+      post: [],
       comments: [],
       originalComments: [],
       commentFeed: [],
       postId:null,
-      sessionUser: null,
-      likedComments: [],
       observer: null,
       commentSliceIndex: 10,      
       commentIterations: 0,
@@ -108,23 +177,80 @@ export default {
         parentCommentId: 0,
         originalCommentId: 0,
         commentBody: '',
-      }
+      },
+
+      // SESSIONUSER      
+      sessionUser: [],
+      likedPosts: [],      
+      savedPosts: [],
+      likedComments: [],
+      followedUsers: [],
+      followedUsersId: [],
+      followUnfollowHtml:null,      
 
       
     };
   },
 
   created () {
-      this.likeUnlike = _.debounce(this.likeUnlike, 300)
+    // this.likeUnlikePosts = _.debounce(this.likeUnlikePosts, 300)
+      // this.likeUnlikeComments = _.debounce(this.likeUnlikeComments, 300)
+      this.saveUnsave = _.debounce(this.saveUnsave, 300)
+      this.likeUnlikePosts = _.debounce(this.likeUnlikePosts, 300)
+      this.likeUnlikeComments = _.debounce(this.likeUnlikeComments, 300)
+      this.postId = window.location.href.split("/")[4];
 
-    this.postId = window.location.href.split("/")[4];
-    axios
-      .get("comments/"+this.postId)
+      axios
+      .get(this.publicPath+"posts/"+this.postId)
       .then((data) => {
-        this.likedComments.push(...data.data.session_user.liked.comments);
+        // SESSION USER
         this.sessionUser = data.data.session_user
-        this.comments = data.data.comments;
+
+        this.likedPosts.push(...this.sessionUser.liked.posts)
+
+        this.likedPosts.push(...this.sessionUser.liked.posts)
+        this.likedComments.push(...data.data.session_user.liked.comments);
+        if (this.sessionUser.favorites !== null) {
+          this.savedPosts.push(...this.sessionUser.favorites);
+        }
+        if (this.sessionUser.followed !== null) {
+          this.followedUsersId.push(...this.sessionUser.followed);        
+        }
+        console.log(this.sessionUser.followed_users);
+          this.followedUsers.push(...this.sessionUser.followed_users)
+          this.likedComments.push(...this.sessionUser.liked.comments);
+
+          // POST
+
+        this.post= data.data;
+        if (this.post.likes == null) {
+          this.post.likes = []
+        }
+
+        if (this.likedPosts.includes(this.post.id)) {
+          this.post.likePath =
+            "M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+          this.post.likeColor = "#ed4956";
+        } else {
+          this.post.likePath =
+            "M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+          this.post.likeColor = "#262626";
+        }
         
+        if (this.savedPosts.includes(this.post.id)) {
+          this.post.savePath =
+            "M43.5 48c-.4 0-.8-.2-1.1-.4L24 28.9 5.6 47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 1.2-.9 1.4-.2.1-.4.1-.6.1z";
+          this.post.saveColor = "#ffbb00";
+        } else {
+          this.post.savePath =
+            "M43.5 48c-.4 0-.8-.2-1.1-.4L24 29 5.6 47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 1.2-.9 1.4-.2.1-.4.1-.6.1zM24 26c.8 0 1.6.3 2.2.9l15.8 16V3H6v39.9l15.8-16c.6-.6 1.4-.9 2.2-.9z";
+          this.post.saveColor = "#262626";
+        }
+
+        // COMMENTS
+          console.log(data.data.comments);
+        this.comments = data.data.comments;
+        console.log(this.comments);
         this.comments.forEach((comment) => {
          comment.replies = []
          comment.editState = false
@@ -193,12 +319,7 @@ export default {
   },
 
   updated: function () {
-    axios
-      .get("comments/"+this.postId)
-      .then((data) => {    
-        this.comments = data.data.comments;  
-      })
-      .catch((err) => {});
+   
   },
 
   mounted: function () {
@@ -207,7 +328,78 @@ export default {
   },
 
   methods: {
-    likeUnlike(event) {
+    update_data() {
+       axios
+      .get(this.publicPath+"posts/"+this.postId)
+      .then((data) => {    
+        this.comments = data.data.comments;  
+      })
+      .catch((err) => {});
+    },
+    
+    likeUnlikePosts(event) {
+
+      let postLikeId
+      let dataPostId
+      
+
+      if (typeof $(event.target).attr("id") == 'undefined') {
+        postLikeId = $(event.target.parentElement).attr("id");
+        dataPostId = $(event.target.parentElement).attr("data-postId");
+      } else {
+        postLikeId = $(event.target).attr("id");
+        dataPostId = $(event.target).attr("data-postId");
+      }
+        //  check if the post is already liked by the user
+        if (this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
+            // apply the laravel unlike function
+            axios
+              .get(this.publicPath+"posts/" +$("#" + postLikeId)[0].attributes[1].nodeValue +"/" +this.sessionUser.id +"/unlike")
+              .then((response) => {
+                if (this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
+
+                  // get the index of the post id we want to delete
+                  let index = this.likedPosts.indexOf(
+                    parseInt($("#" + postLikeId)[0].attributes[1].nodeValue)
+                  );
+                  //  remove it from the likedPosts array
+                  this.likedPosts.splice(index, 1);
+          
+                  $("#" + postLikeId)[0].attributes[2].nodeValue = "#262626";
+                  $("#" + postLikeId)[0].firstChild.attributes[0].nodeValue =
+                    "M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+                  
+                  if (this.post.id == dataPostId ) {
+                    let index = this.post.likes.indexOf(this.sessionUser.id)
+                    this.post.likes.splice(index, 1)
+                  } 
+            
+                }
+
+              });
+        } else {
+          // apply the laravel like function
+          axios
+            .get(this.publicPath+"posts/" + $("#" + postLikeId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/like")
+            .then((response) => {
+              if (!this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
+                // add the post id to the likedPosts array
+                this.likedPosts.push(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue));
+                $("#" + postLikeId)[0].attributes[2].nodeValue = "#ed4956";
+                $("#" + postLikeId)[0].firstChild.attributes[0].nodeValue =
+                  "M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+
+                this.post.likes.push(this.sessionUser.id)
+                    
+                
+              }
+
+            });
+
+        }
+    },
+
+    likeUnlikeComments(event) {
 
       let commentLikeId
       let dataCommentId
@@ -221,13 +413,12 @@ export default {
         commentLikeId = $(event.target).attr("id");
         dataCommentId = $(event.target).attr("data-commentId");
         dataReplyId = $(event.target).attr("data-replyId");
-
       }
-
+      
         //  check if the comment is already liked by the user
         if (this.likedComments.includes(parseInt($("#" + commentLikeId)[0].attributes[1].nodeValue))) {
             // apply the laravel unlike function
-            axios.get("comments/" +$("#" + commentLikeId)[0].attributes[1].nodeValue +"/" + this.sessionUser.id + "/unlike")
+            axios.get(this.publicPath+"post/comments/" +$("#" + commentLikeId)[0].attributes[1].nodeValue +"/" + this.sessionUser.id + "/unlike")
               .then((response) => {
               if (this.likedComments.includes(parseInt($("#" + commentLikeId)[0].attributes[1].nodeValue))){
                 // get the index of the comment id we want to delete
@@ -265,7 +456,7 @@ export default {
         } else {
           // apply the laravel like function
           axios
-            .get("comments/" + $("#" + commentLikeId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/like")
+            .get(this.publicPath+"post/comments/" + $("#" + commentLikeId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/like")
             .then((response) => {
             if (!this.likedComments.includes(parseInt($("#" + commentLikeId)[0].attributes[1].nodeValue))){
 
@@ -319,12 +510,12 @@ export default {
     },
 
     Expand_Collapse(event) {
-      if (this.replyStatus == 'View replies') {
-        this.replyStatus ='Collapse replies'
-        this.reply_display = 'highlight'
+      if ($(event.target).html() == 'View Replies') {
+        $(event.target).html('Collapse Replies')
+        $(event.target.nextElementSibling).toggleClass('highlight d-none') 
       } else {
-        this.replyStatus ='View replies'
-        this.reply_display = 'd-none'
+        $(event.target).html('View Replies')
+        $(event.target.nextElementSibling).toggleClass('highlight d-none') 
       }
     },
 
@@ -339,11 +530,14 @@ export default {
 
     commentReply (event) {
       this.addCommentForm.parentCommentId = event.target.attributes[1].nodeValue
-      this.addCommentForm.commentBody = '@'+event.target.attributes[2].nodeValue
+      this.addCommentForm.commentBody = '@'+event.target.attributes[2].nodeValue+' '
       this.addCommentForm.originalCommentId = event.target.attributes[3].nodeValue
       this.$refs.commentForm.focus()
     },
 
+    focusCommentInput() {
+      this.$refs.commentForm.focus()
+    },
 
     addComment () {
       const params = new URLSearchParams();
@@ -354,7 +548,7 @@ export default {
       params.append('content', this.addCommentForm.commentBody);
       axios({
         method: 'post',
-        url: 'comments',
+        url: this.publicPath+'comments',
         data: params
       }).then((response) => {
 
@@ -515,8 +709,163 @@ export default {
     
     goToProfile(event) {
       var userId = event.target.attributes[0].nodeValue
-      window.location.replace(this.publicPath+'profile/'+userId)
-    },    
+      window.location.replace(this.publicPath+userId+'/profile')
+    },  
+    
+    editPostDescription(event) {
+      var targetId = event.target.attributes[1].nodeValue
+      this.postFeed.forEach(page => {
+        page.forEach(post => {
+          if (post.id == targetId) {
+            
+            post.editState = true
+            console.log(post.editState);
+          } 
+        });
+      });
+      $(this.$refs)[0]['my_postModal'+targetId][0].hide() 
+      this.updatefeed()
+      // this.forceRerender()
+    },
+
+    cancelEditPostDescription(event) {
+      var targetId = event.target.attributes[1].nodeValue
+      this.postFeed.forEach(page => {
+        page.forEach(post => {
+          if (post.id == targetId) {
+            post.editState = false
+            
+          } 
+        });
+      });
+      $(this.$refs)[0]['my_postModal'+targetId][0].hide() 
+      this.forceRerender()
+    },
+
+    sendPost (event) {
+      var targetcontactId = event.target.attributes[1].nodeValue
+      var targetPostId = event.target.attributes[2].nodeValue
+
+      axios.post('/conversation/send', {
+          contactId: targetcontactId,
+          sharedPostId: targetPostId
+      }).then((response)=>{
+        $(event.target).html('Sent').addClass('btn-success').attr('disabled', 'disabled')
+        // $(this.$refs)[0]['my_sharePostModal'+targetPostId][0].hide() 
+      }).catch((err) => {
+      });
+
+    },
+
+    shareStory (event) {
+      var targetId = event.target.attributes[1].nodeValue
+      var updatedType = 'post/story'
+      axios({
+        method: 'patch',
+        url: 'posts/'+targetId,
+        data: {
+          type: updatedType,
+          },
+      }).then((response) => {
+        $(this.$refs)[0]['my_postModal'+targetId][0].hide() 
+      })
+
+
+
+    },
+
+    deletePost (event) {
+      var targetId = event.target.attributes[1].nodeValue;
+      axios({
+        method: 'delete',
+        url: 'posts/'+targetId,
+        data: {
+          'type':'post'
+        },
+      }).then((response) => {
+        this.postFeed.forEach(page => {
+          page.forEach(post => {
+            if (targetId == post.id) {
+              let index = page.indexOf(post)
+              page.splice(index, 1)
+            }
+          });
+          
+        });
+        
+        $(this.$refs)[0]['my_postModal'+targetId][0].hide()         
+      })
+    },
+
+    showHideDescription(event) {
+      // check if the inner text of the element clicked equals 'show more'
+      if ($(event.target).html() == "Show More") {
+        // replace it by 'show less'
+        $(event.target).html("Show Less");
+
+        //  remove the 'show_more' class from the sibling 'description'
+        $(event.target.previousElementSibling).toggleClass("show_more");
+
+        // check if the inner text of the element clicked equals 'show less'
+      } else if ($(event.target).html() == "Show Less") {
+        // replace it by 'show more'
+        $(event.target).html("Show More");
+
+        //  add the 'show_more' class from the sibling 'description'
+        $(event.target.previousElementSibling).toggleClass("show_more");
+      }
+    },
+
+    saveUnsave(event) {
+      let postSaveId; 
+
+
+      if (typeof $(event.target).attr("id") == 'undefined') {
+        postSaveId = $(event.target.parentElement).attr("id");
+      } else {
+        postSaveId = $(event.target).attr("id");
+      }
+
+      //  check if the post is already saved by the user
+      if ( this.savedPosts.includes( parseInt($("#" + postSaveId)[0].attributes[1].nodeValue))) {
+        // apply the laravel unSave function
+        axios.get(this.publicPath+"posts/" + $("#" + postSaveId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/unfavorite")
+          .then((response) => {
+            if ( this.savedPosts.includes( parseInt($("#" + postSaveId)[0].attributes[1].nodeValue))){
+              // get the index of the post id we want to delete
+              let index = this.savedPosts.indexOf(
+                parseInt($("#" + postSaveId)[0].attributes[1].nodeValue)
+              );
+
+              //  remove it from the savedPosts array
+              this.savedPosts.splice(index, 1);
+              $("#" + postSaveId)[0].attributes[3].nodeValue = "#262626";
+              $("#" + postSaveId)[0].firstChild.attributes[0].nodeValue =
+                "M43.5 48c-.4 0-.8-.2-1.1-.4L24 29 5.6 47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 1.2-.9 1.4-.2.1-.4.1-.6.1zM24 26c.8 0 1.6.3 2.2.9l15.8 16V3H6v39.9l15.8-16c.6-.6 1.4-.9 2.2-.9z";
+              
+            }
+          });
+      } else {
+        // apply the laravel Save function
+        axios.get(this.publicPath+"posts/" + $("#" + postSaveId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/favorite")
+          .then((response) => {
+            if ( !this.savedPosts.includes( parseInt($("#" + postSaveId)[0].attributes[1].nodeValue))){
+              // add the post id to the savedPosts array
+              this.savedPosts.push(
+                parseInt($("#" + postSaveId)[0].attributes[1].nodeValue)
+              );
+              $("#" + postSaveId)[0].attributes[3].nodeValue = "#ffbb00";
+              $("#" + postSaveId)[0].firstChild.attributes[0].nodeValue =
+                "M43.5 48c-.4 0-.8-.2-1.1-.4L24 28.9 5.6 47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 1.2-.9 1.4-.2.1-.4.1-.6.1z";
+              
+            }
+          });
+
+      }
+    },
+
+
+
     
   },
 

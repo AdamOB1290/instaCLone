@@ -27,7 +27,7 @@
           <img class="footer_pfp" :src="sessionUser.pfp">
         </template>
 
-        <b-dropdown-item size="sm" :href="publicPath+'profile/'+sessionUserId">Profile</b-dropdown-item>
+        <b-dropdown-item size="sm" :href="publicPath+sessionUserId+'/profile'">Profile</b-dropdown-item>
         <b-dropdown-item size="sm" @click="logout" variant="danger" active-class="bg-danger">Log Out</b-dropdown-item>
       </b-dropdown>
     </div>

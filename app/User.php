@@ -102,6 +102,9 @@ class User extends Authenticatable
     public function dynamicUnlike($unlikedObject, $userId, $databaseIndex)
     {
         $objectLikes = $unlikedObject->likes;
+        if (!isset($objectLikes)) {
+            $objectLikes= [];
+        }
         // When unlike button is clicked, decrement the likes attribute by 1
         if (($key = array_search((int)$userId, $objectLikes)) !== false) {
             
