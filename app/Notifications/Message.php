@@ -49,8 +49,9 @@ class Message extends Notification
     public function toDatabase($notifiable)
     {
         return [
-            'chat_message' => $notifiable->sender_username . ' has sent you a new message!',
-            'chat_id' => $notifiable->chat_id,
+            'notification_message' => ' has sent you a new message!',
+            'object_id' => $notifiable->chat_id,
+            'notifier_id' => (string)$notifiable->notifier_id,
         ];
     }
 

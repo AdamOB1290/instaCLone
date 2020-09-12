@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Chat;
 use App\Comment;
 use App\Events\UserFollowed;
+use App\Notification;
 use App\Post;
 use Illuminate\Http\Request;
 use App\User;
@@ -19,9 +21,16 @@ class UserController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
+        $sessionUser = Auth::user();
+        $users = User::findOrFail(1);
+        $notif=Notification::first();
+        $user=User::findOrFail(1);
+        $chat = Chat::findOrFail(12);
+        
+        
+        dd($notif, $user->notifications->where('id', '0162798b-2da2-4c21-97ca-f2c595841455'));
 
-        return $user;
+        return $users;
         
     }
 

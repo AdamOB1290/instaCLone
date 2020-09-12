@@ -51,9 +51,9 @@ class Like extends Notification
     {
         $index = $notifiable->liked_object_index;
         return [
-            'like_message' => $notifiable->notification_message,
-            'liker_id' => $notifiable->liker_id,
-            $index => $notifiable->liked_object,
+            'notification_message' => $notifiable->notification_message,
+            'notifier_id' => $notifiable->liker_id,
+            'object_id' => $notifiable->liked_object,
         ];
     }
 

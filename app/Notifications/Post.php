@@ -49,8 +49,9 @@ class Post extends Notification
     public function toDatabase($notifiable)
     {
         return [
-            'post_message' => $notifiable->notification_message,
-            'post_id' => $notifiable->post_id,
+            'notification_message' => $notifiable->notification_message,
+            'object_id' => $notifiable->post_id,
+            'notifier_id' => (string)$notifiable->notifier_id,
         ];
     }
 

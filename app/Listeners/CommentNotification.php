@@ -37,11 +37,11 @@ class CommentNotification
         //fetch the user of the post where the comment was created
         $postUser = \App\User::findOrFail($post->user_id);
 
-        //get the username of the user who created the comment
-        $commentUsername = \App\User::findOrFail($event->comment->user_id)->username;
-
         //create the notification message 
-        $notificationMessage = $commentUsername . ' has commented on your post!';
+        $notificationMessage = ' has commented on your post!';
+
+        // create index for the notifier id within post user object
+        $postUser['notifier_id'] = $event->comment->user_id;
 
         //create index for the notification message within post user object
         $postUser['notificationMessage'] = $notificationMessage;

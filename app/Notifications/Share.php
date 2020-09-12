@@ -49,7 +49,8 @@ class Share extends Notification
     public function toDatabase($notifiable)
     {
         return [
-            'welcomeMsg' => 'Welcome to InstaClone!',
+            'notification_message' => 'Welcome to InstaClone!',
+            'notifier_id' => (string)$notifiable->notifier_id,
         ];
     }
 

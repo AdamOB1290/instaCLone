@@ -35,7 +35,29 @@ nav {
 }
 
 nav .fa-camera{
-font-size: 25px;
+  font-size: 25px;
+}
+
+nav .notif_count{
+  position: absolute;
+  top: 10px;
+  right: -8px;
+  text-align: center;
+  background: red;
+  /* border-radius: 50%; */
+  /* color: white; */
+  /* height: 10px;
+  width: 10px; */
+  color: #fff;
+  display: flex;
+  font-weight: 700;
+  justify-content: center;
+  align-items: center;
+  line-height: 12px;
+  font-size: 10px;
+  padding: 1px 5px 2px;
+  border-radius: 50%;
+
 }
 
 main{

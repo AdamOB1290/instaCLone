@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Notification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -18,6 +19,12 @@ class User extends Authenticatable
 
     }
 
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class, 'notifiable_id');
+
+    }
+
     public function comments()
     {
         return $this->hasMany(Comment::class);
@@ -25,7 +32,7 @@ class User extends Authenticatable
 
     public function chats()
     {
-        return $this->hasMany(Chat::class);
+        return $this->hasMany(Chat::class, 'sender_id');
     }
 
 

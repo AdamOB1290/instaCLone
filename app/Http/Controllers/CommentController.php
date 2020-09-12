@@ -197,6 +197,7 @@ class CommentController extends Controller
         $commentUser['liked_comment'] = (string)$comment->id;
 
         event(new LikeEvent($commentUser));
+        // broadcast(new LikeEvent($commentUser)); 
 
         //remove the indexes created earlier
         unset($commentUser['liker_id'], $commentUser['liked_comment']);

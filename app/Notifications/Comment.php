@@ -50,8 +50,9 @@ class Comment extends Notification
     {
         
         return [
-            'comment__message' =>  $notifiable->notificationMessage,
-            'comment_id' => (string)$notifiable->commentId,
+            'notification_message' =>  $notifiable->notificationMessage,
+            'object_id' => (string)$notifiable->commentId,
+            'notifier_id' => (string)$notifiable->notifier_id,
         ];
         
     }

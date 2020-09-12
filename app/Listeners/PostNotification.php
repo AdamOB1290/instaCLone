@@ -32,9 +32,6 @@ class PostNotification
         //fetch post user
         $user = \App\User::findOrFail($event->post->user_id);
 
-        // get his username
-        $username = $user->username;
-
         // check if it's a post or a story
         if ($event->post->type == 'post' || $event->post->type == 'story/post') {
 
@@ -44,7 +41,10 @@ class PostNotification
                 $userToNotify = \App\User::findOrFail($value);
 
                 //create the notification message
-                $notificationMessage = $username.' published a new post!';
+                $notificationMessage = ' published a new post!';
+
+                // create index for the notifier id within post user object
+                $userToNotify['notifier_id'] = $event->post->user_id;
 
                 // index the notification message
                 $userToNotify['notification_message'] = $notificationMessage;
@@ -66,7 +66,7 @@ class PostNotification
                 $userToNotify = \App\User::findOrFail($value);
 
                 //create the notification message
-                $notificationMessage = $username . ' published a new story!';
+                $notificationMessage = ' published a new story!';
 
                 // index the notification message
                 $userToNotify['notification_message'] = $notificationMessage;

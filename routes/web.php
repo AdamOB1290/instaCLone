@@ -53,29 +53,32 @@ Route::get('users/{user}/{sessionUser}/unfollow', 'UserController@unfollow')->na
 
 Route::get('users/{user}/{sessionUser}/{index}/notification_preference', 'UserController@notification_preference')->name('users.notification_preference');
 
+Route::get('{userId}/notifications/activity', 'NotificationController@activityNotifications')->name('activity.notifications');
+Route::get('{userId}/notifications/messages', 'NotificationController@messageNotifications')->name('message.notifications');
+
 Route::get('feeds', function () {
     return view('feed');
-});
+})->middleware('auth');
 
 Route::get('story/{userId}', function () {
     return view('stories');
-});
+})->middleware('auth');
 
 Route::get('post/{postId}', function () {
     return view('comments');
-});
+})->middleware('auth');
 
 Route::get('chat', function () {
     return view('chats');
-});
+})->middleware('auth');
 
 Route::get('{userId}/profile', function () {
     return view('profile');
-});
+})->middleware('auth');
 
 Route::get('profile/edit', function () {
     return view('editProfile');
-});
+})->middleware('auth');
 
 
 

@@ -30,13 +30,11 @@ class FollowNotification
         
         $followedUser = $event->user;
 
-        $followerId = $event->user->followerId;
-
-        //get the username of the user who followed
-        $followerUsername = \App\User::findOrFail($followerId)->username;
-
         //create the notification message 
-        $notificationMessage = 'You have been followed by ' . $followerUsername;
+        $notificationMessage = 'You have been followed by ';
+
+        // create index for the notifier id within post user object
+        $followedUser['notifier_id'] = $event->user->followerId;
 
         //create index for the notification message within followed user object
         $followedUser['notificationMessage'] = $notificationMessage;

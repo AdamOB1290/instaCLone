@@ -30,11 +30,8 @@ class MessageNotification
         // fetch the user who received the message
         $user = \App\User::findOrFail($event->chat->receiver_id);
 
-        // get the username of the sender
-        $username = \App\User::findOrFail($event->chat->sender_id)->username;
-
-        // index the sender username
-        $user['sender_username'] = $username;
+        // create index for the notifier id within post user object
+        $user['notifier_id'] = $event->chat->sender_id;
 
         // index the chat id
         $user['chat_id'] = (string)$event->chat->id;

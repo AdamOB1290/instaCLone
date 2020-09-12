@@ -32,11 +32,11 @@ class LikeNotification
             //create a variable for the user to be notified
             $commentUser = $event->user;
 
-            //fetch the username of the user who liked the comment
-            $likerUsername = \App\User::findOrFail($event->user->liker_id)->username;
-
             //create the notification message
-            $notificationMessage = $likerUsername . ' has liked your comment!';
+            $notificationMessage = ' has liked your comment!';
+
+            // create index for the notifier id within post user object
+            $commentUser['notifier_id'] = $event->user->liker_id;
 
             //index the notification message to the comment user
             $commentUser['notification_message'] = $notificationMessage;
@@ -60,11 +60,11 @@ class LikeNotification
             //create a variable for the user to be notified
             $postUser = $event->user;
 
-            //fetch the username of the user who liked the post
-            $likerUsername = \App\User::findOrFail($event->user->liker_id)->username;
-
             //create the notification message
-            $notificationMessage = $likerUsername . ' has liked your post!';
+            $notificationMessage = ' has liked your post!';
+
+            // create index for the notifier id within post user object
+            $postUser['notifier_id'] = $event->user->liker_id;
 
             //index the notification message to the post user
             $postUser['notification_message'] = $notificationMessage;

@@ -49,7 +49,8 @@ class Favorite extends Notification
     public function toDatabase($notifiable)
     {
         return [
-            'welcome_message' => 'Welcome to InstaClone!',
+            'notification_message' => 'Welcome to InstaClone!',
+            'notifier_id' => (string)$notifiable->notifier_id,
         ];
     }
 

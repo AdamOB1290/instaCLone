@@ -148,7 +148,7 @@
     </followUsers>
     
     
-    <b-modal id="modal_post_form" ref="modal_post_form" class="settings_Modal" title="Add a Post" hide-footer>
+    <b-modal id="modal_post_form" ref="modal_post_form" class="settings_Modal" title="Add a Post" hide-footer centered>
       <validation :errors="validationErrors" v-if="validationErrors"></validation>
       <form class="addPost_form" @submit.prevent="addPost" method="post" action="" enctype="multipart/form-data">
         <b-form-group>
