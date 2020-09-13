@@ -55,6 +55,7 @@ Route::get('users/{user}/{sessionUser}/{index}/notification_preference', 'UserCo
 
 Route::get('{userId}/notifications/activity', 'NotificationController@activityNotifications')->name('activity.notifications');
 Route::get('{userId}/notifications/messages', 'NotificationController@messageNotifications')->name('message.notifications');
+Route::patch('/notifications/messages', 'NotificationController@messageNotifications')->name('message.notifications');
 
 Route::get('feeds', function () {
     return view('feed');

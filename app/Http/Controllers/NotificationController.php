@@ -13,10 +13,11 @@ class NotificationController extends Controller
         $notifications = Notification::where('notifiable_id', $userId)->where('type', '!=', 'App\Notifications\Message')->get();
 
         foreach ($notifications as $notification) {
-            $notification['user']= User::findOrFail($notification->data['notifier_id']);
+            $notification['notifier']= User::findOrFail($notification->data['notifier_id']);
         }
-        broadcast(new LikeEvent($notifications)); 
+        // broadcast(new LikeEvent($notifications)); 
 
+        // dd($notifications);
         return  $notifications;
     }
 

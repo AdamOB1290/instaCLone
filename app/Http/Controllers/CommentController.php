@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Comment;
 use App\Events\CommentCreated;
 use App\Events\LikeEvent;
+use App\Notification;
 use App\User;
 use Illuminate\Http\Request;
 
@@ -190,17 +191,39 @@ class CommentController extends Controller
         // fetch the user who made the comment
         $commentUser = User::findOrFail($comment->user_id);
 
-        // index the user id who liked the comment into it
+        // FOR THE DATABASE:
+        // index the user id who liked the comment into it 
         $commentUser['liker_id'] = $userId;
-
         // index the comment id into it
         $commentUser['liked_comment'] = (string)$comment->id;
 
-        event(new LikeEvent($commentUser));
-        // broadcast(new LikeEvent($commentUser)); 
+        if (Notification::pluck('id')->last() != null) {
+            $newNotifId = Notification::pluck('id')->last() + 1;
+        } else {
+            $newNotifId = 1;
+        }
+
+        $data_notifications=[
+            'object_id' => $comment->id,
+            'notification_message' => " has liked your comment!",
+        ];
+        // FOR REAL TIME NOTIFICATION
+        $notification =
+        [
+            'id' => $newNotifId,
+            'read' => 0,
+            'data' => $data_notifications,
+            'notifier' => User::findOrFail($userId),
+        ];
+
+        $commentUser['real_time_notification'] = json_encode($notification);
+        
+        // event(new LikeEvent($commentUser));
+        // dd($commentUser);
+        broadcast(new LikeEvent($commentUser)); 
 
         //remove the indexes created earlier
-        unset($commentUser['liker_id'], $commentUser['liked_comment']);
+        unset($commentUser['liker_id'], $commentUser['liked_comment'], $commentUser['real_time_notification']);
 
         //apply like function
         $sessionUser = $commentUser->dynamicLike($comment, $userId, $object);

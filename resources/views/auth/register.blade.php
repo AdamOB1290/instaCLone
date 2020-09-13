@@ -106,6 +106,8 @@
                         </div>
                         
                     </form>
+                    <a href="{{ route('login') }}" class="text-center mt-3">Already have an account ? Sign In !</a>
+
                 </div>
             </div>
         </div>

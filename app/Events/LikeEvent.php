@@ -16,6 +16,7 @@ class LikeEvent implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $user;
+    public $notification;
     // public $notifications;
     /**
      * Create a new event instance.
@@ -24,8 +25,9 @@ class LikeEvent implements ShouldBroadcast
      */
     public function __construct( $user)
     {
-        dd($user);
-        $this->user=$user;
+        // dd($this->user);
+        $this->user = $user; // $this->user DOES NOT RETAIN $user var
+        $this->notification = $user['real_time_notification'];
     }
 
     /**
@@ -35,14 +37,15 @@ class LikeEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('likes' . $this->user->id);
+        return new PrivateChannel('likes.' . $this->user->id);
     }
 
     // broadcastWith is the correct spelling
     public function broadcastWith()
     {
-        dd($this->user);
-        return ['messages' => $this->user]; 
+
+        return ['realTime_notification' => json_decode($this->notification)]; 
 
     }
+
 }

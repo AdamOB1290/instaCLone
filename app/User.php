@@ -77,7 +77,7 @@ class User extends Authenticatable
         if ($objectLikes == null) {
             $objectLikes = [(int)$userId];
         } else { // if $objectLikes is already an array, push the $userId
-            if (array_search((int)$userId, $objectLikes) !== false) {
+            if (array_search((int)$userId, $objectLikes) == false) {
                 array_push($objectLikes, (int)$userId);
             }
 
