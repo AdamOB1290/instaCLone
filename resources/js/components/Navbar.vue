@@ -42,7 +42,13 @@
     },
 
     mounted: function () {
-        
+        Echo.private('messages.'+this.sessionUserId)
+        .listen('MessageSent', (e) => {
+          console.log(e);
+          this.notificationsCount++
+        })
+
+
         },
 
     

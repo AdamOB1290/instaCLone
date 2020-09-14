@@ -25,7 +25,6 @@ class UserHasLoggedIn
     {
         $this->user = $user;
 
-        dd($user);
     }
 
     /**

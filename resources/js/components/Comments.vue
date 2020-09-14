@@ -216,7 +216,6 @@ export default {
         if (this.sessionUser.followed !== null) {
           this.followedUsersId.push(...this.sessionUser.followed);        
         }
-        console.log(this.sessionUser.followed_users);
           this.followedUsers.push(...this.sessionUser.followed_users)
           this.likedComments.push(...this.sessionUser.liked.comments);
 
@@ -248,9 +247,7 @@ export default {
         }
 
         // COMMENTS
-          console.log(data.data.comments);
         this.comments = data.data.comments;
-        console.log(this.comments);
         this.comments.forEach((comment) => {
          comment.replies = []
          comment.editState = false
@@ -719,7 +716,6 @@ export default {
           if (post.id == targetId) {
             
             post.editState = true
-            console.log(post.editState);
           } 
         });
       });

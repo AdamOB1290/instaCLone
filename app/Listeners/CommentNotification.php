@@ -67,11 +67,11 @@ class CommentNotification
             //fetch the user of the parent comment
             $parentCommentUser = \App\User::findOrFail($parentComment->user_id);
 
-            //get the username of the user who created the comment
-            $commentUsername = \App\User::findOrFail($event->comment->user_id)->username;
+            // create index for the notifier id within comment user object
+            $parentCommentUser['notifier_id'] = $event->comment->user_id;
 
             //create the notification message 
-            $notificationMessage = $commentUsername . ' has replied to your comment!';
+            $notificationMessage =' has replied to your comment!';
 
             //create index for the notification message within post user object
             $parentCommentUser['notificationMessage'] = $notificationMessage;

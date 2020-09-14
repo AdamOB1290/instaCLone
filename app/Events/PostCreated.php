@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -15,6 +16,7 @@ class PostCreated
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $post;
+    public $notification;
     /**
      * Create a new event instance.
      *
@@ -23,6 +25,7 @@ class PostCreated
     public function __construct($post)
     {
         $this->post = $post;
+        $this->notification = $post['real_time_notification'];
     }
 
     /**
@@ -32,6 +35,17 @@ class PostCreated
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('channel-name');
+        $followedUsersIds= User::findOrFail($this->post->user_id)->followers;
+        foreach ($followedUsersIds as $followedUserId) {
+            return new PrivateChannel('activity.' . $followedUserId);
+        }
     }
+
+    // broadcastWith is the correct spelling
+    public function broadcastWith()
+    {
+
+        return ['realTime_notification' => json_decode($this->notification)]; 
+
+    }    
 }

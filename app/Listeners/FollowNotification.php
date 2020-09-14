@@ -31,7 +31,7 @@ class FollowNotification
         $followedUser = $event->user;
 
         //create the notification message 
-        $notificationMessage = 'You have been followed by ';
+        $notificationMessage = ' has followed you.';
 
         // create index for the notifier id within post user object
         $followedUser['notifier_id'] = $event->user->followerId;

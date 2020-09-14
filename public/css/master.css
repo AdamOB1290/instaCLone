@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Cookie&display=swap');
 html{
-  height: 100vh;
+  height: 100% !important;
 }
 
 body{
@@ -8,7 +8,8 @@ body{
   font-size: 11px!important;
   font-weight: 500;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
-  'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'!important;
+  'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'!important;  
+
 }
 
 .dark_body{

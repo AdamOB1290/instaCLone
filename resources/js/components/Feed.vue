@@ -9,7 +9,7 @@
     v-if="posts.length > 0" 
     :class="post_display">
     </storyGlider>
-<searchComponent :postFeed="posts" ></searchComponent>
+<!-- <searchComponent :postFeed="posts" ></searchComponent> -->
     <!-- <div v-if="posts.length > 0" class="glider story_slider border-down pb-1" :class="post_display">
       <div class="story_wrapper d-flex px-2 my-1">
         <div class="float-left d-flex flex-column align-items-center mr-1">

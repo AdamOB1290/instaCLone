@@ -18,13 +18,10 @@ Broadcast::channel('messages.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
 
-// Broadcast::channel('likes.{id}', function () {
-//     dd(Auth::check());
-//     return Auth::check();
-// });
-
-Broadcast::channel('likes.{id}', function ($user, $id) {
-    // dd((int) $user->id === (int) $id);
-    
+Broadcast::channel('activity.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
+
+// Broadcast::channel('comments.{id}', function ($user, $id) {
+//     return (int) $user->id === (int) $id;
+// });

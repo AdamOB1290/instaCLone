@@ -8,6 +8,7 @@ use App\Post;
 use App\User;
 use Illuminate\Http\Request;
 use App\Events\PostCreated;
+use App\Notification;
 use finfo;
 use Illuminate\Support\Facades\Auth;
 
@@ -439,7 +440,31 @@ class PostController extends Controller
         // index the post id into it
         $postUser['liked_post'] = (string)$post->id;
 
-        event(new LikeEvent(($postUser)));
+        // if (Notification::pluck('notification_id')->last() != null) {
+        //     $newNotifId = Notification::pluck('notification_id')->last() + 1;
+        // } else {
+        //     $newNotifId = 1;
+        // }
+
+        $data_notifications=[
+            'object_id' => $post->id,
+            'notification_message' => " has liked your post!",
+        ];
+        // FOR REAL TIME NOTIFICATION
+        $notification =
+        [
+            // 'notification_id' => $newNotifId,
+            'read' => 0,
+            'data' => $data_notifications,
+            'notifier' => User::findOrFail($userId),
+        ];
+
+        $postUser['real_time_notification'] = json_encode($notification);
+        
+        // event(new LikeEvent(($postUser)));
+        broadcast(new LikeEvent($postUser)); 
+
+
 
         //remove the indexes created earlier
         unset($postUser['liker_id'], $postUser['liked_post']);

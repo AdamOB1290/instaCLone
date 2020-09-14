@@ -37,15 +37,13 @@ class LikeEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('likes.' . $this->user->id);
+        return new PrivateChannel('activity.' . $this->user->id);
     }
 
     // broadcastWith is the correct spelling
     public function broadcastWith()
     {
-
         return ['realTime_notification' => json_decode($this->notification)]; 
-
     }
 
 }

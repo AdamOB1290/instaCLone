@@ -269,34 +269,60 @@ class UserController extends Controller
 
     public function follow($followedUserId, $sessionUserId)
     {
-        $user = User::findOrFail($sessionUserId);
-        
-        if (!isset($user['followed']) || !in_array($followedUserId, $user['followed'])) {
-            $user->dynamicFollow($followedUserId, $sessionUserId, 'followed');
-            $user->dynamicFollow($sessionUserId, $followedUserId, 'followers');
+        $followedUser = User::findOrFail($followedUserId);
+        $sessionUser = User::findOrFail($sessionUserId);
+        // dd(!in_array($followedUserId, $sessionUser['followed']), $sessionUser, $followedUserId);
+        if (!isset($sessionUser['followed']) || !in_array($followedUserId, $sessionUser['followed'])) {
+            $sessionUser->dynamicFollow($followedUserId, $sessionUserId, 'followed');
+            $sessionUser->dynamicFollow($sessionUserId, $followedUserId, 'followers');
         }
         
 
         //we are creating the followerId to access it on to the $notifiable object in App\Notifications\Follow;
 
-        $user['followerId'] = $sessionUserId;
+        $followedUser['followerId'] = $sessionUserId;
 
-        event(new UserFollowed($user));
-        // unset($user['followerId']);
-        $user = User::findOrFail($sessionUserId);
-        return $user; 
+
+        // if (Notification::pluck('notification_id')->last() != null) {
+        //     $newNotifId = Notification::pluck('notification_id')->last() + 1;
+        // } else {
+        //     $newNotifId = 1;
+        // }
+
+        $data_notifications=[
+            'object_id' => $sessionUserId,
+            'notification_message' => ' has followed you.',
+        ];
+        // FOR REAL TIME NOTIFICATION
+        $notification =
+        [
+            // 'notification_id' => $newNotifId,
+            'read' => 0,
+            'data' => $data_notifications,
+            'notifier' => User::findOrFail($sessionUserId),
+        ];
+        
+        $comment['real_time_notification'] = json_encode($notification);
+        
+        // event(new UserFollowed($followedUser));
+        broadcast(new UserFollowed($followedUser));
+
+        // unset($followedUser['followerId']);
+        
+        return $sessionUser; 
     }
 
     public function unfollow($followedUserId, $sessionUserId)
     {
-        $user = User::findOrFail($sessionUserId);
-        if (isset($user['followed']) && in_array($followedUserId, $user['followed'])) {
-            $user->dynamicUnfollow($followedUserId, $sessionUserId, 'followed');
-            $user->dynamicUnfollow($sessionUserId, $followedUserId, 'followers');
+        $followedUser = User::findOrFail($followedUserId);
+        $sessionUser = User::findOrFail($sessionUserId);
+
+        if (isset($sessionUser['followed']) && in_array($followedUserId, $sessionUser['followed'])) {
+            $sessionUser->dynamicUnfollow($followedUserId, $sessionUserId, 'followed');
+            $sessionUser->dynamicUnfollow($sessionUserId, $followedUserId, 'followers');
         }
         
-        $user = User::findOrFail($sessionUserId);
-        return $user; 
+        return $sessionUser; 
 
     }
 

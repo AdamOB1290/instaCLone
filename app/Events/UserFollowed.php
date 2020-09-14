@@ -10,9 +10,12 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class UserFollowed
+class UserFollowed implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
+
+    public $user;
+    public $notification;
 
     /**
      * Create a new event instance.
@@ -22,6 +25,7 @@ class UserFollowed
     public function __construct($user)
     {
         $this->user=$user;
+        $this->notification = $user['real_time_notification'];
     }
 
     /**
@@ -31,6 +35,12 @@ class UserFollowed
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('channel-name');
+        return new PrivateChannel('activity.' . $this->user->id);
     }
+    // broadcastWith is the correct spelling
+    public function broadcastWith()
+    {
+        return ['realTime_notification' => json_decode($this->notification)]; 
+
+    }    
 }

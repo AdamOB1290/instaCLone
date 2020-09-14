@@ -6,7 +6,12 @@
                 <img class="slider-image" :src="user.pfp" />
                 <i class="plusStory fas fa-plus-circle position-absolute text-primary"></i>
             </div>
-            <span class="username font-weight-bold">{{user.username}}</span>
+            <span class="text-center username font-weight-bold">{{user.username}}</span>
+            </div>
+            <div>                        
+                <button :id="'userId'+user.id" :data-followerId="user.id" @click="followUnfollow" class="btn btn-primary" 
+                    v-text="`${sessionUser.followed.includes(user.id) ? 'Unfollow' : 'Follow'}`">
+                </button>
             </div>
             <div class="d-flex align-items-center justify-content-center flex-column">
                 <span class=" font-weight-bold">{{user.posts.length}}</span>
@@ -28,7 +33,7 @@
                         <span class="username font-weight-bold">{{follower.username}}</span>
                         </div>
                         <button :id="'userId'+follower.id" :data-followerId="follower.id" @click="followUnfollow" class="btn btn-primary" 
-                            v-text="`${user.followed.includes(follower.id) ? 'Unfollow' : 'Follow'}`">
+                            v-text="`${sessionUser.followed.includes(follower.id) ? 'Unfollow' : 'Follow'}`">
                         </button>
                     </li>
                 </ul>
@@ -41,7 +46,7 @@
                         <span class="username font-weight-bold">{{followedUser.username}}</span>
                         </div>
                         <button :id="'userId'+followedUser.id" :data-followerId="followedUser.id" @click="followUnfollow" class="btn btn-primary" 
-                            v-text="`${user.followed.includes(followedUser.id) ? 'Unfollow' : 'Follow'}`">
+                            v-text="`${sessionUser.followed.includes(followedUser.id) ? 'Unfollow' : 'Follow'}`">
                         </button>
                     </li>
                 </ul>            
@@ -119,11 +124,24 @@ export default {
             publicPath: 'http://localhost:8000/',
             user:'',
             sessionUserId: this.$sessionUserId,
+            sessionUser: '',
             userId: '',
         }
     },
 
     created: function () {
+        if (this.sessionUserId) {
+        axios
+        .get(this.publicPath+"users/"+this.sessionUserId)
+        .then((data) => { 
+            this.sessionUser = data.data;
+            if (!this.sessionUser.followed) {
+                this.sessionUser.followed = [];
+            }
+        })
+        .catch((err) => {});
+        }
+
         this.userId = window.location.href.split("/")[3];
         // console.log(this.userId);
         this.followUnfollow = _.debounce(this.followUnfollow, 300)
@@ -161,26 +179,21 @@ export default {
             }
 
             //  check if the post is already liked by the user
-            if (this.user.followed.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))) {
+            if (this.sessionUser.followed.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))) {
                 // apply the laravel unlike function
                 axios
-                    .get(
-                    "users/" +
-                        $("#" + userFollowId)[0].attributes[1].nodeValue +
-                        "/" +
-                        this.user.id +
-                        "/unfollow"
-                    )
+                    .get(this.publicPath+"users/" +$("#" + userFollowId)[0].attributes[1].nodeValue +"/" 
+                    +this.sessionUser.id +"/unfollow")
                     .then((response) => {
                     
                     // get the index of the user id we want to delete
-                    let index = this.user.followed.indexOf(
+                    let index = this.sessionUser.followed.indexOf(
                         parseInt($("#" + userFollowId)[0].attributes[1].nodeValue)
                     );
 
-                    if (this.user.followed.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))){
+                    if (this.sessionUser.followed.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))){
                         //  remove it from the followedUsersId array
-                        this.user.followed.splice(index, 1)
+                        this.sessionUser.followed.splice(index, 1)
                         $("#" + userFollowId)[0].innerHTML = 'Follow' 
                     
                     }
@@ -190,12 +203,12 @@ export default {
             } else {
                 // apply the laravel follow function
                 axios
-                .get("users/" + $("#" + userFollowId)[0].attributes[1].nodeValue + "/" + this.user.id + "/follow" )
+                .get(this.publicPath+"users/" + $("#" + userFollowId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/follow" )
                 .then((response) => {
                     
-                    if (!this.user.followed.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))){
+                    if (!this.sessionUser.followed.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))){
                         // add the user id to the followedUsersId array
-                        this.user.followed.push(
+                        this.sessionUser.followed.push(
                         parseInt($("#" + userFollowId)[0].attributes[1].nodeValue)
                         )
                         $("#" + userFollowId)[0].innerHTML = 'Unfollow' 

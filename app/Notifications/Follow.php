@@ -51,6 +51,7 @@ class Follow extends Notification
         
         
         return [
+            'object_id' => (string)$notifiable->notifier_id,
             'notification_message' => $notifiable->notificationMessage,
             'notifier_id' => (string)$notifiable->notifier_id,
         ];

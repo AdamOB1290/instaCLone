@@ -6,6 +6,7 @@ use App\Comment;
 use App\Events\CommentCreated;
 use App\Events\LikeEvent;
 use App\Notification;
+use App\Post;
 use App\User;
 use Illuminate\Http\Request;
 
@@ -57,9 +58,33 @@ class CommentController extends Controller
     public function store(Request $request)
     {
         $comment = Comment::create($this->validatedData());
+        
+        $notifiedUserId=Post::findOrFail($comment->post_id)->user_id;
 
+        $notifierId= $comment->user_id;
 
-        event(new CommentCreated($comment));
+        // if (Notification::pluck('notification_id')->last() != null) {
+        //     $newNotifId = Notification::pluck('notification_id')->last() + 1;
+        // } else {
+        //     $newNotifId = 1;
+        // }
+
+        $data_notifications=[
+            'object_id' => $comment->id,
+            'notification_message' => ' has replied to your comment!',
+        ];
+        // FOR REAL TIME NOTIFICATION
+        $notification =
+        [
+            // 'notification_id' => $newNotifId,
+            'read' => 0,
+            'data' => $data_notifications,
+            'notifier' => User::findOrFail($notifierId),
+            'notified_userId' => $notifiedUserId,
+        ];
+        
+        $comment['real_time_notification'] = json_encode($notification);
+        broadcast(new CommentCreated($comment));
 
         $user = User::findOrFail($comment['user_id']);
 
@@ -197,11 +222,11 @@ class CommentController extends Controller
         // index the comment id into it
         $commentUser['liked_comment'] = (string)$comment->id;
 
-        if (Notification::pluck('id')->last() != null) {
-            $newNotifId = Notification::pluck('id')->last() + 1;
-        } else {
-            $newNotifId = 1;
-        }
+        // if (Notification::pluck('notification_id')->last() != null) {
+        //     $newNotifId = Notification::pluck('notification_id')->last() + 1;
+        // } else {
+        //     $newNotifId = 1;
+        // }
 
         $data_notifications=[
             'object_id' => $comment->id,
@@ -210,7 +235,7 @@ class CommentController extends Controller
         // FOR REAL TIME NOTIFICATION
         $notification =
         [
-            'id' => $newNotifId,
+            // 'notification_id' => $newNotifId,
             'read' => 0,
             'data' => $data_notifications,
             'notifier' => User::findOrFail($userId),

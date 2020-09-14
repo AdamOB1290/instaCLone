@@ -1,7 +1,7 @@
 <template>
     <div class="message_feed_wrapper" ref="message_feed_wrapper">
         <ul v-if="contact">
-            <li v-for="message in messages" :key="message.id" :class="`message_wrapper ${message.receiver_id == contact.id ? 'sent' : 'received'}`">
+            <li v-for="(message, key) in messages" :key="key" :class="`message_wrapper ${message.receiver_id == contact.id ? 'sent' : 'received'}`">
                 <div class="message">
                     <div @click="goToPost" :data-postId="message.shared_post.id" v-if="message.shared_post">
                         <div class="d-flex align-items-center border-down pb-1 px-3">

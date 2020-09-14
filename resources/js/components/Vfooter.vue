@@ -94,25 +94,25 @@
 
     methods: {
       clearNotifications(event){
-        var targetId = event.target.attributes[0].nodeValue
-        var updatedPost = $(event.target)[0].value
-        axios({
-          method: 'patch',
-          url: 'posts/'+targetId,
-          data: {
-            description: updatedPost,
-            },
-        }).then((response) => {
-          this.postFeed.forEach(page => {
-            page.forEach(post => {
-              if (post.id == targetId) {
-                post.editState = false
+        // var targetId = event.target.attributes[0].nodeValue
+        // var updatedPost = $(event.target)[0].value
+        // axios({
+        //   method: 'patch',
+        //   url: 'posts/'+targetId,
+        //   data: {
+        //     description: updatedPost,
+        //     },
+        // }).then((response) => {
+        //   this.postFeed.forEach(page => {
+        //     page.forEach(post => {
+        //       if (post.id == targetId) {
+        //         post.editState = false
                 
-              } 
-            });
-          });
-          this.forceRerender()
-        })
+        //       } 
+        //     });
+        //   });
+        //   this.forceRerender()
+        // })
       },
       
       update_footer() {
@@ -154,12 +154,22 @@
     },
     mounted: function () {
       
-     if(this.sessionUserId) { Echo.private(`likes.${this.sessionUserId}`)
-         .listen('LikeEvent', (e) => {
+     if(this.sessionUserId) { 
+       
+       Echo.private(`activity.${this.sessionUserId}`)
+         .listen('CommentCreated', (e) => {
             this.notifications.push(e.realTime_notification);
             this.update_footer()
-            console.log(this.notifications);
-        })}
+        })
+         .listen('UserFollowed', (e) => {
+            this.notifications.push(e.realTime_notification);
+            this.update_footer()
+        })
+          .listen('LikeEvent', (e) => {
+            this.notifications.push(e.realTime_notification);
+            this.update_footer()
+        })
+      }
 
         this.observer = new MutationObserver(mutations => {
           for (const m of mutations) {

@@ -10,9 +10,12 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class CommentCreated
+class CommentCreated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
+
+    public $comment;
+    public $notification;
 
     /**
      * Create a new event instance.
@@ -22,6 +25,7 @@ class CommentCreated
     public function __construct($comment)
     {
         $this->comment=$comment;
+        $this->notification = $comment['real_time_notification'];
     }
 
     /**
@@ -31,6 +35,13 @@ class CommentCreated
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('channel-name');
+        return new PrivateChannel('activity.' . json_decode($this->notification)->notified_userId);
     }
+
+    // broadcastWith is the correct spelling
+    public function broadcastWith()
+    {
+        return ['realTime_notification' => json_decode($this->notification)]; 
+    }
+    
 }
