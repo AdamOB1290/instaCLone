@@ -1,10 +1,21 @@
 <template>
-  <div key="feedKey" class="h-100">
-    <div v-if="posts.length > 0" class="glider story_slider border-down pb-1" :class="post_display">
+  <div key="feedKey" class="h-100 mt-3 mb-5">
+    
+
+    <storyGlider 
+    :sessionUser="sessionUser" 
+    :storyFeed="storyFeed" 
+    :storyUsers="storyUsers" 
+    v-if="posts.length > 0" 
+    :class="post_display"
+    :widget="widget">
+    </storyGlider>
+<!-- <searchComponent :postFeed="posts" ></searchComponent> -->
+    <!-- <div v-if="posts.length > 0" class="glider story_slider border-down pb-1" :class="post_display">
       <div class="story_wrapper d-flex px-2 my-1">
         <div class="float-left d-flex flex-column align-items-center mr-1">
           <div class="gradiant_background d-flex">
-            <!-- why do we need both m-auto and dflex to center the image  -->
+            why do we need both m-auto and dflex to center the image 
             <div class="m-auto d-flex align-items-center justify-content-center position-relative">
               <img class="slider-image" :src="sessionUser.pfp" />
               <i class="plusStory fas fa-plus-circle position-absolute text-primary"></i>
@@ -24,17 +35,19 @@
           <div class="storyObserver"><observer v-on:intersect="storyIntersected"/></div>
         </div>
       </div>
-    </div>
+    </div> -->
+    
+    
 
-    <div class="feed_wrapper " v-for="(page, key) in postFeed" :key="key" :class="post_display">
+    <div  class="feed_wrapper " v-for="(page, key) in postFeed" :key="key" :class="post_display">
       
       <div class="post_wrapper " v-for="(post, key) in page" :key="key">
         <div class="card rounded-0">
           <div class="card-head d-flex align-items-center border-down py-1">
-            <img class="pfp card-img-top rounded-circle mr-2" :src="post.user.pfp"/>
-            <span class="username font-weight-bold">{{post.user.username}}</span>
+            <img @click="goToProfile" :data-userId="post.user.id" class="pfp  rounded-circle mr-2" :src="post.user.pfp"/>
+            <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{post.user.username}}</span>
             <i class="fas fa-ellipsis-h text-secondary ml-auto mr-2 pt-2" v-b-modal="'my_postModal'+post.id"></i>
-            <b-modal modal-class="settings_Modal" :id="'my_postModal'+post.id" :ref="'my_postModal'+post.id"  hide-header hide-footer >
+            <b-modal modal-class="settings_Modal" :id="'my_postModal'+post.id" :ref="'my_postModal'+post.id"  hide-header hide-footer centered>
               <button :id="'postEditId'+post.id" :data-postId="post.id" @click="editPostDescription"  class="w-100 settings_btn px-5 py-2">Edit</button>
               <button :id="'postShareStoryId'+post.id" :data-postId="post.id" @click="shareStory"  class="w-100 settings_btn px-5 py-2">Share as story</button>
               <button :id="'postDeleteId'+post.id" :data-postId="post.id" @click="deletePost" class="w-100 settings_btn text-danger px-5 py-2 border-0">Delete</button>
@@ -42,7 +55,7 @@
           </div>
 
           <div class="card-body">
-            <img  v-if="post.media_type == 'image'" class="card-img-top rounded-0" :src="post.media_file"/>
+            <img  v-if="post.media_type == 'image'" class=" rounded-0" :src="post.media_file"/>
             <video v-else-if="post.media_type == 'video'" class="post_feed_video" controls muted>
               <source :src="post.media_file"  />
             </video>
@@ -54,7 +67,7 @@
                 </svg>
 
                 <!-- comment icon -->
-                  <a :href="'http://localhost:8000/post/'+post.id">
+                  <a :href="publicPath+'post/'+post.id">
                     <svg :id="'postCommentId'+post.id" :data-postId="post.id" aria-label="Comment" class="_8-yf5 mr-3" fill="#262626" height="24" viewBox="0 0 48 48" width="24">
                       <path clip-rule="evenodd" d="M47.5 46.1l-2.8-11c1.8-3.3 2.8-7.1 2.8-11.1C47.5 11 37 .5 24 .5S.5 11 .5 24 11 47.5 24 47.5c4 0 7.8-1 11.1-2.8l11 2.8c.8.2 1.6-.6 1.4-1.4zm-3-22.1c0 4-1 7-2.6 10-.2.4-.3.9-.2 1.4l2.1 8.4-8.3-2.1c-.5-.1-1-.1-1.4.2-1.8 1-5.2 2.6-10 2.6-11.4 0-20.6-9.2-20.6-20.5S12.7 3.5 24 3.5 44.5 12.7 44.5 24z" fill-rule="evenodd"/>
                     </svg> 
@@ -66,16 +79,9 @@
 
                 <b-modal :id="'my_sharePostModal'+post.id" :ref="'my_sharePostModal'+post.id"  modal-class="sharePost_Modal"  hide-header hide-footer >
                     <ul class="sharePostUl position-relative">
-                      <span class="close_icon"></span> 
-                      <li v-for="(followedUser, key) in followedUsers" :key="key" class="d-flex justify-content-between">
-                        <div  class="" >
-                          <img class="pfp card-img-top rounded-circle mr-2" :src="followedUser.pfp"/>
-                          <span class="username font-weight-bold">{{followedUser.username}}</span>
-                        </div>
-                        <button :id="'postShareId'+post.id" :data-contactId="followedUser.id" :data-postId="post.id" @click="sendPost" class="btn-primary py-1 px-4  border-0 rounded  h-25 align-self-center">Send</button>
-                      </li>
+                      <span  @click="$bvModal.hide('my_sharePostModal'+post.id)" class="close_icon"></span> 
+                      <searchComponent :users="followedUsers" :post="post"></searchComponent>
                     </ul>
-                    
                 </b-modal> 
 
                 <!-- save icon -->
@@ -91,7 +97,7 @@
               <div class="card-text position-relative">
                 <span v-if="post.editState" :id="'cancelPostEditId'+post.id" :data-postId="post.id" @click="cancelEditPostDescription" class="cancel_edit post_cancel text-danger">Cancel</span>
                 <span class="description show_more">
-                  <span class="username font-weight-bold">{{post.user.username}}</span>
+                  <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{post.user.username}}</span>
                   <textarea v-if="post.editState"  v-model="post.description" @keydown.enter.exact.prevent 
                     @keyup.enter.exact="submitEdit" :data-postId="post.id" cols="47" rows="5" class="mt-2 editTxt">
                   </textarea>
@@ -105,11 +111,11 @@
           </div>
 
           <div class="card-footer px-2 py-0">
-            <a href class="show_hide" v-if="post.comments.length > 2" >View All {{post.comments.length}} Comments</a>
+            <a :href="publicPath+'post/'+post.id" class="show_hide" v-if="post.comments.length > 2" >View All {{post.comments.length}} Comments</a>
             <div class="comments_wrapper" v-for="(comment, key) in post.comments.slice(0, 2)" :key="key" @click="showHideComment">
               <div class="d-flex position-relative">
                 <span class="comments show_more pr-3">
-                  <span class="username font-weight-bold">{{comment.username}}</span>
+                  <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{comment.username}}</span>
                   {{comment.content}}
                 </span>
                 <!-- like icon -->
@@ -126,52 +132,17 @@
       <observer v-on:intersect="postIntersected" />
     </div>
 
-    <div class="welcome follow_suggestions text-center mb-0" :class="user_display">
-      <h5>Welcome to Instaclone</h5>
-      <p class="welcome_message mx-4 my-0">Follow people to start seeing the photos and videos they share.</p>
-    </div>
-
+    <followUsers 
+    :sessionUser="sessionUser" 
+    :userFeed="userFeed" 
+    :users="users" 
+    :followedUsersId="followedUsersId"  
+    :followUnfollowHtml="followUnfollowHtml"
+    v-if="posts.length == 0">
+    </followUsers>
     
-    <!-- <div  class="d-flex">
-      <slick ref="slick" :options="slickOptions" v-for="(user, key) in userFeed" :key="key" ><span>1</span></slick>
-    </div>
-     -->
-    <slick ref="slick" :options="slickOptions"  v-for="(page, key) in slickForLoop " :key="key" :class="user_display" class="pt-3 pb-5 follow_suggestions d-flex justify-content-center align-items-center">
-      
-      <div v-for="(user, key) in userFeed" :key="key" class="user_wrapper py-2 px-1 position-relative">
-        <!-- on 'intersect' event trigger, apply 'intersected' function -->
-        <observer class="position-absolute" :id="'slickOsberver'+user.id" :data-slickIndex="key" v-on:intersect="reInit" />
-        <div class="card py-2 px-1 border-0 mx-1">
-
-          <div class="card-head d-flex flex-column align-items-center justify-content-center" >
-            <img class="suggestion_pfp rounded-circle"  :src="user.pfp"/>
-            <span class="suggestion_username font-weight-bold">{{user.username}}</span>
-            
-          </div>
-
-          <div class="card-body">
-            <p  class="suggestion_text">{{user.bio}}</p>
-            <div class="d-flex justify-content-center align-items-center image_wrapper">
-              <div v-for="(post, key) in user.top_posts.slice(0,3)" :key="key" class="image_div">
-                <img v-if="post.media_type == 'image'" class="suggestion_images rounded-0"  :src="post.media_file"/>
-              </div>
-            </div>
-            
-          </div>
-
-          <div class="card-footer">
-            <span class="suggestion_text">Instaclone recommended</span>
-
-            <button :id="'userId'+user.id" :data-userId="user.id" @click="followUnfollow" class="btn btn-primary" v-text="followUnfollowHtml"></button>
-          </div>
-                  
-        </div>
-        
-      </div>
-      
-    </slick>
     
-    <b-modal id="modal_post_form" ref="modal_post_form" class="settings_Modal" title="Add a Post" hide-footer>
+    <b-modal id="modal_post_form" ref="modal_post_form" class="settings_Modal" title="Add a Post" hide-footer centered>
       <validation :errors="validationErrors" v-if="validationErrors"></validation>
       <form class="addPost_form" @submit.prevent="addPost" method="post" action="" enctype="multipart/form-data">
         <b-form-group>
@@ -220,6 +191,8 @@ import VueAvatar from '../vue-avatar-editor/src/components/VueAvatar.vue';
 import VueAvatarScale from '../vue-avatar-editor/src/components/VueAvatarScale.vue';
 import ValidationErrors from './ValidationErrors';
 import StoryGlider from './StoryGlider';
+import FollowUsers from './FollowUsers';
+import SearchComponent from './SearchComponent';
 
 // import ImgCropper from "ImgCropper";
 var moment = require("moment");
@@ -234,6 +207,9 @@ export default {
   // },
   data() {
     return {
+      widget: '',
+      updateFeed: 0,
+
       // General Data
         slide: 0,
         sliding: null,
@@ -276,171 +252,17 @@ export default {
         storyUsers: [],
         storiesType: [],
         storyFeed: [],
-        storySliceIndex: 10,
-        storyIterations: 0,
 
 
       // User Data
         users: [],
         userFeed: [],
-        slickForLoop: [],
         post_display: '',
         user_display: '',
         followedUsers: [],
         followedUsersId: [],
-        followUnfollowHtml:null,
-        userSliceIndex: 10,
-        userIterations: 0,
-        userSlickIterations: 0,
-        userTarget: 7,
-      
-
-      // Slick Options
-        slickOptions: {
-          slidesToShow: 'auto',
-          slidesToScroll: 1,
-          arrows: false,
-          slickSetOption: true,
-          autoplay: false,
-          autoplaySpeed: 3000,
-          centerMode: false,
-          infinite: false,
-          responsive: [
-
-            // cards needs to be bigger through media queries
-
-              // {
-              // breakpoint: 1024,
-              // settings: {
-              //   centerMode: true,
-              //   centerPadding: '40px',
-              //     slidesToShow: 3,
-              //     slidesToScroll: 3,
-              //     infinite: true,
-              // }
-              // },
-              // {
-              // breakpoint: 900,
-              // settings: {
-              //   centerMode: true,
-              //   centerPadding: '60px',
-              //     slidesToShow: 4,
-              //     slidesToScroll: 4
-              // }
-              // },
-              // {
-              // breakpoint: 800,
-              // settings: {
-              //   centerMode: true,
-              //   centerPadding: '60px',
-              //     slidesToShow: 3,
-              //     slidesToScroll: 3
-              // }
-              // },
-              // {
-              // breakpoint: 700,
-              // settings: {
-              //   centerMode: true,
-              //   centerPadding: '10px',
-              //     slidesToShow: 3,
-              //     slidesToScroll: 3
-              // }
-              // },
-              {
-              breakpoint: 600,
-              settings: {
-                centerMode: true,
-                centerPadding: '80px',
-                  slidesToShow: 2,
-                  slidesToScroll: 2
-              }
-              },
-              {
-              breakpoint: 560,
-              settings: {
-                centerMode: true,
-                centerPadding: '65px',
-                  slidesToShow: 2,
-                  slidesToScroll: 2
-              }
-              },
-              {
-              breakpoint: 520,
-              settings: {
-                centerMode: true,
-                centerPadding: '50px',
-                  slidesToShow: 2,
-                  slidesToScroll: 2
-              }
-              },
-              {
-              breakpoint: 480,
-              settings: {
-                centerMode: true,
-                centerPadding: '120px',
-                  slidesToShow: 1,
-                  slidesToScroll: 1
-              }
-              },
-              {
-              breakpoint: 430,
-              settings: {
-                centerMode: true,
-                centerPadding: '105px',
-                  slidesToShow: 1,
-                  slidesToScroll: 1
-              }
-              },
-              {
-              breakpoint: 400,
-              settings: {
-                centerMode: true,
-                centerPadding: '90px',
-                  slidesToShow: 1,
-                  slidesToScroll: 1
-              }
-              },
-              {
-              breakpoint: 370,
-              settings: {
-                centerMode: true,
-                centerPadding: '75px',
-                  slidesToShow: 1,
-                  slidesToScroll: 1
-              }
-              },
-              {
-              breakpoint: 340,
-              settings: {
-                centerMode: true,
-                centerPadding: '60px',
-                  slidesToShow: 1,
-                  slidesToScroll: 1
-              }
-              },
-              {
-              breakpoint: 310,
-              settings: {
-                centerMode: true,
-                centerPadding: '50px',
-                  slidesToShow: 1,
-                  slidesToScroll: 1
-              }
-              },
-              {
-              breakpoint: 290,
-              settings: {
-                centerMode: true,
-                centerPadding: '45px',
-                  slidesToShow: 1,
-                  slidesToScroll: 1
-              }
-              }
-          ]
-      
-            // Any other options that can be got from plugin documentation
-        },
-    };
+        followUnfollowHtml:null,      
+    }
   },
 
   created: function () {
@@ -451,9 +273,7 @@ export default {
         this.likeUnlikePosts = _.debounce(this.likeUnlikePosts, 300)
         this.likeUnlikeComments = _.debounce(this.likeUnlikeComments, 300)
         this.saveUnsave = _.debounce(this.saveUnsave, 300)
-        this.followUnfollow = _.debounce(this.followUnfollow, 300)
         this.likedPosts.push(...this.sessionUser.liked.posts)
-        this.followedUsers.push(...this.sessionUser.followed_users)
         
         if (this.sessionUser.favorites !== null) {
           this.savedPosts.push(...this.sessionUser.favorites);
@@ -463,9 +283,12 @@ export default {
         }
 
         if (typeof data.data[0].username == "undefined") {
+          this.followedUsers.push(...this.sessionUser.followed_users)
           this.likedComments.push(...this.sessionUser.liked.comments);
           this.user_display = "d-none";
+
           this.posts = data.data;
+
           this.storyUsers.push(...this.posts[0]['story_users'])
           this.storyUsers.forEach(storyUser => {
             storyUser.stories = []
@@ -498,15 +321,12 @@ export default {
               post.saveColor = "#262626";
             }
 
-            if (post.type == "post" ) {
+            // We are getting all the posts with type " post "
+            if (post.type == "post" || post.type == "post/story" || post.type == "story/post") {
               this.postsType.push(post);
-            } else if (post.type == "story") {
-              this.storiesType.push(post);
-            } else if (post.type == "post/story" || post.type == "story/post") {
-              this.postsType.push(post);
-              this.storiesType.push(post);
-            }
+            } 
 
+            // We are getting all the posts with type " story "
             if (post.type == "story" || post.type == "post/story" || post.type == "story/post") {
               this.storyUsers.forEach(storyUser => {
                 if (storyUser.id == post.user.id) {
@@ -539,7 +359,7 @@ export default {
         } else {
           this.post_display = "d-none";
           this.users = data.data;
-
+          
           this.users.forEach(user => {
             if (user.top_posts.length == 0) {
               user.top_posts.push(
@@ -567,8 +387,6 @@ export default {
 
           this.userFeed.push(...this.users.slice(0, 10));
 
-          // to fire the slick forloop once
-          this.slickForLoop=[1]
           
         }
         
@@ -577,25 +395,14 @@ export default {
   },
 
   updated: function () {
-    axios
-      .get("posts")
-      .then((data) => {  
-        if (typeof data.data[0].username == "undefined") {
-          
-          this.posts = data.data;
-          
-        } else {
-          
-          this.users = data.data;
-          
-        }
-        
-      })
-      .catch((err) => {});
+    // this.updatefeed()
   },
 
   mounted: function () {
+    this.updateFeed =1
     this.$store.commit("changeState", true);
+    this.$store.commit("changeHomeIcon", true);
+
 
     var widget = cloudinary.createUploadWidget( 
     { cloudName: "resize", uploadPreset: "resize_preset", cropping: true },
@@ -615,7 +422,8 @@ export default {
 
      });
 
-    $('#openWidget').click(function() {
+    this.widget = widget
+    $('.openWidget').click(function() {
       widget.open();
     });
     // THIS.REFS.SHOWMORELESS NOT ACCESSIBLE
@@ -657,6 +465,28 @@ export default {
   },
 
   methods: {
+    updatefeed() {
+      if (this.updateFeed) {
+        axios
+        .get("posts")
+        .then((data) => {  
+          this.updateFeed =0
+          if (typeof data.data[0].username == "undefined") {
+            
+            this.posts = data.data;
+            
+          } else {
+            
+            this.users = data.data;
+            
+          }
+          
+        })
+        .catch((err) => {});
+      }
+      
+    },
+    
     
     // by default vues js @click has an event parameter from which we can access elements
     showHideDescription(event) {
@@ -712,76 +542,6 @@ export default {
       
     },
 
-    reInit() {
-      if (this.userSlickIterations == this.userTarget  ) {
-        this.userTarget +=10
-        if (this.userIterations < Math.floor(this.users.length / 10)) {
-        // push the next page ( of 10 users) into the array feed
-        this.userFeed.push(...this.users.slice(this.userSliceIndex, this.userSliceIndex + 10))
-
-        // increment the slice index to get the next page on the next iteration
-        this.userSliceIndex += 10
-
-        // // increment the iteration
-        this.userIterations++
-
-        
-        
-        
-      }
-      let currIndex = this.$refs.slick[0].currentSlide()
-      this.$refs.slick[0].destroy();
-      this.$nextTick(() => {
-        this.$refs.slick[0].create();
-        let slickElement = this.$refs.slick[0];
-        slickElement.goTo(currIndex, true);
-
-      });
-      }
-      
-      this.userSlickIterations++
-    },
-
-    userIntersected () {
-      
-      if (this.userIterations < Math.floor(this.users.length / 10)) {
-        // push the next page ( of 10 users) into the array feed
-        this.userFeed.push(...this.users.slice(this.userSliceIndex, this.userSliceIndex + 1));
-
-        // increment the slice index to get the next page on the next iteration
-        this.userSliceIndex += 1;
-
-        // increment the iteration
-        this.userIterations++;
-       
-   
-        
-      // console.log(this.$refs);
-        // console.log('iteration :'+this.iterations);
-        // console.log('limit :'+Math.ceil(this.posts.length / 10));
-        // console.log(this.iterations < Math.ceil(this.posts.length / 10));
-        
-        
-      }
-    },
-
-    storyIntersected () {
-      if (this.storyIterations < Math.floor(this.storyUsers.length / 10)) {
-        // push the next page ( of 10 stories) into the array feed
-        this.storyFeed.push(this.storyUsers.slice(this.storySliceIndex, this.storySliceIndex + 10));
-
-        // increment the slice index to get the next page on the next iteration
-        this.storySliceIndex += 10;
-
-        // increment the iteration
-        this.storyIterations++;
-
-        // console.log('iteration :'+this.iterations);
-        // console.log('limit :'+Math.ceil(this.posts.length / 10));
-        // console.log(this.iterations < Math.ceil(this.posts.length / 10));
-      }
-    },
-
     likeUnlikePosts(event) {
 
       let postLikeId
@@ -795,57 +555,66 @@ export default {
         postLikeId = $(event.target).attr("id");
         dataPostId = $(event.target).attr("data-postId");
       }
+
+      if (this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
+
+        // get the index of the post id we want to delete
+        let index = this.likedPosts.indexOf(
+          parseInt($("#" + postLikeId)[0].attributes[1].nodeValue)
+        );
+        //  remove it from the likedPosts array
+        console.log(this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue)));
+        console.log('Unlike frontend', this.likedPosts, parseInt($("#" + postLikeId)[0].attributes[1].nodeValue));
+        this.likedPosts.splice(index, 1);
+        console.log(this.likedPosts, parseInt($("#" + postLikeId)[0].attributes[1].nodeValue));
+
+        $("#" + postLikeId)[0].attributes[2].nodeValue = "#262626";
+        $("#" + postLikeId)[0].firstChild.attributes[0].nodeValue =
+          "M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+        
+        this.postFeed.forEach(postPage => {
+          postPage.forEach(post => {
+              if (post.id == dataPostId ) {
+                let index = post.likes.indexOf(this.sessionUser.id)
+                post.likes.splice(index, 1)
+              } 
+          });
+        });
+    } else {
+         
+            // add the post id to the likedPosts array
+            console.log(this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue)));
+            console.log(this.likedPosts, parseInt($("#" + postLikeId)[0].attributes[1].nodeValue));
+            this.likedPosts.push(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue));
+            console.log('Like frontend',this.likedPosts, parseInt($("#" + postLikeId)[0].attributes[1].nodeValue));
+            $("#" + postLikeId)[0].attributes[2].nodeValue = "#ed4956";
+            $("#" + postLikeId)[0].firstChild.attributes[0].nodeValue =
+              "M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+
+            this.postFeed.forEach(postPage => {
+              postPage.forEach(post => {
+                  if (post.id == dataPostId ) {
+                    post.likes.push(this.sessionUser.id)
+                  } 
+              });
+            });
+        
+    }
+
         //  check if the post is already liked by the user
         if (this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
             // apply the laravel unlike function
             axios
-              .get("posts/" +$("#" + postLikeId)[0].attributes[1].nodeValue +"/" +this.$sessionUser.id +"/unlike")
+              .get("posts/" +$("#" + postLikeId)[0].attributes[1].nodeValue +"/" +this.sessionUser.id +"/unlike")
               .then((response) => {
-                if (this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
-
-                  // get the index of the post id we want to delete
-                  let index = this.likedPosts.indexOf(
-                    parseInt($("#" + postLikeId)[0].attributes[1].nodeValue)
-                  );
-                  //  remove it from the likedPosts array
-                  this.likedPosts.splice(index, 1);
-          
-                  $("#" + postLikeId)[0].attributes[2].nodeValue = "#262626";
-                  $("#" + postLikeId)[0].firstChild.attributes[0].nodeValue =
-                    "M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
-                  
-                  this.postFeed.forEach(postPage => {
-                    postPage.forEach(post => {
-                        if (post.id == dataPostId ) {
-                          let index = post.likes.indexOf(this.sessionUser.id)
-                          post.likes.splice(index, 1)
-                        } 
-                    });
-                  });
-                }
-
+                console.log('Unlike database', response.data);
               });
         } else {
           // apply the laravel like function
           axios
-            .get("posts/" + $("#" + postLikeId)[0].attributes[1].nodeValue + "/" + this.$sessionUser.id + "/like")
+            .get("posts/" + $("#" + postLikeId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/like")
             .then((response) => {
-              if (!this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
-                // add the post id to the likedPosts array
-                this.likedPosts.push(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue));
-                $("#" + postLikeId)[0].attributes[2].nodeValue = "#ed4956";
-                $("#" + postLikeId)[0].firstChild.attributes[0].nodeValue =
-                  "M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
-
-                this.postFeed.forEach(postPage => {
-                  postPage.forEach(post => {
-                      if (post.id == dataPostId ) {
-                        post.likes.push(this.sessionUser.id)
-                      } 
-                  });
-                });
-              }
-
+                console.log('Like database', response.data);
             });
 
         }
@@ -871,7 +640,7 @@ export default {
         if (this.likedComments.includes(parseInt($("#" + commentLikeId)[0].attributes[1].nodeValue))) {
             // apply the laravel unlike function
             axios
-              .get("post/comments/" +$("#" + commentLikeId)[0].attributes[1].nodeValue +"/" +this.$sessionUser.id +"/unlike")
+              .get("post/comments/" +$("#" + commentLikeId)[0].attributes[1].nodeValue +"/" +this.sessionUser.id +"/unlike")
               .then((response) => {
                 if (this.likedComments.includes(parseInt($("#" + commentLikeId)[0].attributes[1].nodeValue))) {
 
@@ -904,7 +673,7 @@ export default {
         } else {
           // apply the laravel like function
           axios
-            .get("post/comments/" + $("#" + commentLikeId)[0].attributes[1].nodeValue + "/" + this.$sessionUser.id + "/like")
+            .get("post/comments/" + $("#" + commentLikeId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/like")
             .then((response) => {
               if (!this.likedComments.includes(parseInt($("#" + commentLikeId)[0].attributes[1].nodeValue))) {
                 // add the post id to the this.likedComments array
@@ -931,65 +700,6 @@ export default {
         }
     },
 
-    followUnfollow(event) {
-      let userFollowId;
-
-      if (typeof $(event.target).attr("id") == 'undefined') {
-        userFollowId = $(event.target.parentElement).attr("id");
-      } else {
-        userFollowId = $(event.target).attr("id");
-      }
-
-      //  check if the post is already liked by the user
-      if (this.followedUsersId.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))) {
-          // apply the laravel unlike function
-          axios
-            .get(
-              "users/" +
-                $("#" + userFollowId)[0].attributes[1].nodeValue +
-                "/" +
-                this.sessionUser.id +
-                "/unfollow"
-            )
-            .then((response) => {
-              
-              // get the index of the user id we want to delete
-              let index = this.followedUsersId.indexOf(
-                parseInt($("#" + userFollowId)[0].attributes[1].nodeValue)
-              );
-
-              if (this.followedUsersId.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))){
-                //  remove it from the followedUsersId array
-                this.followedUsersId.splice(index, 1)
-                $("#" + userFollowId)[0].innerHTML = 'Follow' 
-               
-              }
-              
-              
-            });
-      } else {
-        // apply the laravel follow function
-        axios
-          .get("users/" + $("#" + userFollowId)[0].attributes[1].nodeValue + "/" + this.$sessionUser.id + "/follow" )
-          .then((response) => {
-            
-            if (!this.followedUsersId.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))){
-                // add the user id to the followedUsersId array
-                this.followedUsersId.push(
-                  parseInt($("#" + userFollowId)[0].attributes[1].nodeValue)
-                )
-                $("#" + userFollowId)[0].innerHTML = 'Unfollow' 
-                               
-
-              }
-            
-          });
-                 
-         
-          
-      }
-    },
-
     saveUnsave(event) {
       let postSaveId; 
 
@@ -1003,7 +713,7 @@ export default {
       //  check if the post is already saved by the user
       if ( this.savedPosts.includes( parseInt($("#" + postSaveId)[0].attributes[1].nodeValue))) {
         // apply the laravel unSave function
-        axios.get("posts/" + $("#" + postSaveId)[0].attributes[1].nodeValue + "/" + this.$sessionUser.id + "/unfavorite")
+        axios.get("posts/" + $("#" + postSaveId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/unfavorite")
           .then((response) => {
             if ( this.savedPosts.includes( parseInt($("#" + postSaveId)[0].attributes[1].nodeValue))){
               // get the index of the post id we want to delete
@@ -1021,7 +731,7 @@ export default {
           });
       } else {
         // apply the laravel Save function
-        axios.get("posts/" + $("#" + postSaveId)[0].attributes[1].nodeValue + "/" + this.$sessionUser.id + "/favorite")
+        axios.get("posts/" + $("#" + postSaveId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/favorite")
           .then((response) => {
             if ( !this.savedPosts.includes( parseInt($("#" + postSaveId)[0].attributes[1].nodeValue))){
               // add the post id to the savedPosts array
@@ -1109,7 +819,6 @@ export default {
       formData.append('description', this.postForm.postCaption);
       formData.append('type', this.postForm.mediaType);
       formData.append('user_id', this.sessionUser.id);
-          
       axios({
         method: 'post',
         url: 'posts',
@@ -1171,12 +880,15 @@ export default {
       this.postFeed.forEach(page => {
         page.forEach(post => {
           if (post.id == targetId) {
+            
             post.editState = true
+            console.log(post.editState);
           } 
         });
       });
       $(this.$refs)[0]['my_postModal'+targetId][0].hide() 
-      this.forceRerender()
+      this.updatefeed()
+      // this.forceRerender()
     },
 
     cancelEditPostDescription(event) {
@@ -1215,20 +927,6 @@ export default {
       })
     },
 
-    sendPost (event) {
-      var targetcontactId = event.target.attributes[1].nodeValue
-      var targetPostId = event.target.attributes[2].nodeValue
-
-      axios.post('/conversation/send', {
-          contactId: targetcontactId,
-          sharedPostId: targetPostId
-      }).then((response)=>{
-        // $(this.$refs)[0]['my_sharePostModal'+targetPostId][0].hide() 
-      }).catch((err) => {
-      });
-
-    },
-
     shareStory (event) {
       var targetId = event.target.attributes[1].nodeValue
       var updatedType = 'post/story'
@@ -1246,22 +944,23 @@ export default {
 
     },
 
-    storyHref (event) {
-      var targetId = event.target.attributes[0].nodeValue
-      window.location.replace(this.publicPath+'story/'+targetId);   
-      
-      // console.log('dfqsdfsd');
+    goToProfile(event) {
+      var userId = event.target.attributes[0].nodeValue;
+      window.location.replace(this.publicPath+userId+'/profile')
     },
+    
   },
 
 
   components: {
-    Observer,
     Slick,
+    Observer,
     VueAvatar,
     VueAvatarScale,
     ValidationErrors,
     StoryGlider,
+    FollowUsers,
+    SearchComponent,
   },
 };
 </script>

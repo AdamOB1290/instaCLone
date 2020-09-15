@@ -31,6 +31,9 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\CommentCreated' => [
             'App\Listeners\CommentNotification',
         ],
+        'App\Events\ReplyCreated' => [
+            'App\Listeners\ReplyNotification',
+        ],
         'App\Events\SavedPost' => [
             'App\Listeners\SavedPostNotification',
         ],

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Comment;
 use App\Events\CommentCreated;
 use App\Events\LikeEvent;
+use App\Events\ReplyCreated;
 use App\Notification;
 use App\Post;
 use App\User;
@@ -85,6 +86,20 @@ class CommentController extends Controller
         
         $comment['real_time_notification'] = json_encode($notification);
         broadcast(new CommentCreated($comment));
+
+        if ($comment->parent_comment_id != 0) {
+            $notifiedUserId=Comment::findOrFail($comment->parent_comment_id)->user_id;
+            $notification =
+            [
+                // 'notification_id' => $newNotifId,
+                'read' => 0,
+                'data' => $data_notifications,
+                'notifier' => User::findOrFail($notifierId),
+                'notified_userId' => $notifiedUserId,
+            ];
+            $comment['real_time_notification'] = json_encode($notification);
+            broadcast(new ReplyCreated($comment));
+        }
 
         $user = User::findOrFail($comment['user_id']);
 

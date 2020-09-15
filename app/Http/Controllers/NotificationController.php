@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+
+
 use App\Events\LikeEvent;
 use App\Notification;
 use App\User;
@@ -25,5 +27,15 @@ class NotificationController extends Controller
         $notifications = Notification::where('notifiable_id', $userId)->where('type', 'App\Notifications\Message')->get();
         
         return  $notifications;
+    }
+
+    public function clearNotifications ($userId) {
+        $sessionUser = User::findOrFail($userId);
+        // dd($sessionUser->unreadNotifications);
+        dd($sessionUser->notifications);
+
+        // foreach ($sessionUser->unreadNotifications as $notification) {
+        //     $notification->markAsRead();
+        // }
     }
 }

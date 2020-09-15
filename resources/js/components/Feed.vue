@@ -7,7 +7,8 @@
     :storyFeed="storyFeed" 
     :storyUsers="storyUsers" 
     v-if="posts.length > 0" 
-    :class="post_display">
+    :class="post_display"
+    :widget="widget">
     </storyGlider>
 <!-- <searchComponent :postFeed="posts" ></searchComponent> -->
     <!-- <div v-if="posts.length > 0" class="glider story_slider border-down pb-1" :class="post_display">
@@ -46,7 +47,7 @@
             <img @click="goToProfile" :data-userId="post.user.id" class="pfp  rounded-circle mr-2" :src="post.user.pfp"/>
             <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{post.user.username}}</span>
             <i class="fas fa-ellipsis-h text-secondary ml-auto mr-2 pt-2" v-b-modal="'my_postModal'+post.id"></i>
-            <b-modal modal-class="settings_Modal" :id="'my_postModal'+post.id" :ref="'my_postModal'+post.id"  hide-header hide-footer >
+            <b-modal modal-class="settings_Modal" :id="'my_postModal'+post.id" :ref="'my_postModal'+post.id"  hide-header hide-footer centered>
               <button :id="'postEditId'+post.id" :data-postId="post.id" @click="editPostDescription"  class="w-100 settings_btn px-5 py-2">Edit</button>
               <button :id="'postShareStoryId'+post.id" :data-postId="post.id" @click="shareStory"  class="w-100 settings_btn px-5 py-2">Share as story</button>
               <button :id="'postDeleteId'+post.id" :data-postId="post.id" @click="deletePost" class="w-100 settings_btn text-danger px-5 py-2 border-0">Delete</button>
@@ -79,14 +80,7 @@
                 <b-modal :id="'my_sharePostModal'+post.id" :ref="'my_sharePostModal'+post.id"  modal-class="sharePost_Modal"  hide-header hide-footer >
                     <ul class="sharePostUl position-relative">
                       <span  @click="$bvModal.hide('my_sharePostModal'+post.id)" class="close_icon"></span> 
-                      <!-- <li v-for="(followedUser, key) in followedUsers" :key="key" class="d-flex justify-content-between">
-                        <div  class="" >
-                          <img @click="goToProfile" :data-userId="post.user.id" class="pfp  rounded-circle mr-2" :src="followedUser.pfp"/>
-                          <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{followedUser.username}}</span>
-                        </div>
-                        <button :id="'postShareId'+post.id" :data-contactId="followedUser.id" :data-postId="post.id" @click="sendPost" class="btn-primary py-1 px-4  border-0 rounded  h-25 align-self-center">Send</button>
-                      </li> -->
-                      <searchComponent :followedUsers="followedUsers" :post="post"></searchComponent>
+                      <searchComponent :users="followedUsers" :post="post"></searchComponent>
                     </ul>
                 </b-modal> 
 
@@ -117,7 +111,7 @@
           </div>
 
           <div class="card-footer px-2 py-0">
-            <a href class="show_hide" v-if="post.comments.length > 2" >View All {{post.comments.length}} Comments</a>
+            <a :href="publicPath+'post/'+post.id" class="show_hide" v-if="post.comments.length > 2" >View All {{post.comments.length}} Comments</a>
             <div class="comments_wrapper" v-for="(comment, key) in post.comments.slice(0, 2)" :key="key" @click="showHideComment">
               <div class="d-flex position-relative">
                 <span class="comments show_more pr-3">
@@ -213,7 +207,7 @@ export default {
   // },
   data() {
     return {
-
+      widget: '',
       updateFeed: 0,
 
       // General Data
@@ -428,7 +422,8 @@ export default {
 
      });
 
-    $('#openWidget').click(function() {
+    this.widget = widget
+    $('.openWidget').click(function() {
       widget.open();
     });
     // THIS.REFS.SHOWMORELESS NOT ACCESSIBLE

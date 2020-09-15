@@ -1,16 +1,16 @@
 <template>
     <div>
         <div  class="glider story_slider border-down pb-1" >
-            <div class="story_wrapper d-flex px-2 my-1">
-                <div class="float-left d-flex flex-column align-items-center mr-1">
-                <div class="gradiant_background d-flex">
-                    <!-- why do we need both m-auto and dflex to center the image  -->
-                    <div class="m-auto d-flex align-items-center justify-content-center position-relative">
-                    <img class="slider-image" :src="sessionUser.pfp" />
-                    <i class="plusStory fas fa-plus-circle position-absolute text-primary"></i>
+            <div  class="story_wrapper d-flex px-2 my-1">
+                <div @click="openWidget" class="float-left d-flex flex-column align-items-center mr-1">
+                    <div class="gradiant_background d-flex">
+                        <!-- why do we need both m-auto and dflex to center the image  -->
+                        <div class="m-auto d-flex align-items-center justify-content-center position-relative">
+                        <img class="slider-image" :src="sessionUser.pfp" />
+                        <i class="plusStory fas fa-plus-circle position-absolute text-primary"></i>
+                        </div>
                     </div>
-                </div>
-                <span class="story-username text-center">Your Story</span>
+                    <span class="story-username text-center">Your Story</span>
                 </div>
                 <div v-for="(page, key) in storyFeed" :key="key" class="d-flex position-relative">
                 <div @click="storyHref" v-for="(user, key) in page" :key="key" class="mx-1 d-flex flex-column align-items-center">
@@ -32,17 +32,7 @@
 import Observer from "./Observer";
 
 export default {
-    props: {
-        sessionUser: {
-            type: Object,
-        },
-        storyFeed: {
-            type: Array,
-        },
-        storyUsers: {
-            type: Array,
-        },
-    },
+    props: ['sessionUser', 'storyFeed', 'storyUsers', 'widget'],
 
     data(){
         return {
@@ -61,6 +51,10 @@ export default {
     },
 
     methods: {
+        openWidget() {
+            this.widget.open();
+        },
+        
         storyHref (event) {
             var targetId = event.target.attributes[0].nodeValue
             window.location.replace(this.publicPath+'story/'+targetId);  
@@ -86,6 +80,10 @@ export default {
     },
 
     computed: {
+    },
+
+    mounted: function() {
+       
     },
 
     component: {

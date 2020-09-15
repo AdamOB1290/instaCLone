@@ -1,36 +1,28 @@
 <template>
-    <div class="container">
-       <div id="search">
+  <div class="container">
+    <div id="search">
         <div class="search-wrapper">
             <input type="text" v-model="search" placeholder="Search title.."/>
                 <label>Search title:</label>
         </div>
-        <!-- <div class="wrapper">
-            <div class="card" v-for="(post, key) in filteredList" :key="key">
-            <a v-bind:href="post.link" target="_blank">
-                <img v-bind:src="post.media_file"/>
-                <small>posted by: {{ post.user.username }}</small>
-                {{ post.user.username }}
-            </a>
-            </div> -->
         <div class="wrapper">
-            <li v-for="(followedUser, key) in filteredList" :key="key" class="d-flex justify-content-between">
-                <div  class="" >
-                    <img @click="goToProfile" :data-userId="post.user.id" class="pfp  rounded-circle mr-2" :src="followedUser.pfp"/>
-                    <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{followedUser.username}}</span>
-                </div>
-                <button :id="'postShareId'+post.id" :data-contactId="followedUser.id" :data-postId="post.id" @click="sendPost" class="btn-primary py-1 px-4  border-0 rounded  h-25 align-self-center">Send</button>
+            <li v-for="(user, key) in filteredList" :key="key" class="d-flex justify-content-between">
+                  <img  @click="goToProfile" :data-userId="user.id" class="pfp  rounded-circle mr-2" :src="user.pfp"/>
+                  <span @click="goToProfile" :data-userId="user.id" class="username font-weight-bold">{{user.username}}</span>
+                  <button v-if="post" :id="'postShareId'+post.id" :data-contactId="user.id" :data-postId="post.id" @click="sendPost" class="btn-primary py-1 px-4  border-0 rounded  h-25 align-self-center">Send</button>
+                  <button v-else :id="'userId'+user.id" :data-followerId="user.id" @click="followUnfollow" class="btn btn-primary" 
+                    v-text="`${sessionUser.followed.includes(user.id) ? 'Unfollow' : 'Follow'}`">
+                  </button>
             </li>
         </div>
-
-        </div>
-        </div>
+        
     </div>
+  </div>
 </template>
 
 <script>
 export default {
-    props: ['followedUsers', 'post'],
+    props: ['users', 'post', 'sessionUser'],
   
     data () {
       return {
@@ -39,24 +31,78 @@ export default {
     },
 
     methods :{
-    goToProfile(event) {
-      var userId = event.target.attributes[0].nodeValue;
-      window.location.replace(this.publicPath+userId+'/profile')
-    },
+      goToProfile(event) {
+        var userId = event.target.attributes[0].nodeValue;
+        window.location.replace(this.publicPath+userId+'/profile')
+      },
 
-        sendPost (event) {
-      var targetcontactId = event.target.attributes[1].nodeValue
-      var targetPostId = event.target.attributes[2].nodeValue
+      sendPost (event) {
+        var targetcontactId = event.target.attributes[1].nodeValue
+        var targetPostId = event.target.attributes[2].nodeValue
 
-      axios.post('/conversation/send', {
-          contactId: targetcontactId,
-          sharedPostId: targetPostId
-      }).then((response)=>{
-        $(event.target).html('Sent').addClass('btn-success').attr('disabled', 'disabled')
-        // $(this.$refs)[0]['my_sharePostModal'+targetPostId][0].hide() 
-      }).catch((err) => {
-      });
-    },
+        axios.post('/conversation/send', {
+            contactId: targetcontactId,
+            sharedPostId: targetPostId
+        }).then((response)=>{
+          $(event.target).html('Sent').addClass('btn-success').attr('disabled', 'disabled')
+          // $(this.$refs)[0]['my_sharePostModal'+targetPostId][0].hide() 
+        }).catch((err) => {
+        });
+      },
+
+       followUnfollow(event) {
+            let userFollowId;
+
+            if (typeof $(event.target).attr("id") == 'undefined') {
+                userFollowId = $(event.target.parentElement).attr("id");
+            } else {
+                userFollowId = $(event.target).attr("id");
+            }
+
+            //  check if the post is already liked by the user
+            if (this.sessionUser.followed.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))) {
+                // apply the laravel unlike function
+                axios
+                    .get(this.publicPath+"users/" +$("#" + userFollowId)[0].attributes[1].nodeValue +"/" 
+                    +this.sessionUser.id +"/unfollow")
+                    .then((response) => {
+                    
+                    // get the index of the user id we want to delete
+                    let index = this.sessionUser.followed.indexOf(
+                        parseInt($("#" + userFollowId)[0].attributes[1].nodeValue)
+                    );
+
+                    if (this.sessionUser.followed.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))){
+                        //  remove it from the followedUsersId array
+                        this.sessionUser.followed.splice(index, 1)
+                        $("#" + userFollowId)[0].innerHTML = 'Follow' 
+                    
+                    }
+                    
+                    
+                    });
+            } else {
+                // apply the laravel follow function
+                axios
+                .get(this.publicPath+"users/" + $("#" + userFollowId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/follow" )
+                .then((response) => {
+                    
+                    if (!this.sessionUser.followed.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))){
+                        // add the user id to the followedUsersId array
+                        this.sessionUser.followed.push(
+                        parseInt($("#" + userFollowId)[0].attributes[1].nodeValue)
+                        )
+                        $("#" + userFollowId)[0].innerHTML = 'Unfollow' 
+                                    
+
+                    }
+                    
+                });
+                        
+                
+                
+            }
+        },
     },
 
     mounted: function(){
@@ -65,8 +111,8 @@ export default {
 
     computed: {
     filteredList() {
-      return this.followedUsers.filter(followedUser => {
-        return followedUser.username.toLowerCase().includes(this.search.toLowerCase())
+      return this.users.filter(user => {
+        return user.username.toLowerCase().includes(this.search.toLowerCase())
       })
     }
   }

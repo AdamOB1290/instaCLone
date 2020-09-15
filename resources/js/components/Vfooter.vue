@@ -9,11 +9,18 @@
        <svg  aria-label="Home" class="_8-yf5 " fill="#262626" height="22" viewBox="0 0 48 48" width="22"><path d="M45.5 48H30.1c-.8 0-1.5-.7-1.5-1.5V34.2c0-2.6-2.1-4.6-4.6-4.6s-4.6 2.1-4.6 4.6v12.3c0 .8-.7 1.5-1.5 1.5H2.5c-.8 0-1.5-.7-1.5-1.5V23c0-.4.2-.8.4-1.1L22.9.4c.6-.6 1.6-.6 2.1 0l21.5 21.5c.3.3.4.7.4 1.1v23.5c.1.8-.6 1.5-1.4 1.5z"></path></svg>
       </a>
     <!-- search icon -->
-    <svg aria-label="Search &amp; Explore" class="_8-yf5 " fill="#262626" height="24" viewBox="0 0 48 48" width="24"><path d="M20 40C9 40 0 31 0 20S9 0 20 0s20 9 20 20-9 20-20 20zm0-37C10.6 3 3 10.6 3 20s7.6 17 17 17 17-7.6 17-17S29.4 3 20 3z"></path><path d="M46.6 48.1c-.4 0-.8-.1-1.1-.4L32 34.2c-.6-.6-.6-1.5 0-2.1s1.5-.6 2.1 0l13.5 13.5c.6.6.6 1.5 0 2.1-.2.3-.6.4-1 .4z"></path></svg>
+    <svg ref="search_icon_path" @click="changeSearchIcon"  aria-label="Search &amp; Explore" class="_8-yf5 " fill="#262626" height="24" viewBox="0 0 48 48" width="24"><path :d="searchIconHead"></path><path :d="searchIconTail"></path></svg>
     <!-- <svg aria-label="Search &amp; Explore" class="_8-yf5 " fill="#262626" height="24" viewBox="0 0 48 48" width="24"><path d="M47.6 44L35.8 32.2C38.4 28.9 40 24.6 40 20 40 9 31 0 20 0S0 9 0 20s9 20 20 20c4.6 0 8.9-1.6 12.2-4.2L44 47.6c.6.6 1.5.6 2.1 0l1.4-1.4c.6-.6.6-1.6.1-2.2zM20 35c-8.3 0-15-6.7-15-15S11.7 5 20 5s15 6.7 15 15-6.7 15-15 15z"></path></svg> -->
 
+    <b-modal id="search_modal" ref="search_modal"  modal-class="sharePost_Modal"  hide-header hide-footer >
+        <ul class="sharePostUl position-relative">
+          <span  @click="$bvModal.hide('search_modal')" class="close_icon"></span> 
+          <searchComponent :users="users" :sessionUser="sessionUser" ></searchComponent>
+        </ul>
+    </b-modal> 
+
     <!-- add post icon -->
-    <svg id="openWidget" aria-label="New Post"  class="_8-yf5 " fill="#262626" height="24" viewBox="0 0 48 48" width="24"><path d="M31.8 48H16.2c-6.6 0-9.6-1.6-12.1-4C1.6 41.4 0 38.4 0 31.8V16.2C0 9.6 1.6 6.6 4 4.1 6.6 1.6 9.6 0 16.2 0h15.6c6.6 0 9.6 1.6 12.1 4C46.4 6.6 48 9.6 48 16.2v15.6c0 6.6-1.6 9.6-4 12.1-2.6 2.5-5.6 4.1-12.2 4.1zM16.2 3C10 3 7.8 4.6 6.1 6.2 4.6 7.8 3 10 3 16.2v15.6c0 6.2 1.6 8.4 3.2 10.1 1.6 1.6 3.8 3.1 10 3.1h15.6c6.2 0 8.4-1.6 10.1-3.2 1.6-1.6 3.1-3.8 3.1-10V16.2c0-6.2-1.6-8.4-3.2-10.1C40.2 4.6 38 3 31.8 3H16.2z"></path><path d="M36.3 25.5H11.7c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5h24.6c.8 0 1.5.7 1.5 1.5s-.7 1.5-1.5 1.5z"></path><path d="M24 37.8c-.8 0-1.5-.7-1.5-1.5V11.7c0-.8.7-1.5 1.5-1.5s1.5.7 1.5 1.5v24.6c0 .8-.7 1.5-1.5 1.5z"></path></svg>
+    <svg aria-label="New Post"  class="_8-yf5 openWidget" fill="#262626" height="24" viewBox="0 0 48 48" width="24"><path ref="search_icon_path" d="M31.8 48H16.2c-6.6 0-9.6-1.6-12.1-4C1.6 41.4 0 38.4 0 31.8V16.2C0 9.6 1.6 6.6 4 4.1 6.6 1.6 9.6 0 16.2 0h15.6c6.6 0 9.6 1.6 12.1 4C46.4 6.6 48 9.6 48 16.2v15.6c0 6.6-1.6 9.6-4 12.1-2.6 2.5-5.6 4.1-12.2 4.1zM16.2 3C10 3 7.8 4.6 6.1 6.2 4.6 7.8 3 10 3 16.2v15.6c0 6.2 1.6 8.4 3.2 10.1 1.6 1.6 3.8 3.1 10 3.1h15.6c6.2 0 8.4-1.6 10.1-3.2 1.6-1.6 3.1-3.8 3.1-10V16.2c0-6.2-1.6-8.4-3.2-10.1C40.2 4.6 38 3 31.8 3H16.2z"></path><path d="M36.3 25.5H11.7c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5h24.6c.8 0 1.5.7 1.5 1.5s-.7 1.5-1.5 1.5z"></path><path d="M24 37.8c-.8 0-1.5-.7-1.5-1.5V11.7c0-.8.7-1.5 1.5-1.5s1.5.7 1.5 1.5v24.6c0 .8-.7 1.5-1.5 1.5z"></path></svg>
     
     <div>
       <b-dropdown  id="activity_dropdown_dropup" dropup text="Drop-Up" size="sm"  variant="link" toggle-class="text-decoration-none" no-caret>
@@ -56,17 +63,23 @@
 </template>
 
  <script>
+ import SearchComponent from './SearchComponent';
+
   export default {
     data() {
         return {
           publicPath: 'http://localhost:8000/',
           navbarState: null,
+          users: '',
           sessionUserId: this.$sessionUserId,
           sessionUser: '',
           notifications : '',
           notificationFeed: '',
           notificationsCount: '',
           observer:'',
+          searchIconHead: 'M20 40C9 40 0 31 0 20S9 0 20 0s20 9 20 20-9 20-20 20zm0-37C10.6 3 3 10.6 3 20s7.6 17 17 17 17-7.6 17-17S29.4 3 20 3z',
+          searchIconTail: 'M46.6 48.1c-.4 0-.8-.1-1.1-.4L32 34.2c-.6-.6-.6-1.5 0-2.1s1.5-.6 2.1 0l13.5 13.5c.6.6.6 1.5 0 2.1-.2.3-.6.4-1 .4z',
+          
      }
         
     },
@@ -77,6 +90,13 @@
         .get(this.publicPath+"users/"+this.sessionUserId)
         .then((data) => { 
             this.sessionUser = data.data;
+        })
+        .catch((err) => {});
+
+        axios
+        .get(this.publicPath+"users")
+        .then((data) => { 
+            this.users = data.data;
         })
         .catch((err) => {});
 
@@ -93,26 +113,28 @@
     },
 
     methods: {
+      changeSearchIcon(){
+          var slimSearchIconHead='M20 40C9 40 0 31 0 20S9 0 20 0s20 9 20 20-9 20-20 20zm0-37C10.6 3 3 10.6 3 20s7.6 17 17 17 17-7.6 17-17S29.4 3 20 3z'
+          var slimSearchIconTail='M46.6 48.1c-.4 0-.8-.1-1.1-.4L32 34.2c-.6-.6-.6-1.5 0-2.1s1.5-.6 2.1 0l13.5 13.5c.6.6.6 1.5 0 2.1-.2.3-.6.4-1 .4z'
+          var thickSearchIcon = 'M47.6 44L35.8 32.2C38.4 28.9 40 24.6 40 20 40 9 31 0 20 0S0 9 0 20s9 20 20 20c4.6 0 8.9-1.6 12.2-4.2L44 47.6c.6.6 1.5.6 2.1 0l1.4-1.4c.6-.6.6-1.6.1-2.2zM20 35c-8.3 0-15-6.7-15-15S11.7 5 20 5s15 6.7 15 15-6.7 15-15 15z'
+        if (this.searchIconHead==slimSearchIconHead) {
+          this.searchIconHead=thickSearchIcon
+          this.searchIconTail=''
+          this.$refs['search_modal'].show()   
+        } else {
+          this.searchIconHead=slimSearchIconHead
+          this.searchIconTail=slimSearchIconTail  
+           this.$refs['search_modal'].hide()   
+        }
+      },
       clearNotifications(event){
         // var targetId = event.target.attributes[0].nodeValue
-        // var updatedPost = $(event.target)[0].value
-        // axios({
-        //   method: 'patch',
-        //   url: 'posts/'+targetId,
-        //   data: {
-        //     description: updatedPost,
-        //     },
-        // }).then((response) => {
-        //   this.postFeed.forEach(page => {
-        //     page.forEach(post => {
-        //       if (post.id == targetId) {
-        //         post.editState = false
-                
-        //       } 
-        //     });
-        //   });
-        //   this.forceRerender()
-        // })
+        axios({
+          method: 'patch',
+          url: this.publicPath+'notifications/'+this.sessionUserId,
+        }).then((response) => {
+         
+        })
       },
       
       update_footer() {
@@ -161,6 +183,10 @@
             this.notifications.push(e.realTime_notification);
             this.update_footer()
         })
+          .listen('ReplyCreated', (e) => {
+            this.notifications.push(e.realTime_notification);
+            this.update_footer()
+        })
          .listen('UserFollowed', (e) => {
             this.notifications.push(e.realTime_notification);
             this.update_footer()
@@ -192,6 +218,9 @@
       this.observer.disconnect();
     }, 
 
+    components: {
+    SearchComponent,
+  },
     
   }
 </script>

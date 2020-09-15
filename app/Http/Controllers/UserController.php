@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    
     /**
      * Display a listing of the resource.
      *
@@ -21,17 +22,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $sessionUser = Auth::user();
-        $users = User::findOrFail(1);
-        $notif=Notification::first();
-        $user=User::findOrFail(1);
-        $chat = Chat::findOrFail(12);
-        
-        
-        dd($notif, $user->notifications->where('id', '0162798b-2da2-4c21-97ca-f2c595841455'));
-
+        $users = User::all();
         return $users;
-        
     }
 
     /**

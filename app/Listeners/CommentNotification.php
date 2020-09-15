@@ -56,34 +56,6 @@ class CommentNotification
         unset($postUser['notificationMessage'], $postUser['commentId']);
 
        
-        //if the comment has a parent
-        // we need to use != because we want to ignore the datatype
-        if ($event->comment->parent_comment_id != 0) {
-           
-
-            //fetch the parent comment
-            $parentComment = \App\Comment::findOrFail($event->comment->parent_comment_id);
-
-            //fetch the user of the parent comment
-            $parentCommentUser = \App\User::findOrFail($parentComment->user_id);
-
-            // create index for the notifier id within comment user object
-            $parentCommentUser['notifier_id'] = $event->comment->user_id;
-
-            //create the notification message 
-            $notificationMessage =' has replied to your comment!';
-
-            //create index for the notification message within post user object
-            $parentCommentUser['notificationMessage'] = $notificationMessage;
-
-            // send the notification to the post user
-            $parentCommentUser->notify(new Comment);
-
-            //remove the index created earlier
-            // unset($parentCommentUser['commentUserId']);
-
-            
-        }
         
     }
 }
