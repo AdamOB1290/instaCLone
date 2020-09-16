@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 
 class Comment extends Notification
 {
@@ -57,6 +58,16 @@ class Comment extends Notification
         
     }
 
+    // public function toBroadcast($notifiable)
+    // {
+        
+    //     return new BroadcastMessage([
+    //         'notification_message' =>  $notifiable->notificationMessage,
+    //         'object_id' => (string)$notifiable->commentId,
+    //         'notifier_id' => (string)$notifiable->notifier_id,
+    //     ]);
+    // }
+    
     /**
      * Get the array representation of the notification.
      *

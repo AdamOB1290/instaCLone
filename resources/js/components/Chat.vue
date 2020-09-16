@@ -1,7 +1,15 @@
 <template>
     <div class="chat_wrapper">
-        <contactList  :contacts="contacts" @selected="startConversationWith"/>
-        <conversation :contact="selectedContact" :messages="messages" @newMessage="saveNewMessage"/>
+          <b-tabs v-model="tabIndex"  content-class="" class="w-100" active-nav-item-class="font-weight-bold text-danger" fill lazy>
+                <b-tab>
+                        <contactList  :contacts="contacts" @selected="startConversationWith"/>
+                </b-tab>
+                <b-tab>
+                    <conversation :contact="selectedContact" :messages="messages" @changeTabTo='activateContactList' @newMessage="saveNewMessage"/>
+                </b-tab>
+            </b-tabs>
+       
+        
     </div>
     
 </template>
@@ -21,6 +29,7 @@ export default {
             selectedContact: null,
             messages: [],
             contacts: [],
+            tabIndex: 0,
         }
     },
     
@@ -45,6 +54,7 @@ export default {
             this.updateUnreadCount(contact.id, true)
             axios.get('/conversation/'+contact.id)
             .then((response) => {
+                this.tabIndex = 1
                 this.messages = response.data
                 this.selectedContact= contact
             })
@@ -82,7 +92,9 @@ export default {
             })
         },
 
-       
+       activateContactList() {
+           this.tabIndex=0
+       }
 
 
     },
@@ -97,5 +109,19 @@ export default {
 .chat_wrapper {
     display: flex;
     height: 100%;
+    .tabs{
+        > :nth-child(1) {
+            background: green;
+            display: none;
+        }
+        > :nth-child(2) {
+            height: 100%;
+            .tab-pane {
+                height: 100%;
+            }
+        }
+    }
+    
 }
+
 </style>

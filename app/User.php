@@ -4,6 +4,8 @@ namespace App;
 
 use App\Notification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Notifications\DatabaseNotification;
+
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -21,7 +23,7 @@ class User extends Authenticatable
 
     // public function notifications()
     // {
-    //     return $this->hasMany(Notification::class, 'notifiable_id');
+    //     return $this->hasMany(DatabaseNotification::class, 'notifiable_id')->orderBy('created_at', 'desc');
 
     // }
 

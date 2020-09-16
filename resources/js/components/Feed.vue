@@ -37,8 +37,7 @@
       </div>
     </div> -->
     
-    
-
+  
     <div  class="feed_wrapper " v-for="(page, key) in postFeed" :key="key" :class="post_display">
       
       <div class="post_wrapper " v-for="(post, key) in page" :key="key">

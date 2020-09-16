@@ -56,7 +56,10 @@ Route::get('users/{user}/{sessionUser}/{index}/notification_preference', 'UserCo
 Route::get('{userId}/notifications/activity', 'NotificationController@activityNotifications')->name('activity.notifications');
 Route::get('{userId}/notifications/messages', 'NotificationController@messageNotifications')->name('message.notifications');
 Route::patch('/notifications/messages', 'NotificationController@messageNotifications')->name('message.notifications');
-Route::patch('/notifications/{userId}', 'NotificationController@clearNotifications')->name('clear.notifications');
+Route::patch('/notifications/{userId}/read', 'NotificationController@markAllRead')->name('clear.notifications');
+Route::patch('/notifications/{userId}/unread', 'NotificationController@markAllUnread')->name('clear.notifications');
+Route::patch('/notifications/{userId}/{notifId}/read', 'NotificationController@markRead')->name('clear.notifications');
+Route::patch('/notifications/{userId}/{notifId}/unread', 'NotificationController@markUnread')->name('clear.notifications');
 
 Route::get('feeds', function () {
     return view('feed');

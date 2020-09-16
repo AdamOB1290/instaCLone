@@ -1,7 +1,11 @@
 <template>
     <div class="conversation_wrapper">
-        <h1 v-if="!contact" >Select a Contact</h1>
-        <h1 v-else @click="goToProfile" :data-userId="contact.id" >{{contact.name}} </h1>
+        <div class="d-flex">
+            <i @click="goToContactListTrigger" class="fas fa-arrow-left align-self-center left pl-3"></i>
+            <h1 v-if="!contact" class="center">Select a Contact</h1>
+            <h1 v-else @click="goToProfile" :data-userId="contact.id">{{contact.name}} </h1>
+            <i @click="goToContactListTrigger" class="align-self-center right invisible"></i>
+        </div>
         <MessagesFeed :contact="contact" :messages="messages"/>
         <MessageComposer @send="sendMessage"/>
     </div>
@@ -29,6 +33,10 @@ export default {
     },
 
     methods:{
+        goToContactListTrigger() {
+            this.$emit('changeTabTo');
+        },
+        
         sendMessage(text) {
             if (!this.contact) {
                 return;
@@ -64,16 +72,23 @@ export default {
 
 <style lang="scss" scoped>
 .conversation_wrapper {
-    flex: 5;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    flex: 5;
+    height: 100%;
     h1 {
         text-align: center;
         font-size: 20px;
         padding: 10px;
         margin: 0;
         border-bottom: 1px dashed lightgray;
+    }
+    .fa-arrow-left{
+        font-size: 20px;
+    }
+    .left,.right{
+        flex: 1;
     }
 }
 </style>

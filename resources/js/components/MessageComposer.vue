@@ -33,8 +33,8 @@ export default {
 
 <style lang="scss" scoped>
 .message_composer_wrapper textarea {
-    width: 96%;
-    margin: 10px;
+    width: 100%;
+    padding: 10px;
     resize: none;
     border-radius: 3px;
     border: 1px solid lightgray;

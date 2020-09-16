@@ -601,3 +601,14 @@ transform: translateY(-50%);
 .post-body img{
   width: 100%;
 }
+
+.mark_read_unread{
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 7px;
+
+}

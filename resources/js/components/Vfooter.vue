@@ -22,25 +22,34 @@
     <!-- add post icon -->
     <svg aria-label="New Post"  class="_8-yf5 openWidget" fill="#262626" height="24" viewBox="0 0 48 48" width="24"><path ref="search_icon_path" d="M31.8 48H16.2c-6.6 0-9.6-1.6-12.1-4C1.6 41.4 0 38.4 0 31.8V16.2C0 9.6 1.6 6.6 4 4.1 6.6 1.6 9.6 0 16.2 0h15.6c6.6 0 9.6 1.6 12.1 4C46.4 6.6 48 9.6 48 16.2v15.6c0 6.6-1.6 9.6-4 12.1-2.6 2.5-5.6 4.1-12.2 4.1zM16.2 3C10 3 7.8 4.6 6.1 6.2 4.6 7.8 3 10 3 16.2v15.6c0 6.2 1.6 8.4 3.2 10.1 1.6 1.6 3.8 3.1 10 3.1h15.6c6.2 0 8.4-1.6 10.1-3.2 1.6-1.6 3.1-3.8 3.1-10V16.2c0-6.2-1.6-8.4-3.2-10.1C40.2 4.6 38 3 31.8 3H16.2z"></path><path d="M36.3 25.5H11.7c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5h24.6c.8 0 1.5.7 1.5 1.5s-.7 1.5-1.5 1.5z"></path><path d="M24 37.8c-.8 0-1.5-.7-1.5-1.5V11.7c0-.8.7-1.5 1.5-1.5s1.5.7 1.5 1.5v24.6c0 .8-.7 1.5-1.5 1.5z"></path></svg>
     
-    <div>
+
       <b-dropdown  id="activity_dropdown_dropup" dropup text="Drop-Up" size="sm"  variant="link" toggle-class="text-decoration-none" no-caret>
+        <div class="d-flex flex-column">
+          <b-dropdown ref="subMenu" id="subMenu" text="Dropdown Button" variant="link" toggle-class="text-decoration-none" class="m-md-2 align-self-end" no-caret>
+            <template v-slot:button-content>
+              <i class="fas fa-ellipsis-h text-secondary mr-2 pt-2 subMenuToggle" ></i>
+            </template>
+
+            <b-dropdown-item @click="markAllRead" >Mark all as read</b-dropdown-item>
+            <b-dropdown-item @click="markAllUnread">Mark all as unread</b-dropdown-item>
+           
+          </b-dropdown>
+        </div>
         <template v-slot:button-content>
            <!-- activity icon -->
-          <svg @click="clearNotifications" aria-label="Activity" class="_8-yf5 " fill="#262626" height="24" viewBox="0 0 48 48" width="24"><path ref="activity_icon_path" d="M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"></path></svg>    
+          <svg  aria-label="Activity" class="_8-yf5 " fill="#262626" height="24" viewBox="0 0 48 48" width="24"><path ref="activity_icon_path" d="M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"></path></svg>    
           <!-- <svg aria-label="Activity" class="_8-yf5 " fill="#262626" height="24" viewBox="0 0 48 48" width="24"><path d="M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"></path></svg> -->
           <span v-if="notificationsCount" class="notif_count">{{notificationsCount}}</span>
         </template>
-
-        <b-dropdown-item v-for="(notification, key) in notifications" :key="key" size="lg" >
+        <b-dropdown-item v-for="(notification, key) in notifications" :key="key" size="lg" class="position-relative">
           <img class="pfp rounded-circle mr-2" :src="notification.notifier.pfp">
           <span class=" font-weight-bold ">{{notification.notifier.username}}</span>
           <span class=" "> {{notification.data.notification_message}} </span>
-          
-
+          <div v-if="notification.read_at" @click.stop="markUnread" title="Mark as unread" :data-notifId="notification.id" class="mark_read_unread bg-secondary"></div>
+          <div v-else @click.stop="markRead" title="Mark as read" :data-notifId="notification.id"  class="mark_read_unread bg-primary"></div>
         </b-dropdown-item>
       </b-dropdown>
-    </div>
-
+    
 
     <div>
       <b-dropdown id="dropdown-dropup" dropup text="Drop-Up" size="sm"  variant="link" toggle-class="text-decoration-none" no-caret>
@@ -85,6 +94,10 @@
     },
 
     created: function () {
+      this.markAllRead = _.debounce(this.markAllRead, 300)
+      this.markAllUnread = _.debounce(this.markAllUnread, 300)
+      this.markRead = _.debounce(this.markRead, 300)
+      this.markUnread = _.debounce(this.markUnread, 300)
       if (this.sessionUserId) {
         axios
         .get(this.publicPath+"users/"+this.sessionUserId)
@@ -113,6 +126,34 @@
     },
 
     methods: {
+      updateFooter() {
+        if (this.sessionUserId) {
+        axios
+        .get(this.publicPath+"users/"+this.sessionUserId)
+        .then((data) => { 
+            this.sessionUser = data.data;
+        })
+        .catch((err) => {});
+
+        axios
+        .get(this.publicPath+"users")
+        .then((data) => { 
+            this.users = data.data;
+        })
+        .catch((err) => {});
+
+        axios
+        .get(this.publicPath+this.sessionUserId+'/notifications/activity')
+        .then((data) => { 
+          this.notifications = data.data
+          this.notificationsCount = data.data.length
+          // this.notificationFeed.push(...this.notifications)
+        })
+        .catch((err) => {});
+      }
+
+      },
+
       changeSearchIcon(){
           var slimSearchIconHead='M20 40C9 40 0 31 0 20S9 0 20 0s20 9 20 20-9 20-20 20zm0-37C10.6 3 3 10.6 3 20s7.6 17 17 17 17-7.6 17-17S29.4 3 20 3z'
           var slimSearchIconTail='M46.6 48.1c-.4 0-.8-.1-1.1-.4L32 34.2c-.6-.6-.6-1.5 0-2.1s1.5-.6 2.1 0l13.5 13.5c.6.6.6 1.5 0 2.1-.2.3-.6.4-1 .4z'
@@ -127,35 +168,50 @@
            this.$refs['search_modal'].hide()   
         }
       },
-      clearNotifications(event){
+
+      markAllRead(event){
         // var targetId = event.target.attributes[0].nodeValue
         axios({
           method: 'patch',
-          url: this.publicPath+'notifications/'+this.sessionUserId,
+          url: this.publicPath+'notifications/'+this.sessionUserId+'/read',
         }).then((response) => {
-         
+          this.updateFooter()
         })
       },
       
-      update_footer() {
-        if (this.sessionUserId) {
-        axios
-        .get(this.publicPath+"users/"+this.sessionUserId)
-        .then((data) => { 
-            this.sessionUser = data.data;
+      markAllUnread(event){
+        // var targetId = event.target.attributes[0].nodeValue
+        axios({
+          method: 'patch',
+          url: this.publicPath+'notifications/'+this.sessionUserId+'/unread',
+        }).then((response) => {
+          this.updateFooter()
         })
-        .catch((err) => {});
-
-        axios
-        .get(this.publicPath+this.sessionUserId+'/notifications/activity')
-        .then((data) => { 
-          this.notifications = data.data
-          this.notificationsCount = data.data.length
-          // this.notificationFeed.push(...this.notifications)
-        })
-        .catch((err) => {});
-      }
       },
+
+      markRead(event){
+        var targetId = event.target.attributes[1].nodeValue
+        console.log(targetId);
+        axios({
+          method: 'patch',
+          url: this.publicPath+'notifications/'+this.sessionUserId+'/'+targetId+'/read',
+        }).then((response) => {
+          this.updateFooter()
+        })
+      },
+      
+      markUnread(event){
+        var targetId = event.target.attributes[1].nodeValue
+        console.log(targetId);
+        axios({
+          method: 'patch',
+          url: this.publicPath+'notifications/'+this.sessionUserId+'/'+targetId+'/unread',
+        }).then((response) => {
+          this.updateFooter()
+        })
+      },
+      
+      
       logout() {
         axios
         .post(this.publicPath+"logout")
@@ -175,9 +231,27 @@
       },
     },
     mounted: function () {
+
+       this.$root.$on('bv::dropdown::show', bvEvent => {
+        if(bvEvent.componentId === 'subMenu') {
+          this.isDropdown2Visible = true;
+        }
+        })
+      this.$root.$on('bv::dropdown::hide', bvEvent => {
+        if(bvEvent.componentId === 'subMenu') {
+          this.isDropdown2Visible = false;
+        }
+        if(this.isDropdown2Visible) {
+          bvEvent.preventDefault()
+        }
+        })
       
      if(this.sessionUserId) { 
-       
+    //    Echo.private('App.User.' + this.sessionUserId)
+    // .notification((notification) => {
+    //     console.log(notification);
+    // });
+
        Echo.private(`activity.${this.sessionUserId}`)
          .listen('CommentCreated', (e) => {
             this.notifications.push(e.realTime_notification);
@@ -195,7 +269,7 @@
             this.notifications.push(e.realTime_notification);
             this.update_footer()
         })
-      }
+    }  
 
         this.observer = new MutationObserver(mutations => {
           for (const m of mutations) {
