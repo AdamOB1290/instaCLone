@@ -1,5 +1,5 @@
 <template>
-  <div key="feedKey" class="h-100 mt-3 mb-5">
+  <div key="feedKey" class="h-100 mt-1 mb-5">
     
 
     <storyGlider 
@@ -10,32 +10,6 @@
     :class="post_display"
     :widget="widget">
     </storyGlider>
-<!-- <searchComponent :postFeed="posts" ></searchComponent> -->
-    <!-- <div v-if="posts.length > 0" class="glider story_slider border-down pb-1" :class="post_display">
-      <div class="story_wrapper d-flex px-2 my-1">
-        <div class="float-left d-flex flex-column align-items-center mr-1">
-          <div class="gradiant_background d-flex">
-            why do we need both m-auto and dflex to center the image 
-            <div class="m-auto d-flex align-items-center justify-content-center position-relative">
-              <img class="slider-image" :src="sessionUser.pfp" />
-              <i class="plusStory fas fa-plus-circle position-absolute text-primary"></i>
-            </div>
-          </div>
-          <span class="story-username text-center">Your Story</span>
-        </div>
-        <div v-for="(page, key) in storyFeed" :key="key" class="d-flex position-relative">
-          <div @click="storyHref" v-for="(user, key) in page" :key="key" class="mx-1 d-flex flex-column align-items-center">
-            <div class="gradiant_background d-flex flex-column">
-              <div class="m-auto align-items-center d-flex justify-content-center">
-                <img :data-userId="user.id" class="slider-image" :src="user.pfp"/>
-              </div>
-            </div> 
-            <span class="story-username">{{user.username}}</span>
-          </div>
-          <div class="storyObserver"><observer v-on:intersect="storyIntersected"/></div>
-        </div>
-      </div>
-    </div> -->
     
   
     <div  class="feed_wrapper " v-for="(page, key) in postFeed" :key="key" :class="post_display">

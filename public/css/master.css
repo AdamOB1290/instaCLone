@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Cookie&display=swap');
 html{
   height: 100% !important;
+  margin: 0 !important;
 }
 
 body{
@@ -19,6 +20,10 @@ body{
 #app{
   /* max-width: 700px; */
   margin: auto;
+}
+
+svg{
+  cursor: pointer;
 }
 
 nav {

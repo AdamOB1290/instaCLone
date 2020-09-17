@@ -1,22 +1,23 @@
 <template>
     <div>
-        <div  class="glider story_slider border-down pb-1" >
+        
+        <div v-dragscroll  class="glider story_slider border-down pb-1" >
             <div  class="story_wrapper d-flex px-2 my-1">
                 <div @click="openWidget" class="float-left d-flex flex-column align-items-center mr-1">
                     <div class="gradiant_background d-flex">
                         <!-- why do we need both m-auto and dflex to center the image  -->
                         <div class="m-auto d-flex align-items-center justify-content-center position-relative">
-                        <img class="slider-image" :src="sessionUser.pfp" />
+                        <img class="slider-image" :src="sessionUser.pfp" draggable="false"/>
                         <i class="plusStory fas fa-plus-circle position-absolute text-primary"></i>
                         </div>
                     </div>
                     <span class="story-username text-center">Your Story</span>
                 </div>
                 <div v-for="(page, key) in storyFeed" :key="key" class="d-flex position-relative">
-                <div @click="storyHref" v-for="(user, key) in page" :key="key" class="mx-1 d-flex flex-column align-items-center">
+                <div @mouseup="storyHref" @mousemove="disableStoryHref" v-for="(user, key) in page" :key="key" class="mx-1 d-flex flex-column align-items-center">
                     <div class="gradiant_background d-flex flex-column">
                     <div class="m-auto align-items-center d-flex justify-content-center">
-                        <img :data-userId="user.id" class="slider-image" :src="user.pfp"/>
+                        <img :data-userId="user.id" class="slider-image" :src="user.pfp" draggable="false"/>
                     </div>
                     </div> 
                     <span class="story-username">{{user.username}}</span>
@@ -39,6 +40,10 @@ export default {
             publicPath: 'http://localhost:8000/',
 
             observer: null,
+
+            interval:false,
+            count:0,
+            goToStoryHref: true,
             
             // Story Data
             storiesType: [],
@@ -48,16 +53,44 @@ export default {
     },
 
     created: function () {
+        
     },
 
     methods: {
+
+        disableStoryHref(){
+            this.goToStoryHref= true
+        },
+
+        // start(){
+        //     if(!this.interval){
+        //     this.interval = setInterval(() => this.count++, 10)	
+        //     console.log(this.count);
+        //     }
+        // },
+        // stop(event){
+        //     clearInterval(this.interval)
+        //     this.interval = false
+        //     console.log(this.count);
+        //     if (this.count <= 10) {
+        //         this.storyHref(event)
+        //     }
+        //     this.count =0
+        // },
+        
         openWidget() {
             this.widget.open();
         },
         
         storyHref (event) {
-            var targetId = event.target.attributes[0].nodeValue
-            window.location.replace(this.publicPath+'story/'+targetId);  
+            console.log(this.goToStoryHref);
+            if (this.goToStoryHref) {
+
+                var targetId = event.target.attributes[0].nodeValue
+                window.location.replace(this.publicPath+'story/'+targetId);    
+            }
+            this.goToStoryHref = true
+            
         },
 
         storyIntersected () {
@@ -83,7 +116,6 @@ export default {
     },
 
     mounted: function() {
-       
     },
 
     component: {

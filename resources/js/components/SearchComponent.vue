@@ -1,18 +1,20 @@
 <template>
   <div class="container">
     <div id="search">
-        <div class="search-wrapper">
+        <div class="search-wrapper my-2">
             <input type="text" v-model="search" placeholder="Search title.."/>
                 <label>Search title:</label>
         </div>
         <div class="wrapper">
             <li v-for="(user, key) in filteredList" :key="key" class="d-flex justify-content-between">
-                  <img  @click="goToProfile" :data-userId="user.id" class="pfp  rounded-circle mr-2" :src="user.pfp"/>
-                  <span @click="goToProfile" :data-userId="user.id" class="username font-weight-bold">{{user.username}}</span>
-                  <button v-if="post" :id="'postShareId'+post.id" :data-contactId="user.id" :data-postId="post.id" @click="sendPost" class="btn-primary py-1 px-4  border-0 rounded  h-25 align-self-center">Send</button>
-                  <button v-else :id="'userId'+user.id" :data-followerId="user.id" @click="followUnfollow" class="btn btn-primary" 
-                    v-text="`${sessionUser.followed.includes(user.id) ? 'Unfollow' : 'Follow'}`">
-                  </button>
+              <div>
+                <img  @click="goToProfile" :data-userId="user.id" class="pfp  rounded-circle mr-2" :src="user.pfp"/>
+                <span @click="goToProfile" :data-userId="user.id" class="username font-weight-bold">{{user.username}}</span>
+              </div>
+              <button v-if="post" :id="'postShareId'+post.id" :data-contactId="user.id" :data-postId="post.id" @click="sendPost" class="btn-primary py-1 px-4  border-0 rounded  h-25 align-self-center">Send</button>
+              <button v-else :id="'userId'+user.id" :data-followerId="user.id" @click="followUnfollow" class="btn btn-primary" 
+                v-text="`${sessionUser.followed.includes(user.id) ? 'Unfollow' : 'Follow'}`">
+              </button>
             </li>
         </div>
         

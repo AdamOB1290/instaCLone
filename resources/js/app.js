@@ -91,6 +91,8 @@ import Cloudinary from "cloudinary-vue";
 Vue.use(Cloudinary, {
   configuration: { cloudName: "resize" }
 });
+import VueDragscroll from 'vue-dragscroll'
+Vue.use(VueDragscroll)
 
 
 const app = new Vue({

@@ -39,6 +39,7 @@
         "underscore": "^1.10.2",
         "vue-avatar-editor": "^1.0.4",
         "vue-cropperjs": "^4.1.0",
+        "vue-dragscroll": "^2.1.0",
         "vue-filepond": "^6.0.2",
         "vue-loader": "^14.2.4",
         "vue-router": "^3.4.3",
