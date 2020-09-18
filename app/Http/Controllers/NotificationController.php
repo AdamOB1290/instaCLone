@@ -16,12 +16,9 @@ class NotificationController extends Controller
         $notifications = Notification::where('notifiable_id', $userId)->where('type', '!=', 'App\Notifications\Message')->get();
 
         foreach ($notifications as $notification) {
-            $notification['notifier']= User::findOrFail($notification->data['notifier_id']);
+            $notification['notifier']= User::findOrFail($notification->data['notifier_id']);  
         }
-        // broadcast(new LikeEvent($notifications)); 
-
-        // dd($notifications);
-        return  $notifications;
+        return $notifications;
     }
 
     public function messageNotifications($userId) {
@@ -46,12 +43,10 @@ class NotificationController extends Controller
     public function markRead ($userId, $notifId) {
         $sessionUser = User::findOrFail($userId);
         $sessionUser->unreadNotifications->where('id', $notifId)->markAsRead();
-        
     }
 
     public function markUnread ($userId, $notifId) {
         $sessionUser = User::findOrFail($userId);
-        $sessionUser->readNotifications->where('id', $notifId)->markAsUnread();
-        
+        $sessionUser->readNotifications->where('id', $notifId)->markAsUnread(); 
     }
 }

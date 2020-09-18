@@ -98,6 +98,56 @@ main{
   background: red ;
   color: white !important;
 }
-.v_footer .dropdown-menu{
+
+
+.dropdown-menu.show {
   min-width: 0;
+  font-size: 13px;
+  top: 0px;
+  left: 0px;
+  padding: 0 0 0.5rem;
+}
+
+.dropdown-item {
+  padding: 5px 25px 5px 9px !important;
+}
+
+#activity_dropdown_dropup .dropdown-item{
+  white-space: normal;
+}
+
+#activity_dropdown_dropup .dropdown-item:active{
+  background: white ;
+  color: black;
+}
+
+#activity_dropdown_dropup .dropdown-menu{
+  width: 268px;
+  left: 18px;
+}
+
+.tooltip_notif {
+  position: relative;
+}
+
+.tooltip_notif .tooltip_text {
+  visibility: hidden;
+  width: fit-content;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 2px 5px 3px;
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: -26px;
+  opacity: 80%;
+  left: 5px;
+  transform: translateX(-50%);
+  font-size: 10px;
+}
+
+.mark_read_unread:hover .tooltip_text {
+  visibility: visible;
 }

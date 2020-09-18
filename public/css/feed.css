@@ -682,16 +682,6 @@
 
 }
 
-.dropdown-menu.show {
-  font-size: 13px;
-  top: 0px;
-  left: 0px;
-  padding: 0 0 0.5rem;
-}
-.dropdown-item {
-  padding: 5px 25px 5px 9px !important;
-}
-
 .activity_ellipsis_wrapper {
   height: 21px;
 }

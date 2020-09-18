@@ -2,7 +2,7 @@
     <div>
         
         <div v-dragscroll  class="glider story_slider border-down pb-1" >
-            <div  class="story_wrapper d-flex px-2 my-1">
+            <div class="story_wrapper d-flex px-2 my-1">
                 <div @click="openWidget" class="float-left d-flex flex-column align-items-center mr-1">
                     <div class="gradiant_background d-flex">
                         <!-- why do we need both m-auto and dflex to center the image  -->
@@ -14,7 +14,7 @@
                     <span class="story-username text-center">Your Story</span>
                 </div>
                 <div v-for="(page, key) in storyFeed" :key="key" class="d-flex position-relative">
-                <div @mouseup="storyHref" @mousemove="disableStoryHref" v-for="(user, key) in page" :key="key" class="mx-1 d-flex flex-column align-items-center">
+                <div @mousedown="start" @mouseup="stop"  @mousemove="disableStoryHref" v-for="(user, key) in page" :key="key" class="mx-1 d-flex flex-column align-items-center">
                     <div class="gradiant_background d-flex flex-column">
                     <div class="m-auto align-items-center d-flex justify-content-center">
                         <img :data-userId="user.id" class="slider-image" :src="user.pfp" draggable="false"/>
@@ -53,37 +53,40 @@ export default {
     },
 
     created: function () {
-        
+        this.enableStoryHref = _.debounce(this.enableStoryHref, 100)
     },
 
     methods: {
 
         disableStoryHref(){
-            this.goToStoryHref= true
+            this.goToStoryHref= false
+            this.enableStoryHref()
         },
 
-        // start(){
-        //     if(!this.interval){
-        //     this.interval = setInterval(() => this.count++, 10)	
-        //     console.log(this.count);
-        //     }
-        // },
-        // stop(event){
-        //     clearInterval(this.interval)
-        //     this.interval = false
-        //     console.log(this.count);
-        //     if (this.count <= 10) {
-        //         this.storyHref(event)
-        //     }
-        //     this.count =0
-        // },
+        enableStoryHref(){
+            this.goToStoryHref = true;
+        },
+
+        start(){
+            if(!this.interval){
+            this.interval = setInterval(() => this.count++, 10)	
+            }
+        },
+
+        stop(event){
+            clearInterval(this.interval)
+            this.interval = false
+            if (this.count <= 10) {
+                this.storyHref(event)
+            }
+            this.count =0
+        },
         
         openWidget() {
             this.widget.open();
         },
         
         storyHref (event) {
-            console.log(this.goToStoryHref);
             if (this.goToStoryHref) {
 
                 var targetId = event.target.attributes[0].nodeValue
