@@ -16,7 +16,8 @@
 }
 
 .feed_wrapper .card .card-head{
-    height: 35px;
+  height: 35px;
+  padding-left: 5px;
 }
 
 .post_feed_video {
@@ -54,9 +55,10 @@
 }
 
 .sharePost_Modal .close_icon {
-  top: 4.5%;
-  right: 6%; 
+  top: 31px;
+  right: 19px;
 }
+
 
 .sharePost_Modal .modal-dialog {
   height: max-content;
@@ -114,6 +116,11 @@
 
 .feed_wrapper .card .card-body img{
   width: 100%;
+}
+
+.feed_wrapper .card .show_hide,
+.feed_wrapper .card .show_more  {
+cursor: pointer;
 }
 
 .feed_wrapper .card .show_more{
@@ -296,8 +303,8 @@
   top: 0;
   left: 9px;
   content: '';
-  height: 20px;
-  width: 3px;
+  height: 13px;
+  width: 2.5px;
   background-color: rgb(168, 167, 167);
 }
 .close_icon:before {
@@ -645,6 +652,7 @@
 .post_history_wrapper {
   display: flex;
   flex-wrap: wrap;
+  align-content: flex-start;
   height: 208px;
   overflow: scroll;
 }
@@ -678,7 +686,7 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  right: 7px;
+  right: 16px;
 
 }
 
@@ -690,22 +698,68 @@
   font-size: 12px;
 }
 
-/* .widget .BUTTON{
-  color: red !important;
+div#search{
+  border-left: 1px solid rgba(0, 0, 0, 0.12);
+  border-right: 1px solid rgba(0, 0, 0, 0.12);
 }
 
-#uw-glamor-4484 .css-anf0i3, #uw-glamor-4484 [data-css-anf0i3] {
-  font-size: 10px !important;
-  padding: 4px 5px !important;
+.profile{
+  max-width: 280px;
 }
 
-#uw-glamor-4484 .css-7s0t9w, #uw-glamor-4484 [data-css-7s0t9w] {
-  font-size: 9px;
-  padding: 4px 0px;
-  margin: 0 !important;
-  display: none !important;
+.profile_follow_btn{
+  position: absolute;
+  /* top: 0px;
+  right: -87px;   */
+  top: -94px;
+  right: -90px;
+  padding: 2px 5px 2px !important;
+  font-size: 12px !important;
 }
-#app-root:nth-child(0){
-  
-  background: red !important;
-} */
+
+.profile_avatar_wrapper .slider-image{
+  height: 80px;
+  width: 80px;
+}
+
+.profile_avatar_wrapper .username{
+  padding: 2px 7px 3px;
+  font-size: 13px;
+}
+
+.profile_info_wrapper{
+  padding: 7px 0 10px;  
+  border-top: 1px solid #cccccc;
+  border-bottom: 1px solid #cccccc;
+}
+
+.profile_info div{
+  width: 50px;
+  font-size: 15px;
+}
+
+.edit_profile{
+  background-image: linear-gradient(rgb(255, 255, 255), rgb(233, 233, 233), rgb(255, 255, 255)) !important;
+  margin: 10px 0;
+  border: 1px solid rgba(0, 0, 0, 0.226) !important;
+}
+
+.active_svg svg {
+  fill:#0095f6
+}
+
+.nav-item:hover .tooltip_text {
+  visibility: visible;
+}
+
+.nav-item:hover .tooltip_text {
+  top: -55px;
+  left: 50%;
+  font-size: 13px;
+  font-weight: 300;
+  transform: translateX(-50%);
+}
+
+#image_modal .modal-body {
+  padding: 0;
+}

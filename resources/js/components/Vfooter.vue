@@ -46,10 +46,15 @@
         </template>
         <b-dropdown-item v-for="(notification, key) in notifications" :key="key" size="lg" class="position-relative">
           <div class="d-flex">
-            <img class="pfp rounded-circle mr-2" :src="notification.notifier.pfp">
-            <div class="notif_message">
-              <span class=" font-weight-bold ">{{notification.notifier.username}}</span>
-              <span class=" "> {{notification.data.notification_message}} </span>
+            <img class="pfp_notif rounded-circle mr-2 " :src="notification.notifier.pfp">
+            <div class="d-flex flex-column">
+              <div class="notif_message">
+                <span class=" font-weight-bold ">{{notification.notifier.username}}</span>
+                <span v-if="notification.read_at" class="  "> {{notification.data.notification_message}} </span>
+                <span v-else class=" notif_font "> {{notification.data.notification_message}} </span>
+              </div>
+              <span v-if="notification.read_at" class="text-secondary">{{notification.created_at}}</span>
+              <span v-else class="text-primary notif_font">{{notification.created_at}}</span>
             </div>
           </div>
           
@@ -90,6 +95,7 @@
 
  <script>
  import SearchComponent from './SearchComponent';
+ var moment = require("moment");
 
   export default {
     data() {
@@ -139,6 +145,7 @@
             if (notification.read_at == null) {
               this.unreadNotifications.push(notification)
             }
+            notification.created_at = moment(notification.created_at).fromNow();
           });
           // this.notificationFeed.push(...this.notifications)
         })
@@ -173,6 +180,7 @@
             if (notification.read_at == null) {
               this.unreadNotifications.push(notification)
             }
+             notification.created_at = moment(notification.created_at).fromNow();
           });
          
           // this.notificationFeed.push(...this.notifications)

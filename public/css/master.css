@@ -1,4 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Cookie&display=swap');
+ *{
+   outline: none;
+ }
+
 html{
   height: 100% !important;
   margin: 0 !important;
@@ -103,7 +107,7 @@ main{
 .dropdown-menu.show {
   min-width: 0;
   font-size: 13px;
-  top: 0px;
+  top: -4px !important;
   left: 0px;
   padding: 0 0 0.5rem;
 }
@@ -132,7 +136,7 @@ main{
 
 .tooltip_notif .tooltip_text {
   visibility: hidden;
-  width: fit-content;
+  width: max-content;
   background-color: black;
   color: #fff;
   text-align: center;
@@ -150,4 +154,15 @@ main{
 
 .mark_read_unread:hover .tooltip_text {
   visibility: visible;
+}
+
+.notif_font{
+  color: #000000;
+  font-weight: 500;
+}
+
+.pfp_notif{
+  border-radius: 50%;
+  height: 45px;
+  width: 45px;
 }

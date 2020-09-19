@@ -378,22 +378,68 @@ export default {
 
 
     var widget = cloudinary.createUploadWidget( 
-    { cloudName: "resize", uploadPreset: "resize_preset", cropping: true },
-     (error, result) => { 
-         this.postForm.postMedia = result
-         if (typeof result.info.files != 'undefined') {
-          this.postForm.publicId = result.info.files[0].uploadInfo.public_id
-          this.postForm.resourceType = result.info.files[0].uploadInfo.resource_type
-          this.postForm.fileName = result.info.files[0].name
-          this.postForm.urlImg = result.info.files[0].uploadInfo.url
-          this.$bvModal.show('modal_post_form')
-         }
+    { 
+        cloudName: "resize", 
+        uploadPreset: "resize_preset", 
+        showAdvancedOptions: true,
+        googleApiKey: "<image_search_google_api_key>",
+        cropping: true,
+        multiple: false,
+        sources: [
+          "local",
+          "url",
+          "camera",
+          "image_search",
+          "google_drive",
+          "facebook",
+          "dropbox",
+          "instagram",
+          "shutterstock"
+        ],
+        defaultSource: "local",
+        styles: {
+            palette: {
+                window: "#000000",
+                sourceBg: "#000000",
+                windowBorder: "#8E9FBF",
+                tabIcon: "#FFFFFF",
+                inactiveTabIcon: "#8E9FBF",
+                menuIcons: "#2AD9FF",
+                link: "#08C0FF",
+                action: "#336BFF",
+                inProgress: "#00BFFF",
+                complete: "#33ff00",
+                error: "#EA2727",
+                textDark: "#000000",
+                textLight: "#FFFFFF"
+            },
+            fonts: {
+                default: null,
+                "'Space Mono', monospace": {
+                    url: "https://fonts.googleapis.com/css?family=Space+Mono",
+                    active: true
+                }
+            }
+        }
+    },
+      (error, result) => { 
+              this.postForm.postMedia = result
+          if (typeof result.info.files != 'undefined') {
+            this.postForm.publicId = result.info.files[0].uploadInfo.public_id
+            this.postForm.resourceType = result.info.files[0].uploadInfo.resource_type
+            this.postForm.fileName = result.info.files[0].name
+            this.postForm.urlImg = result.info.files[0].uploadInfo.url
+            this.$bvModal.show('modal_post_form')
+          }
+      
+
+        
         
 
           // this.publicId = result.info.uploadInfo.publicId
               //  console.log(result.info.files[0].uploadInfo.resource_type);
 
-     });
+      });
 
     this.widget = widget
     $('.openWidget').click(function() {

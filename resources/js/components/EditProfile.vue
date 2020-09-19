@@ -6,7 +6,10 @@
               <cld-transformation border="3px_solid_rgb:00390b" radius="20" />
               <cld-transformation quality="auto" fetchFormat="auto" />
             </cld-image> -->
-            <img class="slider-image" :src="sessionUser.pfp" >
+            <div class="profile_avatar d-flex position-relative">
+                <img class="slider-image" :src="sessionUser.pfp" >
+                <i class="plusStory fas fa-plus-circle position-absolute text-primary"></i>
+            </div>
             <span class="text-primary">Change Profile Photo</span>
         </div>
 
