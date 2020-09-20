@@ -71,8 +71,8 @@
         </div>
       </div>
       <div class="comments_wrapper" v-for="(commentPage, key) in commentFeed" :key="key">
-        <div v-for="(comment, key) in commentPage" :key="key">
-          <div class="comments d-flex position-relative show_more p-2" >
+        <div  v-for="(comment, key) in commentPage" :key="key">
+          <div :ref="'comment'+comment.id" :id="'comment'+comment.id" class="comments d-flex position-relative show_more p-2" >
             <img @click="goToProfile" :data-userId="comment.user.id" class="pfp rounded-circle mr-2" :src="comment.user.pfp"/>
            
             <div class="pr-3 pl-1">
@@ -322,6 +322,15 @@ export default {
   mounted: function () {
     // this.$store.commit("changeName", "New Name");
     // console.log(this.$store.state.user.username);
+    const commentId = window.location.href.split("?")[1]
+    console.log(commentId);
+    const el = this.$el
+    this.$nextTick(() => {
+      console.log(this.$refs.comment10);
+    })
+      // console.log(this.$refs);
+      // el.scrollIntoView({behavior: "smooth"});
+
   },
 
   methods: {
@@ -529,6 +538,11 @@ export default {
       this.addCommentForm.parentCommentId = event.target.attributes[1].nodeValue
       this.addCommentForm.commentBody = '@'+event.target.attributes[2].nodeValue+' '
       this.addCommentForm.originalCommentId = event.target.attributes[3].nodeValue
+      // console.log($(this.$refs.comment123[0]));
+      // $(this.$refs.comment123[0])[0].classList.value='comments d-flex position-relative show_more p-2 bg-danger'
+      // $(this.$refs.comment123[0])[0]
+      // console.log($(this.$refs.comment123[0])[0].html());
+      // console.log(this.$refs.commentForm);
       this.$refs.commentForm.focus()
     },
 

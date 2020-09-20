@@ -1,21 +1,22 @@
 <template>
     <div class="mb-5 mt-3">
-        <div id="openWidgetPfp" class="d-flex justify-content-center align-items-center flex-column ">
-            
+        
+        <div class="d-flex justify-content-center align-items-center flex-column ">
+        <i @click="backToProfile" class="fas fa-arrow-left ml-2 exit_edit_profile"></i>    
             <!-- <cld-image  dpr="auto" responsive="width" width="auto" crop="scale" :src="form.pfp.url" :publicId="form.pfp.publicId"  class="slider-image my-2">
               <cld-transformation border="3px_solid_rgb:00390b" radius="20" />
               <cld-transformation quality="auto" fetchFormat="auto" />
             </cld-image> -->
-            <div class="profile_avatar d-flex position-relative">
+            <div id="openWidgetPfp" class="profile_avatar_wrapper d-flex position-relative">
                 <img class="slider-image" :src="sessionUser.pfp" >
                 <i class="plusStory fas fa-plus-circle position-absolute text-primary"></i>
             </div>
-            <span class="text-primary">Change Profile Photo</span>
+            <span id="openWidgetPfp" class="text-primary">Change Profile Photo</span>
         </div>
 
         <validation :errors="validationErrors" :success="validationSuccess" v-if="validationErrors || validationSuccess"></validation>
 
-        <b-container fluid>
+        <b-container  fluid>
             <b-form @submit="updateProfile">
                 <b-row class="my-1" v-for="(input, key) in form.profileInputs" :key="key">                    
                     <b-col sm="3" >
@@ -43,7 +44,7 @@
                     </b-col>
                 </b-row>
 
-                <b-button ref="submitForm" type="submit" variant="primary">Submit</b-button>
+                <b-button class="mb-5 mt-2 float-right py-1" ref="submitForm" type="submit" variant="primary">Submit</b-button>
             </b-form>
         </b-container>
         
@@ -78,7 +79,7 @@
                     pfp : { publicId:'', url:''},
                     
                 },
-                genders: [{ text: 'Select One', value: null }, 'Male', 'Female', 'Attack Helicopter'],
+                genders: [{ text: 'Select One', value: null }, 'Male', 'Female'],
                 
             }
         },
@@ -93,16 +94,30 @@
         },
     
         methods:{
+            backToProfile(){
+                window.location.replace(this.publicPath+this.sessionUserId+'/profile')
+            },
+            reloadProfile() {
+                axios
+                .get(this.publicPath+"users/"+this.sessionUserId)
+                .then((data) => { 
+                    this.sessionUser = data.data;
+                })
+                .catch((err) => {});
+            },
             updateProfile (event) {
                 event.preventDefault();
+                
                 let formData = {
+                    pfp: this.form.pfp.url,
                     name: this.form.profileInputs.name.vModelVal,
                     username: this.form.profileInputs.username.vModelVal,
                     email: this.form.profileInputs.email.vModelVal,
                     bio: this.form.profileInputs.bio.vModelVal,
+                    birthdate: this.form.profileInputs.birthdate.vModelVal,
                     phone_number: this.form.profileInputs.phone_number.vModelVal,
                     password: this.form.password.vModelVal,
-                    pfp: this.form.pfp.url,
+                    gender: this.form.gender,
                 }
                 
                 for (var propName in formData) { 
@@ -120,6 +135,16 @@
                     if (response.status == 200){                   
                     this.validationErrors = ''
                     this.validationSuccess = 'Profile updated successfully';
+                    this.form.pfp.url = ''
+                    this.form.profileInputs.name.vModelVal = ''
+                    this.form.profileInputs.username.vModelVal = ''
+                    this.form.profileInputs.email.vModelVal = ''
+                    this.form.profileInputs.bio.vModelVal = ''
+                    this.form.profileInputs.birthdate.vModelVal = ''
+                    this.form.profileInputs.phone_number.vModelVal = ''
+                    this.form.password.vModelVal = ''
+                    this.form.gender = ''
+                    this.reloadProfile()
                     }
                     if (this.form.pfp.url) {
                        this.sessionUser.pfp = this.form.pfp.url 

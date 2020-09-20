@@ -50,7 +50,9 @@ class Like extends Notification
     public function toDatabase($notifiable)
     {
         $index = $notifiable->liked_object_index;
+        $realTime = json_decode($notifiable->real_time_notification);
         return [
+            'post_id'=> $realTime->data->post_id,
             'notification_message' => $notifiable->notification_message,
             'notifier_id' => $notifiable->liker_id,
             'object_id' => $notifiable->liked_object,

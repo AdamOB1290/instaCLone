@@ -108,11 +108,14 @@ export default {
     },
 
     mounted: function(){
+      
 
     },
 
     computed: {
+      
     filteredList() {
+      console.log(this.users);
       return this.users.filter(user => {
         return user.username.toLowerCase().includes(this.search.toLowerCase())
       })

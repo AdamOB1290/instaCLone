@@ -722,6 +722,12 @@ div#search{
   width: 80px;
 }
 
+.profile_avatar_wrapper .plusStory{
+  font-size: 17px;
+    bottom: -1px;
+    right: -2px;  
+}
+
 .profile_avatar_wrapper .username{
   padding: 2px 7px 3px;
   font-size: 13px;
@@ -762,4 +768,11 @@ div#search{
 
 #image_modal .modal-body {
   padding: 0;
+}
+
+.exit_edit_profile{
+  position: absolute;
+  font-size: 22px;
+  left: 10px;
+  top: 50px;
 }

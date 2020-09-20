@@ -174,7 +174,6 @@ class UserController extends Controller
                 'phone_number' => 'required_without_all:name,username,email,bio,birthdate,gender, password,pfp',
                 'password' => 'required_without_all:name,username,email,bio,birthdate,gender,phone_number,pfp',
                 'pfp' => 'required_without_all:name,username,email,bio,birthdate,gender,phone_number,password',
-                // 'password' => 'required|min:8|confirmed',
                 ]),
         );  
 

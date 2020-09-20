@@ -28,12 +28,12 @@
                             <span class=" font-weight-bold">{{user.posts.length}}</span>
                             <span class="font-weight-light">Posts</span>
                         </div>
-                        <div class="mx-4 d-flex align-items-center justify-content-center flex-column">
-                            <span v-b-modal="'my-followers'" class=" font-weight-bold">{{user.following.length}}</span>
+                        <div v-b-modal="'my-followers'" class="mx-4 d-flex align-items-center justify-content-center flex-column">
+                            <span  class=" font-weight-bold">{{user.following.length}}</span>
                             <span class="font-weight-light">Followers</span>
                         </div>
-                        <div class="ml-4 d-flex align-items-center justify-content-center flex-column">
-                            <span v-b-modal="'my-following'" class=" font-weight-bold">{{user.followedUsers.length}}</span>
+                        <div v-b-modal="'my-following'" class="ml-4 d-flex align-items-center justify-content-center flex-column">
+                            <span  class=" font-weight-bold">{{user.followedUsers.length}}</span>
                             <span class="font-weight-light">Following</span>
                         </div>
                     </div>
@@ -41,9 +41,11 @@
                 </div>
             </div> 
             
-            <b-modal id="my-followers" centered >
-                <ul class="sharePostUl">
-                    <li v-for="(follower, key) in user.following" :key="key" class="d-flex justify-content-between" >
+            <b-modal id="my-followers" centered modal-class="sharePost_Modal"  hide-header hide-footer >
+                <ul class="sharePostUl position-relative">
+                    <span  @click="$bvModal.hide('my-followers')" class="close_icon"></span> 
+                    <searchComponent :users="user.following" :sessionUser="sessionUser" ></searchComponent>
+                    <!-- <li v-for="(follower, key) in user.following" :key="key" class="d-flex justify-content-between" >
                         <div  class="">
                         <img class="pfp card-img-top rounded-circle mr-2" :src="follower.pfp"/>
                         <span class="username font-weight-bold">{{follower.username}}</span>
@@ -51,13 +53,15 @@
                         <button :id="'userId'+follower.id" :data-followerId="follower.id" @click="followUnfollow" class="btn btn-primary" 
                             v-text="`${sessionUser.followed.includes(follower.id) ? 'Unfollow' : 'Follow'}`">
                         </button>
-                    </li>
+                    </li> -->
                 </ul>
             </b-modal>
 
-            <b-modal id="my-following" centered >
-                <ul class="sharePostUl">
-                    <li v-for="(followedUser, key) in user.followedUsers" :key="key" class="d-flex justify-content-between" >
+            <b-modal id="my-following" centered  modal-class="sharePost_Modal"  hide-header hide-footer >
+                <ul class="sharePostUl position-relative">
+                    <span  @click="$bvModal.hide('my-following')" class="close_icon"></span> 
+                    <searchComponent :users="user.followedUsers" :sessionUser="sessionUser"></searchComponent>
+                    <!-- <li v-for="(followedUser, key) in user.followedUsers" :key="key" class="d-flex justify-content-between" >
                         <div  class="">
                         <img class="pfp card-img-top rounded-circle mr-2" :src="followedUser.pfp"/>
                         <span class="username font-weight-bold">{{followedUser.username}}</span>
@@ -65,7 +69,7 @@
                         <button :id="'userId'+followedUser.id" :data-followerId="followedUser.id" @click="followUnfollow" class="btn btn-primary" 
                             v-text="`${sessionUser.followed.includes(followedUser.id) ? 'Unfollow' : 'Follow'}`">
                         </button>
-                    </li>
+                    </li> -->
                 </ul>            
             </b-modal>
         </div>
@@ -172,6 +176,8 @@
 </template>
 
 <script>
+import SearchComponent from './SearchComponent';
+
 export default {
     data(){
         return {
@@ -290,7 +296,8 @@ export default {
         
     },
 
-    computed: {
+    components: {
+        SearchComponent,
         
     }
 

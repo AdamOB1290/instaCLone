@@ -71,6 +71,7 @@ class CommentController extends Controller
         // }
 
         $data_notifications=[
+            'post_id' => $comment->post_id,
             'object_id' => $comment->id,
             'notification_message' => ' has replied to your comment!',
         ];
@@ -244,6 +245,7 @@ class CommentController extends Controller
         // }
 
         $data_notifications=[
+            'post_id' => $comment->post_id,
             'object_id' => $comment->id,
             'notification_message' => " has liked your comment!",
         ];
