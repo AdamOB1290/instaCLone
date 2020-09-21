@@ -40,8 +40,11 @@ class ChatController extends Controller
     {
         $chat = Chat::create($this->validatedData());
 
-        event(new MessageSent($chat));
-
+        dd($chat->sender_id != $chat->receiver_id);
+        if ($chat->sender_id != $chat->receiver_id) {
+            event(new MessageSent($chat));
+        }
+        
         $this->storeMediaFile($chat);;
         return redirect('chats');
     }

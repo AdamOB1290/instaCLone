@@ -156,8 +156,10 @@ class ContactController extends Controller
             'shared_post' => $sharedPost,
         ]);
 
+        if ($message->sender_id != $message->receiver_id) {
+            broadcast(new MessageSent($message)); 
+        }
 
-        broadcast(new MessageSent($message)); 
         return response()->json($message);
     }
 

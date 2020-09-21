@@ -29,6 +29,7 @@ export default {
     data () {
       return {
         search: '',
+        publicPath: 'http://localhost:8000/',
         }
     },
 

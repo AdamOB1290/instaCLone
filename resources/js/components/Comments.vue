@@ -31,19 +31,12 @@
             <svg v-b-modal="'my_sharePostModal'+post.id" aria-label="Share Post" class="_8-yf5 mr-3" fill="#262626" height="24" viewBox="0 0 48 48" width="24">
               <path d="M47.8 3.8c-.3-.5-.8-.8-1.3-.8h-45C.9 3.1.3 3.5.1 4S0 5.2.4 5.7l15.9 15.6 5.5 22.6c.1.6.6 1 1.2 1.1h.2c.5 0 1-.3 1.3-.7l23.2-39c.4-.4.4-1 .1-1.5zM5.2 6.1h35.5L18 18.7 5.2 6.1zm18.7 33.6l-4.4-18.4L42.4 8.6 23.9 39.7z"/>
             </svg>
-
             <b-modal :id="'my_sharePostModal'+post.id" :ref="'my_sharePostModal'+post.id"  modal-class="sharePost_Modal"  hide-header hide-footer >
-                <ul class="sharePostUl position-relative">
-                  <span  @click="$bvModal.hide('my_sharePostModal'+post.id)" class="close_icon"></span> 
-                  <li v-for="(followedUser, key) in followedUsers" :key="key" class="d-flex justify-content-between">
-                    <div  class="" >
-                      <img @click="goToProfile" :data-userId="post.user.id" class="pfp  rounded-circle mr-2" :src="followedUser.pfp"/>
-                      <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{followedUser.username}}</span>
-                    </div>
-                    <button :id="'postShareId'+post.id" :data-contactId="followedUser.id" :data-postId="post.id" @click="sendPost" class="btn-primary py-1 px-4  border-0 rounded  h-25 align-self-center">Send</button>
-                  </li>
-                </ul>
-            </b-modal> 
+                    <ul class="sharePostUl position-relative">
+                      <span  @click="$bvModal.hide('my_sharePostModal'+post.id)" class="close_icon"></span> 
+                      <searchComponent :users="followedUsers" :post="post"></searchComponent>
+                    </ul>
+              </b-modal> 
 
             <!-- save icon -->
             <svg :id="'postSaveId'+post.id" :data-postId="post.id" @click="saveUnsave" aria-label="Save" class="ml-auto" :fill="post.saveColor" height="24" viewBox="0 0 48 48" width="24">
@@ -153,6 +146,7 @@
 </template>
 <script>
 import Observer from "./Observer";
+import SearchComponent from './SearchComponent';
 window.axios = require("axios");
 var moment = require("moment");
 
@@ -199,7 +193,7 @@ export default {
       this.likeUnlikePosts = _.debounce(this.likeUnlikePosts, 300)
       this.likeUnlikeComments = _.debounce(this.likeUnlikeComments, 300)
       this.postId = window.location.href.split("/")[4];
-
+      this.postId = this.postId.split("?")[0];
       axios
       .get(this.publicPath+"posts/"+this.postId)
       .then((data) => {
@@ -220,7 +214,6 @@ export default {
           this.likedComments.push(...this.sessionUser.liked.comments);
 
           // POST
-
         this.post= data.data;
         if (this.post.likes == null) {
           this.post.likes = []
@@ -323,10 +316,8 @@ export default {
     // this.$store.commit("changeName", "New Name");
     // console.log(this.$store.state.user.username);
     const commentId = window.location.href.split("?")[1]
-    console.log(commentId);
     const el = this.$el
     this.$nextTick(() => {
-      console.log(this.$refs.comment10);
     })
       // console.log(this.$refs);
       // el.scrollIntoView({behavior: "smooth"});
@@ -539,10 +530,9 @@ export default {
       this.addCommentForm.commentBody = '@'+event.target.attributes[2].nodeValue+' '
       this.addCommentForm.originalCommentId = event.target.attributes[3].nodeValue
       // console.log($(this.$refs.comment123[0]));
-      // $(this.$refs.comment123[0])[0].classList.value='comments d-flex position-relative show_more p-2 bg-danger'
-      // $(this.$refs.comment123[0])[0]
-      // console.log($(this.$refs.comment123[0])[0].html());
-      // console.log(this.$refs.commentForm);
+;      // $(this.$refs.comment123[0])[0]
+      // console.log($(this.$refs.comment123[0])[0]);
+      console.log(this.$refs);
       this.$refs.commentForm.focus()
     },
 
@@ -557,6 +547,7 @@ export default {
       params.append('post_id', this.postId);
       params.append('user_id', this.sessionUser.id);
       params.append('content', this.addCommentForm.commentBody);
+      console.log(this.publicPath+'comments');
       axios({
         method: 'post',
         url: this.publicPath+'comments',
@@ -597,6 +588,7 @@ export default {
         this.addCommentForm.commentBody = ''
         this.addCommentForm.originalCommentId = 0
         this.addCommentForm.parentCommentId = 0
+        this.update_data()
       })
       
     },
@@ -883,6 +875,7 @@ export default {
 
   components: {
     Observer,
+    SearchComponent
   },
 };
 </script>

@@ -35,14 +35,20 @@ class ReplyNotification
 
           // create index for the notifier id within comment user object
           $parentCommentUser['notifier_id'] = $event->reply->user_id;
-
+          
+          
+          // create index for the notifier id within comment user object
+          $parentCommentUser['comment_id'] = $event->reply->id;
+          
+          
           //create the notification message 
           $notificationMessage =' has replied to your comment!';
-
+          
           //create index for the notification message within post user object
           $parentCommentUser['notificationMessage'] = $notificationMessage;
-
+          
           // send the notification to the post user
+          $parentCommentUser['real_time_notification'] = $event->reply->real_time_notification;
           $parentCommentUser->notify(new Reply);
     }
 }

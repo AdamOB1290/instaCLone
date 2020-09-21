@@ -26,6 +26,7 @@ export default {
 
     data(){
         return {
+            sessionUserId: this.$sessionUserId,
             selectedContact: null,
             messages: [],
             contacts: [],
@@ -51,18 +52,22 @@ export default {
 
     methods: {
         startConversationWith(contact) {
-            this.updateUnreadCount(contact.id, true)
             axios.get('/conversation/'+contact.id)
             .then((response) => {
                 this.tabIndex = 1
                 this.messages = response.data
                 this.selectedContact= contact
             })
+               
+            this.updateUnreadCount(contact, true)
         },
 
         saveNewMessage(message) {
-            this.messages.push(message);
-
+            console.log(message);
+            console.log(message.sender_id, message.receiver_id);
+            if (message.sender_id != message.receiver_id) {
+                this.messages.push(message);
+            }     
         },
 
         handleIncoming (message) {
@@ -76,6 +81,8 @@ export default {
             this.updateUnreadCount(message.sender, false)
         },
 
+
+
         updateUnreadCount(selectedContact, reset) {
             this.contacts = this.contacts.map((contact) => {
                 if (contact.id !== selectedContact.id) {
@@ -87,7 +94,6 @@ export default {
                 } else {
                     contact.unread += 1;
                 }
-                
                 return contact
             })
         },

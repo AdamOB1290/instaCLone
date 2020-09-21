@@ -60,11 +60,13 @@ export default {
 
         disableStoryHref(){
             this.goToStoryHref= false
+            console.log('disable',this.goToStoryHref);
             this.enableStoryHref()
         },
 
         enableStoryHref(){
             this.goToStoryHref = true;
+            console.log('enable',this.goToStoryHref);
         },
 
         start(){
@@ -87,10 +89,12 @@ export default {
         },
         
         storyHref (event) {
+            console.log(this.goToStoryHref);  
             if (this.goToStoryHref) {
 
                 var targetId = event.target.attributes[0].nodeValue
-                window.location.replace(this.publicPath+'story/'+targetId);    
+                window.location.replace(this.publicPath+'story/'+targetId);  
+                
             }
             this.goToStoryHref = true
             

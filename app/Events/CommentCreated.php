@@ -25,7 +25,8 @@ class CommentCreated implements ShouldBroadcast
     public function __construct($comment)
     {
         $this->comment=$comment;
-        $this->notification = $comment['real_time_notification'];
+        $this->notification = $comment['real_time_notification'];        
+
     }
 
     /**

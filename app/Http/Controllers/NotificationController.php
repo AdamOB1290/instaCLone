@@ -27,17 +27,35 @@ class NotificationController extends Controller
         return  $notifications;
     }
 
-    public function markAllRead ($userId) {
+    public function markMessagesRead ($userId) {
         $sessionUser = User::findOrFail($userId);
-        $sessionUser->unreadNotifications->markAsRead();
+        foreach ($sessionUser->unreadNotifications as $unreadNotification) {
+            if($unreadNotification->type == 'App\Notifications\Message'){
+                $unreadNotification->markAsRead();
+            }
+        }
        
     }
 
+    public function markAllRead ($userId) {
+        $sessionUser = User::findOrFail($userId);
+        foreach ($sessionUser->unreadNotifications as $unreadNotification) {
+            if($unreadNotification->type != 'App\Notifications\Message'){
+                $unreadNotification->markAsRead();
+            }
+        }
+       
+    }
+
+
     public function markAllUnread ($userId) {
         $sessionUser = User::findOrFail($userId);
-        $sessionUser->readNotifications->markAsUnread();
+        foreach ($sessionUser->unreadNotifications as $unreadNotification) {
+            if($unreadNotification->type != 'App\Notifications\Message'){
+                $unreadNotification->markAsUnread();
+            }
+        }
 
-       
     }
 
     public function markRead ($userId, $notifId) {

@@ -50,6 +50,7 @@ class CommentNotification
         $postUser['commentId']  = $event->comment->id;
 
         // send the notification to the post user
+        $postUser['real_time_notification']= $event->comment['real_time_notification'];
         $postUser->notify(new Comment);
 
         //remove the indexes created earlier

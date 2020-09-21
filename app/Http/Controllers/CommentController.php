@@ -69,7 +69,6 @@ class CommentController extends Controller
         // } else {
         //     $newNotifId = 1;
         // }
-
         $data_notifications=[
             'post_id' => $comment->post_id,
             'object_id' => $comment->id,
@@ -99,6 +98,7 @@ class CommentController extends Controller
                 'notified_userId' => $notifiedUserId,
             ];
             $comment['real_time_notification'] = json_encode($notification);
+            
             broadcast(new ReplyCreated($comment));
         }
 

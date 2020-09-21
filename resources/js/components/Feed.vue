@@ -114,46 +114,6 @@
     v-if="posts.length == 0">
     </followUsers>
     
-    
-    <b-modal id="modal_post_form" ref="modal_post_form" class="settings_Modal" title="Add a Post" hide-footer centered>
-      <validation :errors="validationErrors" v-if="validationErrors"></validation>
-      <form class="addPost_form" @submit.prevent="addPost" method="post" action="" enctype="multipart/form-data">
-        <b-form-group>
-          <div class="form-group d-flex flex-column">
-            <input type="hidden" name="type" v-model="postForm.mediaType">
-            <cld-image v-if="postForm.resourceType == 'image'" dpr="auto" responsive="width" width="auto" crop="scale" :publicId="postForm.publicId" class="my-2">
-              <cld-transformation border="3px_solid_rgb:00390b" radius="20" />
-              <cld-transformation quality="auto" fetchFormat="auto" />
-            </cld-image>
-            <!-- <cld-video v-else-if="postForm.resourceType == 'video'" cloudName="my_cloud" :publicId="postForm.publicId">
-              <cld-transformation border="3px_solid_rgb:00390b" radius="20" />
-              <cld-transformation quality="auto" fetchFormat="auto" />
-            </cld-video> -->
-            <video class="video img ml-auto bg-dark" v-else-if="postForm.resourceType == 'video'" controls muted>
-              <source :src="postForm.urlImg"/>
-            </video>
-
-            <!-- <b-form-file v-model="postForm.postMedia" @change="postPreview" name="media_file" id="file-default"></b-form-file> -->
-            <!-- <div class="previewWrapper d-flex justify-content-center align-items-center ">
-              <i class="fas fa-cloud-upload-alt"></i>
-              <div>
-                <video class="video img" v-if="postForm.videoPreview" controls muted>
-                  <source :src="postForm.videoPreview"/>
-                </video>
-              </div>
-              <div>
-                <img ref="imagePrev" class="preview img" v-if="postForm.imgPreview" :src="postForm.imgPreview"/>
-              </div>
-            </div> -->
-            <!-- <ImgCropper></ImgCropper> -->
-            <b-form-select v-model="postForm.mediaType" :options="postForm.options" size="sm" class="my-2"></b-form-select>
-            <b-form-textarea v-model="postForm.postCaption" name="description" placeholder="Add a caption ..."  cols="30" rows="1" max-rows="10" class="form-control addPostTxt my-2"></b-form-textarea>
-            <button type="submit" class="btn btn-primary float-right">Submit</button>
-          </div>
-        </b-form-group>
-      </form>
-    </b-modal> 
-    
   </div>
 </template>
 
@@ -189,32 +149,31 @@ export default {
         publicPath: 'http://localhost:8000/',
         observer: null,
         sessionUser: null,
-        validationErrors: '',
 
       // Post Data
         feedKey: 0,
         postFeed: [],
         posts: [],
         postsType: [],
-        postForm: {
-          postMedia: null,
-          publicId: null,
-          resourceType:null,
-          imgPreview: null,
-          videoPreview: null,
-          postCaption: '',
-          urlImg:null,
-          mediaType: '',
-          options: [
-            { value: '' , text: 'Select an option' },
-            { value: 'post', text: 'Publish as a Post' },
-            { value: 'story', text: 'Publish as a Story' },
-          ]
-        },
         postSliceIndex: 10,      
         postIterations: 0,
         likedPosts: [],
         savedPosts: [],
+         postForm: {
+            postMedia: null,
+            publicId: null,
+            resourceType:null,
+            imgPreview: null,
+            videoPreview: null,
+            postCaption: '',
+            urlImg:null,
+            mediaType: '',
+            options: [
+              { value: '' , text: 'Select an option' },
+              { value: 'post', text: 'Publish as a Post' },
+              { value: 'story', text: 'Publish as a Story' },
+            ]
+          },
 
 
       // Comment Data
@@ -442,9 +401,6 @@ export default {
       });
 
     this.widget = widget
-    $('.openWidget').click(function() {
-      widget.open();
-    });
     // THIS.REFS.SHOWMORELESS NOT ACCESSIBLE
     //  console.log(this.postFeed);            
     //     console.log(this.$refs);
@@ -817,49 +773,6 @@ export default {
       // theBlob.name = fileName;
       var theFile = new File([theBlob], fileName, {lastModified: new Date()});
       return theFile;
-    },
-
-    addPost(event) {
-      
-      // let Blob = this.dataURLToBlob(this.$store.state.image.croppedImage) 
-      // this.postForm.postMedia = this.blobToFile(Blob)  
-      let formData = new FormData();
-      formData.append('media_file', this.postForm.urlImg);
-      formData.append('media_type', this.postForm.resourceType);
-      formData.append('description', this.postForm.postCaption);
-      formData.append('type', this.postForm.mediaType);
-      formData.append('user_id', this.sessionUser.id);
-      axios({
-        method: 'post',
-        url: 'posts',
-        data: formData,
-      }).then((response) => {
-        let post = response.data
-        post.likes = []
-        post.created_at = moment(post.created_at).fromNow();
-        post.showStatus = "Show More";
-        post.likePath = "M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
-        post.likeColor = "#262626";
-        post.savePath = "M43.5 48c-.4 0-.8-.2-1.1-.4L24 29 5.6 47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 1.2-.9 1.4-.2.1-.4.1-.6.1zM24 26c.8 0 1.6.3 2.2.9l15.8 16V3H6v39.9l15.8-16c.6-.6 1.4-.9 2.2-.9z";
-        post.saveColor = "#262626";
-      
-        this.$refs['modal_post_form'].hide()
-        this.postFeed[0].splice(0, 0, post)
-
-        this.postForm.imgPreview = null;
-        this.postForm.videoPreview = null;
-        this.postForm.postCaption = ''
-
-      }).catch((error) => {
-        console.log("ERRRR:: ",error.response.errors);
-        if (error.response.status == 422){
-        this.validationErrors = error.response.data.errors;
-        }
-
-
-      });
-
-      
     },
 
     deletePost (event) {

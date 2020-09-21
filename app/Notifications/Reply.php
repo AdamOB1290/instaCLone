@@ -48,10 +48,11 @@ class Reply extends Notification
 
     public function toDatabase($notifiable)
     {
-        
+        $realTime = json_decode($notifiable->real_time_notification);
         return [
+            'post_id'=> $realTime->data->post_id,
             'notification_message' =>  $notifiable->notificationMessage,
-            'object_id' => (string)$notifiable->commentId,
+            'object_id' => (string)$notifiable->comment_id,
             'notifier_id' => (string)$notifiable->notifier_id,
         ];
         

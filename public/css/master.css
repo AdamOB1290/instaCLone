@@ -107,8 +107,8 @@ main{
 .dropdown-menu.show {
   min-width: 0;
   font-size: 13px;
-  top: -4px !important;
-  left: 0px;
+  top: 0;
+  left: 0;
   padding: 0 0 0.5rem;
 }
 
@@ -128,6 +128,26 @@ main{
 #activity_dropdown_dropup .dropdown-menu{
   width: 268px;
   left: 18px;
+  max-height: 507px;
+  overflow: scroll;
+  /* top: 3px; */
+  /* transform: translate3d(-172px, -104px, 0px) !important; */
+}
+
+#activity_dropdown_dropup #subMenu ul{
+  border-radius: 12px;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  width: max-content;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+#activity_dropdown_dropup #subMenu ul > :nth-child(1){
+  border-bottom: 1px solid rgba(0, 0, 0, 0.164);
+}
+
+#activity_dropdown_dropup #subMenu ul li a{
+  padding-right: 9px !important;
 }
 
 .tooltip_notif {
@@ -166,3 +186,39 @@ main{
   height: 45px;
   width: 45px;
 }
+
+.modal-content {
+  border: none !important;
+}
+
+#modal_post_form .modal-header {
+  padding-top: 3px;
+  padding-bottom: 3px;
+  display: flex;
+  align-items: center;
+}
+
+#modal_post_form .modal-header button {
+  padding: 0 0 2px;
+  margin:0;
+}
+
+#modal_post_form .modal-title {
+  font-size: 15px;
+}
+
+#modal_post_form .modal-body {
+  padding: 0;
+}
+
+#modal_post_form .form-group {
+  margin-bottom: 0;
+}
+
+#modal_post_form .btn {
+  padding: 2px 0px;
+  width: 95%;
+  margin: 0 auto 7px;
+  border-radius: 15px;
+}
+

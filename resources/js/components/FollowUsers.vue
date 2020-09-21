@@ -295,8 +295,9 @@ export default {
                         parseInt($("#" + userFollowId)[0].attributes[1].nodeValue)
                         )
                         $("#" + userFollowId)[0].innerHTML = 'Unfollow' 
-                                    
 
+                        console.log(this.$refs);
+                        this.$refs.slick[0].next();
                     }
                     
                 });

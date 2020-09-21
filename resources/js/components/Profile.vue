@@ -7,7 +7,7 @@
                     <div class="profile_avatar_wrapper d-flex flex-column align-items-center">
                         <img v-b-modal.image_modal @click="showImage" class="slider-image" :src="user.pfp" />
                         <span class="my-2 text-center username font-weight-bold position-relative">{{user.username}}                    
-                            <button :id="'userId'+user.id" :data-followerId="user.id" @click="followUnfollow" class="btn btn-primary profile_follow_btn" 
+                            <button :id="'userId'+user.id" :data-followerId="user.id" @click="followUnfollow" class="btn btn-light profile_follow_btn" 
                                 v-text="`${sessionUser.followed.includes(user.id) ? 'Unfollow' : 'Follow'}`">
                             </button>                      
                         </span>

@@ -5,11 +5,11 @@
         <!-- brand title -->
     <a class="navbar-brand py-0" href="http://localhost:8000/feeds">Instaclone</a>
     <!-- direct message icon -->
-    <a href="http://localhost:8000/chat" class="position-relative">
+    <a @click="markAllRead"  class="position-relative">
       <svg aria-label="Share Post" class="" fill="#262626" height="24" viewBox="0 0 48 48" width="24">
         <path d="M47.8 3.8c-.3-.5-.8-.8-1.3-.8h-45C.9 3.1.3 3.5.1 4S0 5.2.4 5.7l15.9 15.6 5.5 22.6c.1.6.6 1 1.2 1.1h.2c.5 0 1-.3 1.3-.7l23.2-39c.4-.4.4-1 .1-1.5zM5.2 6.1h35.5L18 18.7 5.2 6.1zm18.7 33.6l-4.4-18.4L42.4 8.6 23.9 39.7z"></path>
       </svg>
-      <span v-if="notificationsCount" class="notif_count">{{notificationsCount}}</span>
+      <span v-if="unreadNotifications.length > 0" class="notif_count">{{unreadNotifications.length}}</span>
     </a>
   </nav>
 
@@ -23,7 +23,8 @@
           publicPath: 'http://localhost:8000/',
           navbarState: null,
           sessionUserId: this.$sessionUserId,
-          notificationsCount : '',
+          notifications: '',
+          unreadNotifications : [],
      }
         
     },
@@ -33,19 +34,55 @@
         axios
         .get(this.publicPath+this.sessionUserId+'/notifications/messages')
         .then((data) => { 
-          this.notificationsCount = data.data.length
-          // this.notificationFeed.push(...this.notifications)
+          this.notifications = data.data
+           this.unreadNotifications = []
+          this.notifications.forEach(notification => {
+            if (notification.read_at == null) {
+              this.unreadNotifications.push(notification)
+            }
+          });
         })
         .catch((err) => {});
       }
       
     },
 
+    methods: {
+
+      updateNav(){
+         axios
+        .get(this.publicPath+this.sessionUserId+'/notifications/messages')
+        .then((data) => { 
+          this.notifications = data.data.length
+           this.unreadNotifications = []
+          this.notifications.forEach(notification => {
+            if (notification.read_at == null) {
+              this.unreadNotifications.push(notification)
+            }
+          });
+        })
+        .catch((err) => {});
+      },
+
+      markAllRead(event){
+        axios({
+          method: 'patch',
+          url: this.publicPath+'notifications/'+this.sessionUserId+'/messagesRead',
+        }).then((response) => {
+          if (window.location.href != "http://localhost:8000/chat") {
+            window.location.replace("http://localhost:8000/chat")
+          }
+          this.updateNav()
+        })
+      },
+
+    },
+
     mounted: function () {
         Echo.private('messages.'+this.sessionUserId)
         .listen('MessageSent', (e) => {
           console.log(e);
-          this.notificationsCount++
+          this.unreadNotifications.push(e)
         })
 
 
