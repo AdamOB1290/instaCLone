@@ -14,6 +14,7 @@ export default new Vuex.Store({
       username: 'matt',
       fullName: 'Matt Maribojoc',
       sessionUser: null,
+      loading: true
     },
     componentState: {
       navbar: true,
@@ -26,10 +27,9 @@ export default new Vuex.Store({
       home : false,
     },
  },
- getters: {},
  mutations: {
-    changeName (state, payload) {
-      state.user.username = payload
+   changeName (state, payload) {
+     state.user.username = payload
     },
     changePostId (state, payload) {
       state.post.id = payload
@@ -46,10 +46,30 @@ export default new Vuex.Store({
     changeSessionUser (state, payload){
       state.user.sessionUser = payload
     },
+    changeLoadingState(state, payload) {
+      state.user.loading = payload
+    },
     changeHomeIcon (state, payload){
       state.iconState.home = payload
     },
     
- },
- actions: {}
+  },
+
+ actions: {
+
+  async setSessionUser(state) {
+    axios
+    .get("users/21")
+    .then((response) => { 
+      state.commit('changeSessionUser', response.data)
+      // state.commit('changeLoadingState', false)
+        
+    })
+    .catch((err) => {})
+  }
+   },
+   getters: {
+    getCurrentSessionUser: state => state.user.sessionUser
+  },
+  
 });

@@ -134,9 +134,7 @@ class UserController extends Controller
         //     $user['followed'] = [];
         // } 
 
-        // return view('users.crud.index', compact('users'));
-        
-        // return view('users.crud.show', compact('user'));
+       
         return $user;
     }
 

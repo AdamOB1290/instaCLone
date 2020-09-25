@@ -35,16 +35,18 @@
             <div class="px-2">
               <div class="interaction_buttons pt-2 d-flex">
                 <!-- like icon -->
+                <div class="w-10">
                 <svg :id="'postLikeId'+post.id" :data-postId="post.id" @click="likeUnlikePosts" :fill="post.likeColor" aria-label="Like" class="mr-3" height="24" viewBox="0 0 48 48" width="24" >
                   <path :d="post.likePath" />
                 </svg>
+                </div>
 
                 <!-- comment icon -->
-                  <a :href="publicPath+'post/'+post.id">
+                  <router-link @click="jelloAnimation" :to="'post/'+post.id">
                     <svg :id="'postCommentId'+post.id" :data-postId="post.id" aria-label="Comment" class="_8-yf5 mr-3" fill="#262626" height="24" viewBox="0 0 48 48" width="24">
                       <path clip-rule="evenodd" d="M47.5 46.1l-2.8-11c1.8-3.3 2.8-7.1 2.8-11.1C47.5 11 37 .5 24 .5S.5 11 .5 24 11 47.5 24 47.5c4 0 7.8-1 11.1-2.8l11 2.8c.8.2 1.6-.6 1.4-1.4zm-3-22.1c0 4-1 7-2.6 10-.2.4-.3.9-.2 1.4l2.1 8.4-8.3-2.1c-.5-.1-1-.1-1.4.2-1.8 1-5.2 2.6-10 2.6-11.4 0-20.6-9.2-20.6-20.5S12.7 3.5 24 3.5 44.5 12.7 44.5 24z" fill-rule="evenodd"/>
                     </svg> 
-                  </a>
+                  </router-link>
                 <!-- direct message icon -->
                 <svg v-b-modal="'my_sharePostModal'+post.id" aria-label="Share Post" class="_8-yf5 mr-3" fill="#262626" height="24" viewBox="0 0 48 48" width="24">
                   <path d="M47.8 3.8c-.3-.5-.8-.8-1.3-.8h-45C.9 3.1.3 3.5.1 4S0 5.2.4 5.7l15.9 15.6 5.5 22.6c.1.6.6 1 1.2 1.1h.2c.5 0 1-.3 1.3-.7l23.2-39c.4-.4.4-1 .1-1.5zM5.2 6.1h35.5L18 18.7 5.2 6.1zm18.7 33.6l-4.4-18.4L42.4 8.6 23.9 39.7z"/>
@@ -83,8 +85,8 @@
             </div>
           </div>
 
-          <div class="card-footer px-2 py-0">
-            <a :href="publicPath+'post/'+post.id" class="show_hide" v-if="post.comments.length > 2" >View All {{post.comments.length}} Comments</a>
+          <div class="card-footer px-2 py-0 bg-white">
+            <router-link :to="'post/'+post.id" class="show_hide" v-if="post.comments.length > 2" >View All {{post.comments.length}} Comments</router-link>
             <div class="comments_wrapper" v-for="(comment, key) in post.comments.slice(0, 2)" :key="key" @click="showHideComment">
               <div class="d-flex position-relative">
                 <span class="comments show_more pr-3">
@@ -113,7 +115,8 @@
     :followUnfollowHtml="followUnfollowHtml"
     v-if="posts.length == 0">
     </followUsers>
-    
+
+    <div class="invisible mb-12"></div>
   </div>
 </template>
 
@@ -518,86 +521,100 @@ export default {
     },
 
     likeUnlikePosts(event) {
-
-      let postLikeId
-      let dataPostId
-      
+      var target
+      var postLikeId
+      var dataPostId
 
       if (typeof $(event.target).attr("id") == 'undefined') {
+        target=$(event.target.parentElement)
         postLikeId = $(event.target.parentElement).attr("id");
         dataPostId = $(event.target.parentElement).attr("data-postId");
       } else {
+        target=$(event.target)
         postLikeId = $(event.target).attr("id");
         dataPostId = $(event.target).attr("data-postId");
       }
+      
         //  check if the post is already liked by the user
-        if (this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
-            // apply the laravel unlike function
-            axios
-              .get("posts/" +$("#" + postLikeId)[0].attributes[1].nodeValue +"/" +this.sessionUser.id +"/unlike")
-              .then((response) => {
-                if (this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
-
-                  // get the index of the post id we want to delete
-                  let index = this.likedPosts.indexOf(
-                    parseInt($("#" + postLikeId)[0].attributes[1].nodeValue)
-                  );
-                  //  remove it from the likedPosts array
-                  this.likedPosts.splice(index, 1);
-          
-                  $("#" + postLikeId)[0].attributes[2].nodeValue = "#262626";
-                  $("#" + postLikeId)[0].firstChild.attributes[0].nodeValue =
-                    "M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
-                  
-                  this.postFeed.forEach(postPage => {
-                    postPage.forEach(post => {
-                        if (post.id == dataPostId ) {
-                          let index = post.likes.indexOf(this.sessionUser.id)
-                          post.likes.splice(index, 1)
-                        } 
-                    });
-                  });
-                }
-
-              });
-        } else {
-          // apply the laravel like function
+      if (this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
+          // apply the laravel unlike function
           axios
-            .get("posts/" + $("#" + postLikeId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/like")
+            .get("posts/" +$("#" + postLikeId)[0].attributes[1].nodeValue +"/" +this.sessionUser.id +"/unlike")
             .then((response) => {
-              if (!this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
-                // add the post id to the likedPosts array
-                this.likedPosts.push(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue));
-                $("#" + postLikeId)[0].attributes[2].nodeValue = "#ed4956";
-                $("#" + postLikeId)[0].firstChild.attributes[0].nodeValue =
-                  "M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+              if (this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
 
+                // get the index of the post id we want to delete
+                let index = this.likedPosts.indexOf(
+                  parseInt($("#" + postLikeId)[0].attributes[1].nodeValue)
+                );
+                //  remove it from the likedPosts array
+                this.likedPosts.splice(index, 1);
+        
+                $("#" + postLikeId)[0].attributes[2].nodeValue = "#262626";
+                $("#" + postLikeId)[0].firstChild.attributes[0].nodeValue =
+                  "M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+                
                 this.postFeed.forEach(postPage => {
                   postPage.forEach(post => {
                       if (post.id == dataPostId ) {
-                        post.likes.push(this.sessionUser.id)
+                        let index = post.likes.indexOf(this.sessionUser.id)
+                        post.likes.splice(index, 1)
                       } 
                   });
                 });
               }
 
             });
+      } else {
+        
+      if (target.hasClass('animate__animated')) {
+        target.removeClass('animate__animated animate__bounceIn');  
+      }
+        target.addClass('reduce_like_animation');  
 
-        }
+        // apply the laravel like function
+        axios
+          .get("posts/" + $("#" + postLikeId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/like")
+          .then((response) => {
+            if (!this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
+              // add the post id to the likedPosts array
+              this.likedPosts.push(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue));
+              $("#" + postLikeId)[0].attributes[2].nodeValue = "#ed4956";
+              if (target.hasClass('reduce_like_animation')) {
+                target.removeClass('reduce_like_animation');  
+              }
+              target.addClass('animate__animated animate__bounceIn');  
+              $("#" + postLikeId)[0].firstChild.attributes[0].nodeValue =
+                "M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+
+              this.postFeed.forEach(postPage => {
+                postPage.forEach(post => {
+                    if (post.id == dataPostId ) {
+                      post.likes.push(this.sessionUser.id)
+                    } 
+                });
+              });
+            }
+
+          });
+
+      }
     },
 
     likeUnlikeComments(event) {
-
-      let commentLikeId
-      let dataPostId
-      let dataCommentId
+      var target
+      var commentLikeId
+      var dataPostId
+      var dataCommentId
       
 
       if (typeof $(event.target).attr("id") == 'undefined') {
+        target=$(event.target.parentElement)
         commentLikeId = $(event.target.parentElement).attr("id");
         dataPostId = $(event.target.parentElement).attr("data-postId");
         dataCommentId = $(event.target.parentElement).attr("data-commentId");
       } else {
+        target=$(event.target)
         commentLikeId = $(event.target).attr("id");
         dataPostId = $(event.target).attr("data-postId");
         dataCommentId = $(event.target).attr("data-commentId");
@@ -637,6 +654,10 @@ export default {
 
               });
         } else {
+          if (target.hasClass('animate__animated')) {
+            target.removeClass('animate__animated animate__bounceIn');  
+          }
+          target.addClass('reduce_comment_like_animation')
           // apply the laravel like function
           axios
             .get("post/comments/" + $("#" + commentLikeId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/like")
@@ -645,6 +666,10 @@ export default {
                 // add the post id to the this.likedComments array
                 this.likedComments.push(parseInt($("#" + commentLikeId)[0].attributes[1].nodeValue));
                 $("#" + commentLikeId)[0].attributes[2].nodeValue = "#ed4956";
+                if (target.hasClass('reduce_comment_like_animation')) {
+                  target.removeClass('reduce_comment_like_animation')
+                }
+                target.addClass('animate__animated animate__bounceIn');  
                 $("#" + commentLikeId)[0].firstChild.attributes[0].nodeValue =
                   "M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
 
@@ -667,12 +692,14 @@ export default {
     },
 
     saveUnsave(event) {
-      let postSaveId; 
-
+      var postSaveId; 
+      var target
 
       if (typeof $(event.target).attr("id") == 'undefined') {
+        target=$(event.target.parentElement)
         postSaveId = $(event.target.parentElement).attr("id");
       } else {
+        target=$(event.target)
         postSaveId = $(event.target).attr("id");
       }
 
@@ -696,6 +723,9 @@ export default {
             }
           });
       } else {
+          if (target.hasClass('animate__animated')) {
+            target.removeClass('animate__animated animate__rubberBand');  
+          }
         // apply the laravel Save function
         axios.get("posts/" + $("#" + postSaveId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/favorite")
           .then((response) => {
@@ -705,6 +735,7 @@ export default {
                 parseInt($("#" + postSaveId)[0].attributes[1].nodeValue)
               );
               $("#" + postSaveId)[0].attributes[3].nodeValue = "#ffbb00";
+              target.addClass('animate__animated animate__rubberBand');  
               $("#" + postSaveId)[0].firstChild.attributes[0].nodeValue =
                 "M43.5 48c-.4 0-.8-.2-1.1-.4L24 28.9 5.6 47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 1.2-.9 1.4-.2.1-.4.1-.6.1z";
               
@@ -805,7 +836,6 @@ export default {
           if (post.id == targetId) {
             
             post.editState = true
-            console.log(post.editState);
           } 
         });
       });
@@ -869,8 +899,18 @@ export default {
 
     goToProfile(event) {
       var userId = event.target.attributes[0].nodeValue;
-      window.location.replace(this.publicPath+userId+'/profile')
+      this.$router.push({path : userId+'/profile'})
+      // window.location.replace(this.publicPath+userId+'/profile')
     },
+
+    jelloAnimation(event) {
+      $(event.target).addClass('animate__animated  animate__jello animate__slow')
+    },
+
+    sendAnimation(event){
+      $(event.target).addClass('animate__animated  animate__fadeOutTopRigh animate__slow')
+    }
+
     
   },
 

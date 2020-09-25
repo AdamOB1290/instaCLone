@@ -32,10 +32,10 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+Vue.component('home', require('./components/Home.vue').default);
 Vue.component('app', require('./components/App.vue').default);
 Vue.component('navbar', require('./components/Navbar.vue').default);
 Vue.component('vfooter', require('./components/Vfooter.vue').default);
-Vue.component("login", require('./components/Login.vue').default);
 Vue.component('feed', require('./components/Feed.vue').default);
 Vue.component('profile', require('./components/Profile.vue').default);
 Vue.component('edit-profile', require('./components/EditProfile.vue').default);
@@ -92,21 +92,58 @@ Vue.use(Cloudinary, {
   configuration: { cloudName: "resize" }
 });
 import VueDragscroll from 'vue-dragscroll'
-Vue.use(VueDragscroll)
+Vue.use(VueDragscroll);
+
+
+
+
+let routes = [
+  { name: 'feeds', path: '/', component: require('./components/Feed.vue').default },
+  { name: 'stories', path: '/story/:userId', component: require('./components/Stories.vue').default, },
+  { name: 'comments', path: '/post/:postId/:objectId?/:originalCommentId?', component: require('./components/Comments.vue').default, },
+  { name: 'chat', path: '/chat', component: require('./components/Chat.vue').default, },
+  { name: 'profile', path: '/:userId/profile', component: require('./components/Profile.vue').default, },
+  { name: 'edit-profile', path: '/profile/edit', component: require('./components/EditProfile.vue').default, },
+]
+
+const router = new VueRouter({
+  mode: 'history',
+  routes // short for `routes: routes`
+})
 
 
 const app = new Vue({
-    store,
-    el: '#app',
-    data() {
-        return {
-            navbarState: true,
-        }
-    },
-   
-    
-    components: {
+        store,
+        el: '#app',
+        router,
+        data() {
+            return {
+                navbarState: true,
+            }
+        },
+        created: function() {
+          this.$store.dispatch('setSessionUser') 
 
-    },
-});
+        },
+        mounted() {
+          // console.log(this.$store.getters.getCurrentSessionUser);
+        },
+        computed : {
+          getSessionUser(){
+              
+              return this.$store.getters.getCurrentSessionUser
+              // return this.$store.getters.getCurrentSessionUser
+             
+          }
+        },
+      
+    });
 
+
+// const app = new Vue({
+//   el: '#app',
+//   router,
+//   data:{
+//     search: ''
+//   },
+// }).$mount('#app');

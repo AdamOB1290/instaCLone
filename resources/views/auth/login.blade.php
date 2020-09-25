@@ -5,17 +5,22 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">InstaClone</div>
+                <div class="card-header text-center text-6xl login_brand text-white-100">Instaclone</div>
 
                 <div class="card-body">
+                    <button class="btn btn-primary w-100 py-1" style="font-size: 15px;"><i class="fab fa-facebook-square mr-1 "></i> Continue with Facebook</button>
+                    <div class="Or_wrapper position-relative d-flex justify-content-center mt-3">
+                        <hr class=" login_hr w-100 ">
+                        <span class="text-sm position-absolute p-2 bg-white login_or">OR</span> 
+                    </div>
+                    
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
 
                         <div class="form-group row">
-                            <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
 
                             <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+                                <input id="email" type="email" placeholder="E-Mail Address" class="login_form form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
 
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">
@@ -26,10 +31,9 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
 
                             <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
+                                <input id="password" type="password" placeholder="Password" class="login_form form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
 
                                 @error('password')
                                     <span class="invalid-feedback" role="alert">
@@ -53,17 +57,35 @@
 
                         <div class="form-group row mb-0">
                             <div class="col-md-8 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" class="btn btn-primary w-100 pt-0 pb-1" style="font-size: 15px;">
                                     {{ __('Login') }}
                                 </button>
+                                
+                                <div class="d-flex flex-column align-items-center " >
+                                    @if (Route::has('password.request'))
+                                        <a class="text-blue-600 font-semibold  py-2 text-sm hover:no-underline hover:text-blue-700" href="{{ route('password.request') }}">
+                                            {{ __('Forgot Your Password?') }}
+                                        </a>
+                                    @endif
+                                    <span>Don't have an account ?<a href="{{ route('register') }}" class="text-blue-600 text-center font-semibold hover:no-underline hover:text-blue-800"> Sign up </a></span>
+                                    
+                                    <div class="Or_wrapper position-relative d-flex justify-content-center mt-3">
+                                        <hr class=" login_hr w-100 ">
+                                        <span class="text-sm position-absolute p-2 bg-white login_getApp">Get the app</span>
+                                    </div>
+                                    <div class="d-flex">
+                                       <div>
+                                        <img src="https://www.instagram.com/static/images/appstore-install-badges/badge_ios_english-en.png/180ae7a0bcf7.png" alt="">
+                                        </div>
+                                        <div>
+                                            <img src="https://www.instagram.com/static/images/appstore-install-badges/badge_android_english-en.png/e9cd846dc748.png" alt="">
+                                        </div> 
+                                    </div>
+                                    
 
-                                @if (Route::has('password.request'))
-                                    <a class="btn btn-link" href="{{ route('password.request') }}">
-                                        {{ __('Forgot Your Password?') }}
-                                    </a>
-                                @endif
+                                </div>
                             </div>
-                            <a href="{{ route('register') }}" class="text-center">Don't have an account ? Register !</a>
+                            
                         </div>
                     </form>
                 </div>
@@ -71,5 +93,7 @@
         </div>
     </div>
 </div>
-<login></login>
 @endsection
+<script>
+
+</script>

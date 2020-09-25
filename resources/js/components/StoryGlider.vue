@@ -40,7 +40,6 @@ export default {
             publicPath: 'http://localhost:8000/',
 
             observer: null,
-
             interval:false,
             count:0,
             goToStoryHref: true,
@@ -60,13 +59,13 @@ export default {
 
         disableStoryHref(){
             this.goToStoryHref= false
-            console.log('disable',this.goToStoryHref);
+            // console.log('disable',this.goToStoryHref);
             this.enableStoryHref()
         },
 
         enableStoryHref(){
             this.goToStoryHref = true;
-            console.log('enable',this.goToStoryHref);
+            // console.log('enable',this.goToStoryHref);
         },
 
         start(){
@@ -93,7 +92,8 @@ export default {
             if (this.goToStoryHref) {
 
                 var targetId = event.target.attributes[0].nodeValue
-                window.location.replace(this.publicPath+'story/'+targetId);  
+                this.$router.push({path : 'story/'+targetId})
+
                 
             }
             this.goToStoryHref = true

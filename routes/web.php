@@ -19,6 +19,11 @@ Route::get('/view', function () {
     return view('welcome');
 });
 
+// Route::get('{path}',function () {
+//     return view('home');
+// })->where( 'path', '([A-z\d\-\/_.]+)?' );
+
+
 Route::resource('users', 'UserController');
 
 Route::resource('chats', 'ChatController');
@@ -62,29 +67,31 @@ Route::patch('/notifications/{userId}/unread', 'NotificationController@markAllUn
 Route::patch('/notifications/{userId}/{notifId}/read', 'NotificationController@markRead')->name('clear.notifications');
 Route::patch('/notifications/{userId}/{notifId}/unread', 'NotificationController@markUnread')->name('clear.notifications');
 
-Route::get('feeds', function () {
-    return view('feed');
-})->middleware('auth');
+Route::get('{path}','HomeController@index')->where( 'path', '([A-z\d\-\/_.]+)?' );
 
-Route::get('story/{userId}', function () {
-    return view('stories');
-})->middleware('auth');
+// Route::get('feeds', function () {
+//     return view('feed');
+// })->middleware('auth');
 
-Route::get('post/{postId}', function () {
-    return view('comments');
-})->middleware('auth');
+// Route::get('story/{userId}', function () {
+//     return view('stories');
+// })->middleware('auth');
 
-Route::get('chat', function () {
-    return view('chats');
-})->middleware('auth');
+// Route::get('post/{postId}', function () {
+//     return view('comments');
+// })->middleware('auth');
 
-Route::get('{userId}/profile', function () {
-    return view('profile');
-})->middleware('auth');
+// Route::get('chat', function () {
+//     return view('chats');
+// })->middleware('auth');
 
-Route::get('profile/edit', function () {
-    return view('editProfile');
-})->middleware('auth');
+// Route::get('{userId}/profile', function () {
+//     return view('profile');
+// })->middleware('auth');
+
+// Route::get('profile/edit', function () {
+//     return view('editProfile');
+// })->middleware('auth');
 
 
 

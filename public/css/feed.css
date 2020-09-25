@@ -1,8 +1,11 @@
 /* Posts */
 
-.feed_wrapper {
+/* .feed_component:last-child{
   margin-bottom: 50px;
+
 }
+.feed_wrapper {
+} */
 
 .feed_wrapper .card {
     width: 18rem; 
@@ -468,6 +471,21 @@ cursor: pointer;
 .slick-slide > div {
     padding-bottom: 20px;
 }
+.deleted_comment {
+  padding-top: 5px;
+  height: 20px;
+}
+ 
+
+/* .reduce_like_animation{
+  height: 15px;
+  width: 15px;
+  margin-left: 9px;
+  align-self: center;
+  transition:2s;
+} */
+
+
 
 .comment_like_icon{
     height: 13px;
@@ -489,26 +507,36 @@ cursor: pointer;
     top: 12px;
     right: -14px;
 }
+/* 
+.reduce_comment_like_animation{
+  height: 3px;
+  width: 3px;
+  transition:2s;
+}
+.reduce_comment_like_animation.postfeed{
+  top: 5px !important;
+  right: 0 !important;
+}
+.reduce_comment_like_animation.commentfeed{
+  top: 15px !important;
+  right: 15px !important;
+}
+
+.reduce_comment_like_animation.replyfeed{
+  top: 15px !important;
+  right: -10px !important;
+} */
 
 @keyframes highlight {
-    0% {
-        background: #fce24d57; 
-    }
-    100% {
-        background: none;
-    }
+    0% {background: #fce24d57;}
+    70%{background: #fce24d3a;}
+    100% {background: none; }
 }
   
 .highlight {
-  animation: highlight 2s;
+  animation: highlight 4s;
   border-radius: 2%;
 }
-
-/* .settings_Modal {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-} */
 
 .settings_Modal .modal-content{
   border-radius: 12px !important;
@@ -527,7 +555,7 @@ cursor: pointer;
   
 }
 
-.settings_btn:focus {
+.settings_btn:fcus {
   
   outline: none !important;
 
@@ -789,4 +817,35 @@ div#search div.wrapper {
 }
 
 
-MEDIA
+/* login page */
+
+.login_brand {
+  font-family: 'Cookie', cursive;
+  font-size: 40px!important;
+}
+
+.Or_wrapper{
+  
+  line-height: 100%;
+}
+
+.login_hr{
+  background-color: #dbdbdb;
+  opacity: 60%;
+  height: 1px;
+}
+
+.login_or{
+  color:#8e8e8e;
+  top: 2px;
+}
+
+.login_getApp{
+  color:#8e8e8e;
+  top: 2px;
+  width: max-content;
+}
+
+.login_form{
+  font-size: 13px !important;
+}

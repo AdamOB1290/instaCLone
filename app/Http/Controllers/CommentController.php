@@ -89,6 +89,12 @@ class CommentController extends Controller
 
         if ($comment->parent_comment_id != 0) {
             $notifiedUserId=Comment::findOrFail($comment->parent_comment_id)->user_id;
+            $data_notifications=[
+                'post_id' => $comment->post_id,
+                'object_id' => $comment->id,
+                'original_comment_id' => $comment->original_comment_id,
+                'notification_message' => ' has replied to your comment!',
+            ];
             $notification =
             [
                 // 'notification_id' => $newNotifId,
@@ -210,9 +216,10 @@ class CommentController extends Controller
             }
         } else { // update the current comment instead of delete ( since it has a child)
             $comment->where('id', $comment->id)->update(['delete_state' => 1]);
+            $comment= Comment::findOrFail($comment->id);
+            return $comment;
         }
-        // return redirect('/comments');
-        // return 'success';
+        
     }
 
     protected  function validatedData()

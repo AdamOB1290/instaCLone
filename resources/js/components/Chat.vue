@@ -2,14 +2,13 @@
     <div class="chat_wrapper">
           <b-tabs v-model="tabIndex"  content-class="" class="w-100" active-nav-item-class="font-weight-bold text-danger" fill lazy>
                 <b-tab>
-                        <contactList  :contacts="contacts" @selected="startConversationWith"/>
+                    <contactList  :contacts="contacts" @selected="startConversationWith"/>
                 </b-tab>
                 <b-tab>
                     <conversation :contact="selectedContact" :messages="messages" @changeTabTo='activateContactList' @newMessage="saveNewMessage"/>
                 </b-tab>
             </b-tabs>
        
-        
     </div>
     
 </template>
@@ -17,21 +16,35 @@
 import Conversation from "./Conversation";
 import ContactList from "./ContactList";
 export default {
-    props: {
-        user: {
-            type: Object,
-            required: true,
+    // props: {
+    //     user: {
+    //         type: Object,
+    //         required: true,
+    //     }
+    // },
+ 
+    watch: {
+        getSessionUser: {
+            handler() {
+                if (this.$store.getters.getCurrentSessionUser) {
+                    this.setSessionUser();
+                }
+            },
+            immediate: true
         }
     },
-
     data(){
         return {
             sessionUserId: this.$sessionUserId,
+            user:'',
             selectedContact: null,
             messages: [],
             contacts: [],
             tabIndex: 0,
         }
+    },
+
+    created: function () {
     },
     
     mounted() {
@@ -39,18 +52,31 @@ export default {
 
         // listens and receives data from MessageSent laravel event
         // when a message is sent, laravel Echo displays it dynamically to the receiver
-        Echo.private('messages.'+this.user.id)
-         .listen('MessageSent', (e) => {
+
+        setTimeout(()=> {
+            console.log(this.user);
+            Echo.private('messages.'+this.user.id)
+            .listen('MessageSent', (e) => {
+             console.log(e.messages);
             this.handleIncoming(e.messages);
         })
-
+        }, 900)
         axios.get('/contacts')
         .then((response) => {
             this.contacts = response.data
         })
+        
+        
+    },
+
+    updated: function(){
     },
 
     methods: {
+        setSessionUser() {
+        this.user = this.$store.getters.getCurrentSessionUser;
+        },
+
         startConversationWith(contact) {
             axios.get('/conversation/'+contact.id)
             .then((response) => {
@@ -105,6 +131,12 @@ export default {
 
     },
 
+    computed : {
+        getSessionUser() {
+                return this.$store.getters.getCurrentSessionUser           
+        }
+    },
+    
     components : {
         Conversation,
         ContactList,

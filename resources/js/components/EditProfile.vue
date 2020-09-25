@@ -2,7 +2,7 @@
     <div class="mb-5 mt-3">
         
         <div class="d-flex justify-content-center align-items-center flex-column ">
-        <i @click="backToProfile" class="fas fa-arrow-left ml-2 exit_edit_profile"></i>    
+        <i @click="backToProfile" class="fas fa-arrow-left ml-2 exit_edit_profile cursor-pointer"></i>    
             <!-- <cld-image  dpr="auto" responsive="width" width="auto" crop="scale" :src="form.pfp.url" :publicId="form.pfp.publicId"  class="slider-image my-2">
               <cld-transformation border="3px_solid_rgb:00390b" radius="20" />
               <cld-transformation quality="auto" fetchFormat="auto" />
@@ -95,8 +95,10 @@
     
         methods:{
             backToProfile(){
-                window.location.replace(this.publicPath+this.sessionUserId+'/profile')
+                this.$router.push({path : '/'+this.sessionUserId+'/profile'})
+                // window.location.replace(this.publicPath+this.sessionUserId+'/profile')
             },
+            
             reloadProfile() {
                 axios
                 .get(this.publicPath+"users/"+this.sessionUserId)

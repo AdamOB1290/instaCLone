@@ -19,7 +19,9 @@
                 <img @click="goToProfile" :data-userId="storyUser.id" class="pfp card-img-top rounded-circle mr-2" :src="storyUser.pfp" />
                 <span @click="goToProfile" :data-userId="storyUser.id" class="username font-weight-bold">{{storyUser.username}}</span>
                 <i class="fas fa-ellipsis-h ml-auto mr-2 pt-2 storySettings" v-b-modal="'my_storyModal'+story.id"></i>
-                <a :href="publicPath+'feeds'"><span class="close_icon"></span></a>
+                <router-link to="/">
+                  <span class="close_icon"></span>
+                </router-link>
             </div>
             <b-modal modal-class="settings_Modal" :id="'my_storyModal'+story.id" :ref="'my_storyModal'+story.id"  hide-header hide-footer >
               <button :id="'storyShareStoryId'+story.id" :data-storyId="story.id" @click="sharePost"  class="w-100 settings_btn px-5 py-2">Share as post</button>

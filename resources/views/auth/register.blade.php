@@ -5,8 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">{{ __('Register') }}</div>
-
+                <div class="card-header text-center text-6xl login_brand text-white-100">Instaclone</div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
@@ -98,15 +97,16 @@
                         </div> --}}
 
                         <div class="form-group row mb-0">
-                            <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
+                            <div class="col-md-6 offset-md-4 d-flex flex-column align-items-center">
+                                <button type="submit" class="btn btn-primary w-100 pt-0 pb-1 mb-3">
                                     {{ __('Register') }}
-                                </button>
+                                </button>                            
+                                <span>Don't have an account ?<a href="{{ route('login') }}" class="text-blue-600 text-center font-semibold hover:no-underline hover:text-blue-800"> Sign in </a></span>
+
                             </div>
                         </div>
                         
                     </form>
-                    <a href="{{ route('login') }}" class="text-center mt-3">Already have an account ? Sign In !</a>
 
                 </div>
             </div>

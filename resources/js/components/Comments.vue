@@ -65,65 +65,67 @@
       </div>
       <div class="comments_wrapper" v-for="(commentPage, key) in commentFeed" :key="key">
         <div  v-for="(comment, key) in commentPage" :key="key">
-          <div :ref="'comment'+comment.id" :id="'comment'+comment.id" class="comments d-flex position-relative show_more p-2" >
-            <img @click="goToProfile" :data-userId="comment.user.id" class="pfp rounded-circle mr-2" :src="comment.user.pfp"/>
-           
+          <div :ref="'comment'+comment.id" :id="'comment'+comment.id" :class="`comments d-flex position-relative show_more ${comment.delete_state == 1 ? 'px-2 pt-2 pb-0' : 'p-2'}`" >
+            <img v-if="!comment.delete_state == 1" @click="goToProfile" :data-userId="comment.user.id" class="pfp rounded-circle mr-2" :src="comment.user.pfp"/>
+            <img v-else src="https://res.cloudinary.com/resize/image/upload/v1599491685/default_pic.png" alt="" class="pfp rounded-circle mr-2" >
             <div class="pr-3 pl-1">
               <span @click="goToProfile" :data-userId="comment.user.id" class="username font-weight-bold pb-2">{{comment.user.username}}</span>
               <textarea v-if="comment.editState"  v-model="comment.content" @keydown.enter.exact.prevent 
               @keyup.enter.exact="submitEdit" :data-commentId="comment.id"
                cols="35" rows="5" class="mt-2 editTxt">
               </textarea>
-              <span v-else>{{comment.content}}</span>
+              <div v-else :class="`${comment.delete_state == 1 ? 'text-secondary font-italic deleted_comment' : 'break-all'}`">{{comment.content}}</div>
               <br>
-              <span class="text-secondary">{{comment.created_at}}</span>
-              <span v-if=" comment.likes.length != 0" class="text-secondary ml-2">{{comment.likes.length}} likes</span>
-              <span v-if=" comment.likes.length == 0" class="text-secondary ml-2">0 likes</span>
-              <span :id="'commentReplyId'+comment.id" :data-commentId="comment.id" :data-username="comment.user.username" :data-originalCommentId="comment.id" @click="commentReply" class="text-secondary ml-2">Reply</span>
-              <i class="fas fa-ellipsis-h text-secondary ml-2"  v-b-modal="'my_commentModal'+comment.id"></i>
-              <b-modal :id="'my_commentModal'+comment.id" :ref="'my_commentModal'+comment.id" modal-class="settings_Modal" hide-header hide-footer centered>
-                <button :id="'commentEditId'+comment.id" :data-commentId="comment.id" @click="editComment"  class="w-100 settings_btn px-5 py-2">Edit</button>
-                <button :id="'commentDeleteId'+comment.id" :data-commentId="comment.id" @click="deleteComment" class="w-100 settings_btn text-danger px-5 py-2 border-0" >Delete</button>
-              </b-modal>
-              
+              <div v-if="comment.delete_state == 0">
+                <span class="text-secondary">{{comment.created_at}}</span>
+                <span v-if=" comment.likes.length == 0" class="text-secondary ml-2">0 likes</span>
+                <span v-else class="text-secondary ml-2">{{comment.likes.length}} likes</span>
+                <span :id="'commentReplyId'+comment.id" :data-commentId="comment.id" :data-username="comment.user.username" :data-originalCommentId="comment.id" @click="commentReply" class="text-secondary ml-2 cursor-pointer">Reply</span>
+                <i class="fas fa-ellipsis-h text-secondary ml-2 cursor-pointer"  v-b-modal="'my_commentModal'+comment.id"></i>
+                <b-modal :id="'my_commentModal'+comment.id" :ref="'my_commentModal'+comment.id" modal-class="settings_Modal" hide-header hide-footer centered>
+                  <button :id="'commentEditId'+comment.id" :data-commentId="comment.id" @click="editComment"  class="w-100 settings_btn px-5 py-2">Edit</button>
+                  <button :id="'commentDeleteId'+comment.id" :data-commentId="comment.id" @click="deleteComment" class="w-100 settings_btn text-danger px-5 py-2 border-0" >Delete</button>
+                </b-modal>
+              </div>
             </div>
-            <span v-if="comment.editState" :id="'cancelCommentEditId'+comment.id" :data-commentId="comment.id" @click="cancelEditComment" class="cancel_edit text-danger ml-2">Cancel</span>
+            <span v-if="comment.editState" :id="'cancelCommentEditId'+comment.id" :data-commentId="comment.id" @click="cancelEditComment" class="cancel_edit text-danger ml-2 cursor-pointer">Cancel</span>
             <!-- like icon -->
-            <svg :id="'commentLikeId'+comment.id" :data-commentId="comment.id" @click="likeUnlikeComments" :fill="comment.likeColor"  class="comment_like_icon commentfeed" aria-label="Like" viewBox="0 0 48 48" data-objectType='post/comments'>
+            <svg v-if="comment.delete_state == 0" :id="'commentLikeId'+comment.id" :data-commentId="comment.id" @click="likeUnlikeComments" :fill="comment.likeColor"  class="comment_like_icon commentfeed" aria-label="Like" viewBox="0 0 48 48" data-objectType='post/comments'>
               <path :d="comment.likePath"></path>
             </svg>
           </div>
-          <div v-if="comment.replies.length > 0" class="text-secondary text-center" @click="Expand_Collapse">View Replies</div>
+          <div :ref="'showReplies'+comment.id" v-if="comment.replies.length > 0" class="text-secondary text-center cursor-pointer" @click="Expand_Collapse">View Replies</div>
           <div v-if="comment.replies.length > 0" class="reply_wrapper mx-4" :class="reply_display">
             <div  v-for="(reply, key) in comment.replyFeed" :key="key">
-                  <div class="replys d-flex position-relative show_more p-2">
-                    <img class="pfp rounded-circle mr-2" :src="reply.user.pfp"/>
-                  <div>
+              <div :ref="'comment'+reply.id" :id="'comment'+reply.id"  class="replies d-flex position-relative show_more p-2">
+                <img class="pfp rounded-circle mr-2" :src="reply.user.pfp"/>
+                <div>
                   <span class="username font-weight-bold pb-2">{{reply.user.username}}</span>
+                  <span @click="goToParent" :data-parentId="'#comment'+reply.parent_comment_id" class="text-gray-600 hover:underline hover:text-red-600 cursor-pointer">{{'replied to comment#'+reply.parent_comment_id}}</span>
                   <textarea  v-if="reply.editState" v-model="reply.content" @keydown.enter.exact.prevent 
                   @keyup.enter.exact="submitEdit" :data-commentId="reply.id" 
                   cols="30" rows="5" class="mt-2 editTxt">
                   </textarea>
-                  <span v-else>{{reply.content}}</span>
+                  <div v-else :class="`${reply.delete_state == 1 ? 'text-secondary font-italic deleted_comment' : 'break-all'}`">{{reply.content}}</div>
                   <br>
                   <span class="text-secondary">{{reply.created_at}}</span>
                   <span v-if=" reply.likes.length != 0" class="text-secondary ml-2">{{reply.likes.length}} likes</span>
                   <span v-if=" reply.likes.length == 0" class="text-secondary ml-2">0 likes</span>
-                  <span :id="'commentReplyId'+comment.id" :data-commentId="reply.id" :data-username="reply.user.username" :data-originalCommentId="reply.original_comment_id" @click="commentReply" class="text-secondary ml-2">Reply</span>
-                  <i class="fas fa-ellipsis-h text-secondary ml-2"  v-b-modal="'my_replyModal'+reply.id"></i>
+                  <span :id="'commentReplyId'+comment.id" :data-commentId="reply.id" :data-username="reply.user.username" :data-originalCommentId="reply.original_comment_id" @click="commentReply" class="text-secondary ml-2 cursor-pointer">Reply</span>
+                  <i class="fas fa-ellipsis-h text-secondary ml-2 cursor-pointer"  v-b-modal="'my_replyModal'+reply.id"></i>
                   <b-modal :id="'my_replyModal'+reply.id" :ref="'my_commentModal'+reply.id" modal-class="settings_Modal" hide-header hide-footer centered>
                     <button :id="'replyEditId'+reply.id" :data-replyId="reply.id" @click="editComment"  class="w-100 settings_btn px-5 py-2">Edit</button>
                     <button :id="'replyDeleteId'+reply.id" :data-replyId="reply.id" @click="deleteComment" class="w-100 settings_btn text-danger px-5 py-2 border-0" >Delete</button>
                   </b-modal> 
                 </div>
-                <span v-if="reply.editState" :id="'cancelReplyEditId'+comment.id" :data-replyId="reply.id" @click="cancelEditComment" class="cancel_edit text-danger ml-2">Cancel</span>
+                <span v-if="reply.editState" :id="'cancelReplyEditId'+comment.id" :data-replyId="reply.id" @click="cancelEditComment" class="cancel_edit text-danger ml-2 cursor-pointer">Cancel</span>
                 <!-- like icon -->
                 <svg :id="'commentLikeId'+reply.id" :data-replyId="reply.id" @click="likeUnlikeComments" :fill="reply.likeColor"  class="comment_like_icon replyfeed" aria-label="Like" viewBox="0 0 48 48" data-objectType='post/comments'>
                   <path :d="reply.likePath"></path>
                 </svg>
               </div>
             </div>
-            <div v-if="comment.replies.length != comment.replyFeed.length" @click="showReplies" :data-commentId="comment.id" class="text-secondary text-center" >Show More</div>
+            <div v-if="comment.replies.length != comment.replyFeed.length" :ref="'showMore'+comment.id" @click="showReplies" :data-commentId="comment.id" class="text-secondary text-center cursor-pointer" >Show More</div>
           </div>
           
           <observer v-on:intersect="commentIntersected" />
@@ -153,6 +155,7 @@ var moment = require("moment");
 export default {
   data() {
     return {
+      response: [],
       post: [],
       comments: [],
       originalComments: [],
@@ -172,6 +175,7 @@ export default {
         originalCommentId: 0,
         commentBody: '',
       },
+      executeScroll: true,
 
       // SESSIONUSER      
       sessionUser: [],
@@ -244,6 +248,10 @@ export default {
         this.comments.forEach((comment) => {
          comment.replies = []
          comment.editState = false
+         if (comment.delete_state == 1) {
+           comment.user.username=""
+           comment.content= "(Comment Deleted)"
+         }
           if (comment.likes == null) {
               comment.likes = []
           }
@@ -290,13 +298,13 @@ export default {
       this.commentFeed.forEach(commentPage => {
         commentPage.forEach(comment => {
           if (comment.id == this.targetCommentId ) {
-          // push the next page ( of 10 replys) into the array feed
+          // push the next page ( of 10 replies) into the array feed
           comment.replyFeed.push(...comment.replies.slice(this.replySliceIndex, this.replySliceIndex + 5))
           // increment the slice index to get the next page on the next iteration
           this.replySliceIndex += 5;
 
-          // forcing vue to rerender
-          this.forceRerender() 
+          // updating our data
+          this.update_data()
         }
         });
         
@@ -309,17 +317,71 @@ export default {
   },
 
   updated: function () {
-   
+        var urlArray= window.location.href.split("?")
+        console.log('Url', urlArray);
+        console.log('Scroll state', this.executeScroll);
+        var commentId
+        var parentId
+        var targetComment
+        var showReplies
+        var showMore
+        var originalCommentId
+
+        if (urlArray.length > 1 && this.executeScroll) {
+          commentId = window.location.href.split("?")[1]
+          targetComment = document.getElementById("comment"+commentId)
+          console.log('commentId then targetComment then scroll state', commentId, targetComment, this.executeScroll);
+
+          // check if it's a reply
+          if (urlArray.length == 3) {
+            originalCommentId = window.location.href.split("?")[2]
+            showReplies = this.$refs['showReplies'+originalCommentId]
+            
+
+            // finds the comment and pushes it into the replyfeed
+            this.originalComments.forEach(originalComment => {
+              if (originalComment.id == originalCommentId) {
+                originalComment.replyFeed.forEach(replyInFeed => {
+                  if (replyInFeed.id == commentId) {
+                    let index = originalComment.replyFeed.indexOf(replyInFeed)
+                    originalComment.replyFeed.splice(index, 1)
+                  }
+                });
+                originalComment.replies.forEach(reply => {
+                  if (reply.id == commentId) {
+                    originalComment.replyFeed.splice(0, 0, reply)
+                  }
+                });
+
+
+              }
+            });
+          }      
+          this.executeScroll =false
+          this.forceRerender() 
+          setTimeout(() => {
+            targetComment = document.getElementById("comment"+commentId)
+            showReplies[0].click()
+            console.log('showrepliesEl and then its sibling', targetComment, showReplies[0], showReplies[0].nextElementSibling);
+            $(showReplies[0].nextElementSibling).removeClass('highlight')    
+            targetComment.className += " highlight";
+            targetComment.scrollIntoView({behavior: "smooth"})
+          }, 1000);
+          
+        }
+
+  
+
+    
   },
 
   mounted: function () {
     // this.$store.commit("changeName", "New Name");
     // console.log(this.$store.state.user.username);
-    const commentId = window.location.href.split("?")[1]
-    const el = this.$el
-    this.$nextTick(() => {
-    })
-      // console.log(this.$refs);
+    // const commentId = window.location.href.split("?")[1]
+    // const el = this.$el
+    
+    //   console.log(this.$refs);
       // el.scrollIntoView({behavior: "smooth"});
 
   },
@@ -328,166 +390,233 @@ export default {
     update_data() {
        axios
       .get(this.publicPath+"posts/"+this.postId)
-      .then((data) => {    
-        this.comments = data.data.comments;  
+      .then((data) => {  
+        this.originalComments = []
+        this.commentFeed = []
+        this.comments = []
+        this.comments = data.data.comments
+        
+        this.comments.forEach((comment) => {
+         comment.replies = []
+         comment.editState = false
+         if (comment.delete_state == 1) {
+           comment.user.username=""
+           comment.content= "(Comment Deleted)"
+         }
+          if (comment.likes == null) {
+              comment.likes = []
+          }
+          
+          comment.created_at=this.dateReformat(comment.created_at)
+
+          if (this.likedComments.includes(comment.id)) {
+              comment.likePath =
+                "M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+              comment.likeColor = "#ed4956";
+            } else {              
+              comment.likePath =
+                "M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+              comment.likeColor = "#262626";
+            }
+
+            if (comment.parent_comment_id == 0) {
+              this.originalComments.push(comment);
+            } 
+        })
+
+        this.originalComments.forEach(originalComment => {
+          originalComment.replies = []
+          originalComment.replyFeed = []
+          this.comments.forEach(comment => {
+            if (comment.original_comment_id == originalComment.id) {
+              if (comment.likes == null) {
+                comment.likes = []
+              }
+              originalComment.replies.push(comment);
+            }
+          });
+          originalComment.replyFeed.push(...originalComment.replies.slice(0, 10))
+        });
+
+        this.commentFeed.push(this.originalComments.slice(0, 10))
       })
       .catch((err) => {});
     },
     
     likeUnlikePosts(event) {
-
-      let postLikeId
-      let dataPostId
-      
+      var target
+      var postLikeId
+      var dataPostId
 
       if (typeof $(event.target).attr("id") == 'undefined') {
+        target=$(event.target.parentElement)
         postLikeId = $(event.target.parentElement).attr("id");
         dataPostId = $(event.target.parentElement).attr("data-postId");
       } else {
+        target=$(event.target)
         postLikeId = $(event.target).attr("id");
         dataPostId = $(event.target).attr("data-postId");
       }
-        //  check if the post is already liked by the user
-        if (this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
-            // apply the laravel unlike function
-            axios
-              .get(this.publicPath+"posts/" +$("#" + postLikeId)[0].attributes[1].nodeValue +"/" +this.sessionUser.id +"/unlike")
-              .then((response) => {
-                if (this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
-
-                  // get the index of the post id we want to delete
-                  let index = this.likedPosts.indexOf(
-                    parseInt($("#" + postLikeId)[0].attributes[1].nodeValue)
-                  );
-                  //  remove it from the likedPosts array
-                  this.likedPosts.splice(index, 1);
-          
-                  $("#" + postLikeId)[0].attributes[2].nodeValue = "#262626";
-                  $("#" + postLikeId)[0].firstChild.attributes[0].nodeValue =
-                    "M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
-                  
-                  if (this.post.id == dataPostId ) {
-                    let index = this.post.likes.indexOf(this.sessionUser.id)
-                    this.post.likes.splice(index, 1)
-                  } 
-            
-                }
-
-              });
-        } else {
-          // apply the laravel like function
+      //  check if the post is already liked by the user
+      if (this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
+          // apply the laravel unlike function
           axios
-            .get(this.publicPath+"posts/" + $("#" + postLikeId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/like")
+            .get(this.publicPath+"posts/" +$("#" + postLikeId)[0].attributes[1].nodeValue +"/" +this.sessionUser.id +"/unlike")
             .then((response) => {
-              if (!this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
-                // add the post id to the likedPosts array
-                this.likedPosts.push(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue));
-                $("#" + postLikeId)[0].attributes[2].nodeValue = "#ed4956";
-                $("#" + postLikeId)[0].firstChild.attributes[0].nodeValue =
-                  "M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+              if (this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
 
-                this.post.likes.push(this.sessionUser.id)
-                    
+                // get the index of the post id we want to delete
+                let index = this.likedPosts.indexOf(
+                  parseInt($("#" + postLikeId)[0].attributes[1].nodeValue)
+                );
+                //  remove it from the likedPosts array
+                this.likedPosts.splice(index, 1);
+        
+                $("#" + postLikeId)[0].attributes[2].nodeValue = "#262626";
+                $("#" + postLikeId)[0].firstChild.attributes[0].nodeValue =
+                  "M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
                 
+                if (this.post.id == dataPostId ) {
+                  let index = this.post.likes.indexOf(this.sessionUser.id)
+                  this.post.likes.splice(index, 1)
+                } 
+          
               }
 
             });
-
+      } else {
+        if (target.hasClass('animate__animated')) {
+          target.removeClass('animate__animated animate__bounceIn');  
         }
+          target.addClass('reduce_like_animation');  
+        // apply the laravel like function
+        axios
+          .get(this.publicPath+"posts/" + $("#" + postLikeId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/like")
+          .then((response) => {
+            if (!this.likedPosts.includes(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue))) {
+              // add the post id to the likedPosts array
+              this.likedPosts.push(parseInt($("#" + postLikeId)[0].attributes[1].nodeValue));
+              $("#" + postLikeId)[0].attributes[2].nodeValue = "#ed4956";
+              if (target.hasClass('reduce_like_animation')) {
+                target.removeClass('reduce_like_animation');  
+              }
+              target.addClass('animate__animated animate__bounceIn');  
+              $("#" + postLikeId)[0].firstChild.attributes[0].nodeValue =
+                "M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+
+              this.post.likes.push(this.sessionUser.id)
+                  
+              
+            }
+
+          });
+
+      }
     },
 
     likeUnlikeComments(event) {
-
-      let commentLikeId
-      let dataCommentId
-      let dataReplyId
+      var target
+      var commentLikeId
+      var dataPostId
+      var dataCommentId
+      
 
       if (typeof $(event.target).attr("id") == 'undefined') {
+        target=$(event.target.parentElement)
         commentLikeId = $(event.target.parentElement).attr("id");
+        dataPostId = $(event.target.parentElement).attr("data-postId");
         dataCommentId = $(event.target.parentElement).attr("data-commentId");
-        dataReplyId = $(event.target.parentElement).attr("data-replyId");
       } else {
+        target=$(event.target)
         commentLikeId = $(event.target).attr("id");
+        dataPostId = $(event.target).attr("data-postId");
         dataCommentId = $(event.target).attr("data-commentId");
-        dataReplyId = $(event.target).attr("data-replyId");
       }
       
-        //  check if the comment is already liked by the user
-        if (this.likedComments.includes(parseInt($("#" + commentLikeId)[0].attributes[1].nodeValue))) {
-            // apply the laravel unlike function
-            axios.get(this.publicPath+"post/comments/" +$("#" + commentLikeId)[0].attributes[1].nodeValue +"/" + this.sessionUser.id + "/unlike")
-              .then((response) => {
-              if (this.likedComments.includes(parseInt($("#" + commentLikeId)[0].attributes[1].nodeValue))){
-                // get the index of the comment id we want to delete
-                let index = this.likedComments.indexOf(
-                  parseInt($("#" + commentLikeId)[0].attributes[1].nodeValue)
-                );
-                //  remove it from the likedComments array
-                this.likedComments.splice(index, 1);
-                $("#" + commentLikeId)[0].attributes[2].nodeValue = "#262626";
-                $("#" + commentLikeId)[0].firstChild.attributes[0].nodeValue =
-                "M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
-
-                this.commentFeed.forEach(commentPage => {
-                  commentPage.forEach(comment => {
-                      if (comment.id == dataCommentId ) {
-                        let index = comment.likes.indexOf(this.sessionUser.id)
-                        comment.likes.splice(index, 1)
-                      } else if (comment.replies.length > 0) {
-                        comment.replyFeed.forEach(reply => {
-                          if (reply.id == dataReplyId ) {
-                            let index = reply.likes.indexOf(this.sessionUser.id)
-                            reply.likes.splice(index, 1)
-                          }
-                        });
-                      }
-
-                      
-                  });
-        
-                });
-
-              }
-          
-              });
-        } else {
-          // apply the laravel like function
-          axios
-            .get(this.publicPath+"post/comments/" + $("#" + commentLikeId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/like")
+      //  check if the comment is already liked by the user
+      if (this.likedComments.includes(parseInt($("#" + commentLikeId)[0].attributes[1].nodeValue))) {
+          // apply the laravel unlike function
+          axios.get(this.publicPath+"post/comments/" +$("#" + commentLikeId)[0].attributes[1].nodeValue +"/" + this.sessionUser.id + "/unlike")
             .then((response) => {
-            if (!this.likedComments.includes(parseInt($("#" + commentLikeId)[0].attributes[1].nodeValue))){
-
-              // add the comment id to the likedComments array
-              this.likedComments.push(
+            if (this.likedComments.includes(parseInt($("#" + commentLikeId)[0].attributes[1].nodeValue))){
+              // get the index of the comment id we want to delete
+              let index = this.likedComments.indexOf(
                 parseInt($("#" + commentLikeId)[0].attributes[1].nodeValue)
               );
-              $("#" + commentLikeId)[0].attributes[2].nodeValue = "#ed4956";
+              //  remove it from the likedComments array
+              this.likedComments.splice(index, 1);
+              $("#" + commentLikeId)[0].attributes[2].nodeValue = "#262626";
               $("#" + commentLikeId)[0].firstChild.attributes[0].nodeValue =
-              "M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+              "M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
 
               this.commentFeed.forEach(commentPage => {
-                  commentPage.forEach(comment => {
-                      if (comment.id == dataCommentId ) {
-                        let index = comment.likes.indexOf(this.sessionUser.id)
-                        comment.likes.push(this.sessionUser.id)
-                      } else if (comment.replies.length > 0) {
-                        comment.replyFeed.forEach(reply => {
-                          if (reply.id == dataReplyId ) {
-                            let index = reply.likes.indexOf(this.sessionUser.id)
-                            reply.likes.push(this.sessionUser.id)
-                          }
-                        });
-                      }
+                commentPage.forEach(comment => {
+                    if (comment.id == dataCommentId ) {
+                      let index = comment.likes.indexOf(this.sessionUser.id)
+                      comment.likes.splice(index, 1)
+                    } else if (comment.replies.length > 0) {
+                      comment.replyFeed.forEach(reply => {
+                        if (reply.id == dataReplyId ) {
+                          let index = reply.likes.indexOf(this.sessionUser.id)
+                          reply.likes.splice(index, 1)
+                        }
+                      });
+                    }
 
-                      
-                  });
-        
+                    
+                });
+      
               });
-              
+
             }
-          });
-          
+        
+            });
+      } else {
+        if (target.hasClass('animate__animated')) {
+          target.removeClass('animate__animated animate__bounceIn');  
         }
+        target.addClass('reduce_comment_like_animation')
+        // apply the laravel like function
+        axios
+          .get(this.publicPath+"post/comments/" + $("#" + commentLikeId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/like")
+          .then((response) => {
+          if (!this.likedComments.includes(parseInt($("#" + commentLikeId)[0].attributes[1].nodeValue))){
+
+            // add the comment id to the likedComments array
+            this.likedComments.push(
+              parseInt($("#" + commentLikeId)[0].attributes[1].nodeValue)
+            );
+            $("#" + commentLikeId)[0].attributes[2].nodeValue = "#ed4956";
+            if (target.hasClass('reduce_comment_like_animation')) {
+              target.removeClass('reduce_comment_like_animation')
+            }
+            target.addClass('animate__animated animate__bounceIn');  
+            $("#" + commentLikeId)[0].firstChild.attributes[0].nodeValue =
+            "M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+
+            this.commentFeed.forEach(commentPage => {
+                commentPage.forEach(comment => {
+                    if (comment.id == dataCommentId ) {
+                      let index = comment.likes.indexOf(this.sessionUser.id)
+                      comment.likes.push(this.sessionUser.id)
+                    } else if (comment.replies.length > 0) {
+                      comment.replyFeed.forEach(reply => {
+                        if (reply.id == dataReplyId ) {
+                          let index = reply.likes.indexOf(this.sessionUser.id)
+                          reply.likes.push(this.sessionUser.id)
+                        }
+                      });
+                    }
+
+                    
+                });
+      
+            });
+            
+          }
+        });
+        
+      }
     },
 
     commentIntersected() {
@@ -529,10 +658,10 @@ export default {
       this.addCommentForm.parentCommentId = event.target.attributes[1].nodeValue
       this.addCommentForm.commentBody = '@'+event.target.attributes[2].nodeValue+' '
       this.addCommentForm.originalCommentId = event.target.attributes[3].nodeValue
-      // console.log($(this.$refs.comment123[0]));
+      // console.log($(this.$refs.comment113[0]));
 ;      // $(this.$refs.comment123[0])[0]
       // console.log($(this.$refs.comment123[0])[0]);
-      console.log(this.$refs);
+      // console.log(this.$refs);
       this.$refs.commentForm.focus()
     },
 
@@ -547,7 +676,6 @@ export default {
       params.append('post_id', this.postId);
       params.append('user_id', this.sessionUser.id);
       params.append('content', this.addCommentForm.commentBody);
-      console.log(this.publicPath+'comments');
       axios({
         method: 'post',
         url: this.publicPath+'comments',
@@ -567,20 +695,28 @@ export default {
         response.data.created_at= this.dateReformat(response.data.created_at)
 
         if (this.addCommentForm.originalCommentId == 0) {
+          response.data.replyFeed = []
+          response.data.replies = []
           this.commentFeed[0].push(response.data)
+          this.originalComments.push(response.data)
         } else {
           this.originalComments.forEach(originalComment => {
+            
             if (originalComment.id == this.addCommentForm.originalCommentId) {
                 originalComment.replyFeed.push(response.data)
                 originalComment.replies.push(response.data)
-              } else {
-                originalComment.replyFeed.forEach(reply => {
-                  if (reply.id == this.addCommentForm.originalCommentId) {
-                    originalComment.replyFeed[0].push(response.data)
-                    originalComment.replies.push(response.data)
-                  } 
-                });
-              }
+              } 
+              
+              // it doesn't make sense to compare the reply id to the original comment ID
+              //  by definition they will nerver match 
+              // else {
+              //   originalComment.replyFeed.forEach(reply => {
+              //     if (reply.id == this.addCommentForm.originalCommentId) {
+              //       originalComment.replyFeed[0].push(response.data)
+              //       originalComment.replies.push(response.data)
+              //     } 
+              //   });
+              // }
             
           });
         } 
@@ -599,29 +735,44 @@ export default {
         method: 'delete',
         url: `${this.publicPath}comments/`+targetId,
       }).then((response) => {
-        this.commentFeed.forEach(page => {
-          page.forEach(comment => {
-            if (targetId == comment.id) {
-              let index = page.indexOf(comment)
-              page.splice(index, 1)
-            } else {
-              this.originalComments.forEach(originalComment => {
-                originalComment.replyFeed.forEach(reply => {
-                  if (reply.id == targetId) {
-                    let index = originalComment.replyFeed.indexOf(reply)
-                    originalComment.replyFeed.splice(index, 1)
-                    let index2 = originalComment.replies.indexOf(reply)
-                    originalComment.replies.splice(index2, 1)
+        
+          this.commentFeed.forEach(page => {
+            page.forEach(comment => {
+                if (targetId == comment.id) {
+                  if (response.data.delete_state == undefined) {
+                    let index = page.indexOf(comment)
+                    page.splice(index, 1)
+                  } else {
+                    comment.delete_state = 1
+                    comment.user.username=""
+                    comment.content= "(Comment Deleted)"
                   }
-                })
-              })
-            }
+                  
+                } else {
+                  this.originalComments.forEach(originalComment => {
+                    originalComment.replyFeed.forEach(reply => {
+                      if (reply.id == targetId) {
+                        if (response.data.delete_state == undefined) {
+                          let index = originalComment.replyFeed.indexOf(reply)
+                          originalComment.replyFeed.splice(index, 1)
+                          let index2 = originalComment.replies.indexOf(reply)
+                          originalComment.replies.splice(index2, 1)
+                        } else {
+                          reply.delete_state = 1
+                          reply.user.username=""
+                          reply.content= "(Comment Deleted)"
+                        }
+                        
+                      }
+                    })
+                  })
+                }
+            });
           });
-          
-        });
         
         $(this.$refs)[0]['my_commentModal'+targetId][0].hide() 
         this.forceRerender()
+        this.update_data()
         
       })
     },
@@ -696,23 +847,42 @@ export default {
     },
     
     dateReformat (createdAt) {
-      var dateArray = moment(createdAt).fromNow()
-      // console.log(dateArray);
-          
-      //     if (dateArray[0]=='a') {
-      //       dateArray[0]= 1
-      //     }
-      //     var timeLetter = dateArray[1].charAt(0)
-      //     if (timeLetter=='f') {
-      //       timeLetter= 'm'
-      //     }
-           
-          return dateArray
+      // var dateArray = moment(createdAt).fromNow()
+      moment.updateLocale('en', {
+          relativeTime: {
+              future: "in %s",
+              past: "%s ago",
+              s: number=>number + "s ago",
+              ss: '%ds ago',
+              m: "1m ago",
+              mm: "%dm ago",
+              h: "1h ago",
+              hh: "%dh ago",
+              d: "1d ago",
+              dd: "%dd ago",
+              M: "a month ago",
+              MM: "%d months ago",
+              y: "a year ago",
+              yy: "%d years ago"
+          }
+      });
+
+      let secondsElapsed = moment().diff(createdAt, 'seconds');
+      let dayStart = moment("2018-01-01").startOf('day').seconds(secondsElapsed);
+
+      if (secondsElapsed > 300) {
+          return moment(createdAt).fromNow(true);
+      } else if (secondsElapsed < 60) {
+          return dayStart.format('s') + 's ago';
+      } else {
+          return dayStart.format('m:ss') + 'm ago';
+      }
     },
     
     goToProfile(event) {
       var userId = event.target.attributes[0].nodeValue
-      window.location.replace(this.publicPath+userId+'/profile')
+      this.$router.push({path : '/'+userId+'/profile'})
+      // window.location.replace(this.publicPath+userId+'/profile')
     },  
     
     editPostDescription(event) {
@@ -820,11 +990,14 @@ export default {
 
     saveUnsave(event) {
       let postSaveId; 
+      var target
 
 
       if (typeof $(event.target).attr("id") == 'undefined') {
+        target=$(event.target.parentElement)
         postSaveId = $(event.target.parentElement).attr("id");
       } else {
+        target=$(event.target)
         postSaveId = $(event.target).attr("id");
       }
 
@@ -848,6 +1021,9 @@ export default {
             }
           });
       } else {
+        if (target.hasClass('animate__animated')) {
+            target.removeClass('animate__animated animate__rubberBand');  
+        }
         // apply the laravel Save function
         axios.get(this.publicPath+"posts/" + $("#" + postSaveId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/favorite")
           .then((response) => {
@@ -857,6 +1033,7 @@ export default {
                 parseInt($("#" + postSaveId)[0].attributes[1].nodeValue)
               );
               $("#" + postSaveId)[0].attributes[3].nodeValue = "#ffbb00";
+              target.addClass('animate__animated animate__rubberBand');  
               $("#" + postSaveId)[0].firstChild.attributes[0].nodeValue =
                 "M43.5 48c-.4 0-.8-.2-1.1-.4L24 28.9 5.6 47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 1.2-.9 1.4-.2.1-.4.1-.6.1z";
               
@@ -866,16 +1043,44 @@ export default {
       }
     },
 
+    goToParent(event){
+      var targetCommentId= event.target.attributes[0].nodeValue
+      var targetOffset = $(targetCommentId).offset().top;
+      var targetHeight = $(targetCommentId).height();
+      var windowHeight = $(window).height();
+      var offset;
 
+      if (targetHeight < windowHeight) {
+        offset = targetOffset - ((windowHeight / 2) - (targetHeight / 2));
+      }
+      else {
+        offset = targetOffset;
+      }
+      $('html, body').animate({scrollTop:offset}, 700);
+
+      if ($(targetCommentId).hasClass('highlight')) {
+        console.log($(targetCommentId).hasClass('highlight'));
+        $(targetCommentId).removeClass('highlight');
+      }
+      setTimeout(()=>{
+      $(targetCommentId).addClass('highlight'),1000
+      })
+
+    }
 
     
   },
 
-
+  computed:{
+    // goToComment(){
+    //     if (this.$route.name == "comments") {
+    // }
+    // }
+  },
 
   components: {
     Observer,
-    SearchComponent
+    SearchComponent,
   },
 };
 </script>

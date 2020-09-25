@@ -291,7 +291,8 @@ export default {
         },
 
         goToProfile(){
-            window.location.replace('http://localhost:8000/profile/edit')
+            this.$router.push({path : '/profile/edit'})
+            // window.location.replace('http://localhost:8000/profile/edit')
         }
         
     },

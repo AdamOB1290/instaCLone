@@ -51,6 +51,7 @@ class Reply extends Notification
         $realTime = json_decode($notifiable->real_time_notification);
         return [
             'post_id'=> $realTime->data->post_id,
+            'original_comment_id'=> $realTime->data->original_comment_id,
             'notification_message' =>  $notifiable->notificationMessage,
             'object_id' => (string)$notifiable->comment_id,
             'notifier_id' => (string)$notifiable->notifier_id,

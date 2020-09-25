@@ -1,11 +1,12 @@
 <template>
-<div  v-if="this.$store.state.componentState.navbar" class="footer_container">
+<div  v-if="!storyPage" class="footer_container">
 <footer  class="v_footer navbar navbar-expand-lg navbar-light bg-light d-flex align-items-center justify-content-between py-0">
     <!-- home icon -->
-      <a href="http://localhost:8000/feeds" v-if="!this.$store.state.iconState.home">
+
+      <router-link to="/" v-if="!homePage">
         <svg  aria-label="Home" class="_8-yf5 " fill="#262626" height="24" viewBox="0 0 48 48" width="24"><path d="M45.3 48H30c-.8 0-1.5-.7-1.5-1.5V34.2c0-2.6-2-4.6-4.6-4.6s-4.6 2-4.6 4.6v12.3c0 .8-.7 1.5-1.5 1.5H2.5c-.8 0-1.5-.7-1.5-1.5V23c0-.4.2-.8.4-1.1L22.9.4c.6-.6 1.5-.6 2.1 0l21.5 21.5c.4.4.6 1.1.3 1.6 0 .1-.1.1-.1.2v22.8c.1.8-.6 1.5-1.4 1.5zm-13.8-3h12.3V23.4L24 3.6l-20 20V45h12.3V34.2c0-4.3 3.3-7.6 7.6-7.6s7.6 3.3 7.6 7.6V45z"></path></svg>
-      </a>
-     <a href="#" v-else> 
+      </router-link>
+      <a href="#" v-else> 
        <svg  aria-label="Home" class="_8-yf5 " fill="#262626" height="22" viewBox="0 0 48 48" width="22"><path d="M45.5 48H30.1c-.8 0-1.5-.7-1.5-1.5V34.2c0-2.6-2.1-4.6-4.6-4.6s-4.6 2.1-4.6 4.6v12.3c0 .8-.7 1.5-1.5 1.5H2.5c-.8 0-1.5-.7-1.5-1.5V23c0-.4.2-.8.4-1.1L22.9.4c.6-.6 1.6-.6 2.1 0l21.5 21.5c.3.3.4.7.4 1.1v23.5c.1.8-.6 1.5-1.4 1.5z"></path></svg>
       </a>
     <!-- search icon -->
@@ -42,12 +43,17 @@
            <!-- activity icon -->
           <svg  aria-label="Activity" class="_8-yf5 " fill="#262626" height="24" viewBox="0 0 48 48" width="24"><path ref="activity_icon_path" d="M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"></path></svg>    
           <!-- <svg aria-label="Activity" class="_8-yf5 " fill="#262626" height="24" viewBox="0 0 48 48" width="24"><path d="M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"></path></svg> -->
-          <span v-if="unreadNotifications.length > 0" class="notif_count">{{unreadNotifications.length}}</span>
+          <div class="notif_count" >
+          <span  v-if="unreadNotifications.length > 0" class="relative inline-flex rounded-full h-4 w-4 bg-red-650 text-center" >
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-650 opacity-75"></span> 
+            <span class="mx-auto">{{unreadNotifications.length}}</span>
+          </span>
+          </div>
         </template>
         <b-dropdown-item  v-for="(notification, key) in notifications" :key="key" size="lg" class="position-relative">
           <div @click="notificationRedirect" :data-notifId="notification.id"  class="d-flex">
             <img v-if="notification.read_at" class="pfp_notif rounded-circle mr-2 " :src="notification.notifier.pfp">
-            <img v-else class="pfp_notif rounded-circle mr-2 " :src="notification.notifier.pfp"  style="border: 2px solid #007bff;">
+            <img v-else class="pfp_notif rounded-circle mr-2 " :src="notification.notifier.pfp"  style="border : 2px solid #007bff;">
             <div class="d-flex flex-column">
               <div class="notif_message">
                 <span class=" font-weight-bold ">{{notification.notifier.username}}</span>
@@ -79,8 +85,7 @@
         <template v-slot:button-content>
           <img class="footer_pfp" :src="sessionUser.pfp">
         </template>
-
-        <b-dropdown-item size="sm" :href="publicPath+sessionUserId+'/profile'">Profile</b-dropdown-item>
+        <b-dropdown-item size="sm" :to="sessionUserId+'/profile'">Profile</b-dropdown-item>
         <b-dropdown-item size="sm" @click="logout" variant="danger" active-class="bg-danger">Log Out</b-dropdown-item>
       </b-dropdown>
     </div>
@@ -143,7 +148,7 @@
           navbarState: null,
           users: '',
           sessionUserId: this.$sessionUserId,
-          sessionUser: '',
+          sessionUser: [],
           notifications : '',
           notificationFeed: '',
           unreadNotifications : [],
@@ -245,28 +250,38 @@
 
         if ($(event.currentTarget)[0].nextElementSibling.className.includes('bg-primary')) {
           $(event.currentTarget)[0].nextElementSibling.click()
-          console.log('test');
         }
         var notifId = event.currentTarget.attributes[0].nodeValue
         var notifType
         var objectId 
         var postId 
+        var originalCommentId
         setTimeout(() => {
-          console.log('object');
           this.notifications.forEach(notification => {
             objectId = notification.data.object_id
             notifType = notification.type.split('\\')[2];
             if (notification.id == notifId) {
               if ((notifType == 'Like') || (notifType == 'Comment') || (notifType == 'Reply')) {
+                // check if it's a comment
                 if (notification.data.post_id != undefined) {
                   postId = notification.data.post_id
-                  console.log(postId, objectId);
-                  window.location.replace(this.publicPath+'post/'+postId+'?'+objectId)
+                  // check if it's a reply
+                  if (notification.data.original_comment_id != undefined) {
+                    originalCommentId = notification.data.original_comment_id
+                    this.$router.push({path : '/post/'+postId+'?'+objectId+'?'+originalCommentId})
+                    // window.location.replace(this.publicPath+'post/'+postId+'?'+objectId+'?'+originalCommentId)
+                  } else {
+                    this.$router.push({path : '/post/'+postId+'?'+objectId})
+                    // window.location.replace(this.publicPath+'post/'+postId+'?'+objectId)
+                  }
+                  
                 } else {
-                  window.location.replace(this.publicPath+'post/'+objectId)
+                  this.$router.push({path : '/post/'+objectId})
+                  // window.location.replace(this.publicPath+'post/'+objectId)
                 }              
               } else if (notifType == 'Follow') {
-                window.location.replace(this.publicPath+objectId+'/profile')
+                this.$router.push({path : '/'+objectId+'/profile'})
+                // window.location.replace(this.publicPath+objectId+'/profile')
               }
             }
           })
@@ -345,7 +360,6 @@
 
       markRead(event){
         var targetId = event.target.attributes[0].nodeValue
-        console.log(targetId);
         axios({
           method: 'patch',
           url: this.publicPath+'notifications/'+this.sessionUserId+'/'+targetId+'/read',
@@ -356,7 +370,6 @@
       
       markUnread(event){
         var targetId = event.target.attributes[0].nodeValue
-        console.log(targetId);
         axios({
           method: 'patch',
           url: this.publicPath+'notifications/'+this.sessionUserId+'/'+targetId+'/unread',
@@ -505,6 +518,27 @@
     beforeDestroy() {
       this.observer.disconnect();
     }, 
+
+    computed: {
+
+      homePage() {
+        if(this.$route.name == "feeds") {
+          return true
+        } else {
+          return false
+        }
+      },
+
+      storyPage() {
+        if(this.$route.name == "stories") {
+          return true
+        } else {
+          return false
+        }
+      }
+      
+
+    },
 
     components: {
     SearchComponent,
