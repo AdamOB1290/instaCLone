@@ -7,9 +7,8 @@
 .feed_wrapper {
 } */
 
-.feed_wrapper .card {
-    width: 18rem; 
-    max-width:280px;
+.feed_wrapper .card { 
+    min-width: 350px;
     
 }
 
@@ -107,7 +106,7 @@
   padding: 3px 13px !important;
 }
 
-.wrapper li button
+.sharePostUl .wrapper li button
 {
   font-size: 11px;
   padding: 3px 10px !important;
@@ -145,7 +144,7 @@ cursor: pointer;
 .glider, .glider-contain {
   cursor: pointer;
   margin: 0 !important;
-  max-width: 280px;
+  min-width: 350px;
   scrollbar-width: none;
   user-select: none;
 }
@@ -581,7 +580,7 @@ cursor: pointer;
 
 .addComment_form{
   position: fixed!important;
-  width: inherit;
+  width: 100%;
   z-index: 1;  
   bottom: 23px;
 }
@@ -686,8 +685,8 @@ cursor: pointer;
 }
 
 .post_history {
-  flex: 0 0 25%;
-  max-height: 52px;
+  flex: 0 0 33%;
+  border: 2px solid white;
 }
 
 .eye_icon{
@@ -699,7 +698,7 @@ cursor: pointer;
 }
 
 .post_comment_wrapper{
-  width: 280px;
+  min-width: 350px;
   margin-bottom: 80px;
 }
 
@@ -742,7 +741,7 @@ div#search div.wrapper {
 }
 
 .profile{
-  max-width: 280px;
+  min-width: 350px;
 }
 
 .profile_follow_btn{
@@ -849,3 +848,40 @@ div#search div.wrapper {
 .login_form{
   font-size: 13px !important;
 }
+
+.search_component_wrapper .container{
+  padding-right: 0;
+}
+
+.search_component_wrapper #search{
+  border: none;
+}
+
+.search_component_wrapper .wrapper {
+  width: 100% !important;
+  overflow-x: hidden !important;
+  list-style-type: none;
+  padding:15px 0px 10px 5px;
+  /* overflow: scroll; */
+  height: 100%;
+}
+
+.search_component_wrapper  li{
+  padding: 5px 0;
+  /* font-size: 11px !important; */
+
+}
+
+.search_component_wrapper  li button{
+  font-size: 10px;
+  padding: 2px 5px !important;
+
+}
+
+.search_component_wrapper .pfp
+{
+  cursor: pointer;
+  width: 25px; 
+  height: 25px;
+}
+

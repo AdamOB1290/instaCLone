@@ -1,112 +1,148 @@
 <template>
-  <div key="feedKey" class="h-100 mt-1 mb-5">
-    
-
-    <storyGlider 
-    :sessionUser="sessionUser" 
-    :storyFeed="storyFeed" 
-    :storyUsers="storyUsers" 
-    v-if="posts.length > 0" 
-    :class="post_display"
-    :widget="widget">
-    </storyGlider>
-    
-  
-    <div  class="feed_wrapper " v-for="(page, key) in postFeed" :key="key" :class="post_display">
-      
-      <div class="post_wrapper " v-for="(post, key) in page" :key="key">
-        <div class="card rounded-0">
-          <div class="card-head d-flex align-items-center border-down py-1">
-            <img @click="goToProfile" :data-userId="post.user.id" class="pfp  rounded-circle mr-2" :src="post.user.pfp"/>
-            <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{post.user.username}}</span>
-            <i class="fas fa-ellipsis-h text-secondary ml-auto mr-2 pt-2" v-b-modal="'my_postModal'+post.id"></i>
-            <b-modal modal-class="settings_Modal" :id="'my_postModal'+post.id" :ref="'my_postModal'+post.id"  hide-header hide-footer centered>
-              <button :id="'postEditId'+post.id" :data-postId="post.id" @click="editPostDescription"  class="w-100 settings_btn px-5 py-2">Edit</button>
-              <button :id="'postShareStoryId'+post.id" :data-postId="post.id" @click="shareStory"  class="w-100 settings_btn px-5 py-2">Share as story</button>
-              <button :id="'postDeleteId'+post.id" :data-postId="post.id" @click="deletePost" class="w-100 settings_btn text-danger px-5 py-2 border-0">Delete</button>
-            </b-modal> 
-          </div>
-
-          <div class="card-body">
-            <img  v-if="post.media_type == 'image'" class=" rounded-0" :src="post.media_file"/>
-            <video v-else-if="post.media_type == 'video'" class="post_feed_video" controls muted>
-              <source :src="post.media_file"  />
-            </video>
-            <div class="px-2">
-              <div class="interaction_buttons pt-2 d-flex">
-                <!-- like icon -->
-                <div class="w-10">
-                <svg :id="'postLikeId'+post.id" :data-postId="post.id" @click="likeUnlikePosts" :fill="post.likeColor" aria-label="Like" class="mr-3" height="24" viewBox="0 0 48 48" width="24" >
-                  <path :d="post.likePath" />
-                </svg>
-                </div>
-
-                <!-- comment icon -->
-                  <router-link @click="jelloAnimation" :to="'post/'+post.id">
-                    <svg :id="'postCommentId'+post.id" :data-postId="post.id" aria-label="Comment" class="_8-yf5 mr-3" fill="#262626" height="24" viewBox="0 0 48 48" width="24">
-                      <path clip-rule="evenodd" d="M47.5 46.1l-2.8-11c1.8-3.3 2.8-7.1 2.8-11.1C47.5 11 37 .5 24 .5S.5 11 .5 24 11 47.5 24 47.5c4 0 7.8-1 11.1-2.8l11 2.8c.8.2 1.6-.6 1.4-1.4zm-3-22.1c0 4-1 7-2.6 10-.2.4-.3.9-.2 1.4l2.1 8.4-8.3-2.1c-.5-.1-1-.1-1.4.2-1.8 1-5.2 2.6-10 2.6-11.4 0-20.6-9.2-20.6-20.5S12.7 3.5 24 3.5 44.5 12.7 44.5 24z" fill-rule="evenodd"/>
-                    </svg> 
-                  </router-link>
-                <!-- direct message icon -->
-                <svg v-b-modal="'my_sharePostModal'+post.id" aria-label="Share Post" class="_8-yf5 mr-3" fill="#262626" height="24" viewBox="0 0 48 48" width="24">
-                  <path d="M47.8 3.8c-.3-.5-.8-.8-1.3-.8h-45C.9 3.1.3 3.5.1 4S0 5.2.4 5.7l15.9 15.6 5.5 22.6c.1.6.6 1 1.2 1.1h.2c.5 0 1-.3 1.3-.7l23.2-39c.4-.4.4-1 .1-1.5zM5.2 6.1h35.5L18 18.7 5.2 6.1zm18.7 33.6l-4.4-18.4L42.4 8.6 23.9 39.7z"/>
-                </svg>
-
-                <b-modal :id="'my_sharePostModal'+post.id" :ref="'my_sharePostModal'+post.id"  modal-class="sharePost_Modal"  hide-header hide-footer >
-                    <ul class="sharePostUl position-relative">
-                      <span  @click="$bvModal.hide('my_sharePostModal'+post.id)" class="close_icon"></span> 
-                      <searchComponent :users="followedUsers" :post="post"></searchComponent>
-                    </ul>
+  <div key="feedKey" class="h-100  mt-1 mb-5 ">
+    <div class="d-flex pb-12 sm:pb-0 mx-auto sm:w-3/4  ">
+      <div class="w-full md:w-8/12 lg:w-7/12 xl:w-8/12 ">
+        <storyGlider 
+        :sessionUser="sessionUser" 
+        :storyFeed="storyFeed" 
+        :storyUsers="storyUsers" 
+        v-if="posts.length > 0" 
+        :class="post_display"
+        :widget="widget">
+        </storyGlider>
+        
+        <div  class="feed_wrapper" v-for="(page, key) in postFeed" :key="key" :class="post_display">
+          
+          <div class="post_wrapper " v-for="(post, key) in page" :key="key">
+            <div class="card rounded-0">
+              <div class="card-head d-flex align-items-center border-down py-1">
+                <img @click="goToProfile" :data-userId="post.user.id" class="pfp  rounded-circle mr-2" :src="post.user.pfp"/>
+                <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{post.user.username}}</span>
+                <i class="fas fa-ellipsis-h text-secondary ml-auto mr-2 pt-2" v-b-modal="'my_postModal'+post.id"></i>
+                <b-modal modal-class="settings_Modal" :id="'my_postModal'+post.id" :ref="'my_postModal'+post.id"  hide-header hide-footer centered>
+                  <button :id="'postEditId'+post.id" :data-postId="post.id" @click="editPostDescription"  class="w-100 settings_btn px-5 py-2">Edit</button>
+                  <button :id="'postShareStoryId'+post.id" :data-postId="post.id" @click="shareStory"  class="w-100 settings_btn px-5 py-2">Share as story</button>
+                  <button :id="'postDeleteId'+post.id" :data-postId="post.id" @click="deletePost" class="w-100 settings_btn text-danger px-5 py-2 border-0">Delete</button>
                 </b-modal> 
-
-                <!-- save icon -->
-                <svg :id="'postSaveId'+post.id" :data-postId="post.id" @click="saveUnsave" aria-label="Save" class="ml-auto" :fill="post.saveColor" height="24" viewBox="0 0 48 48" width="24">
-                  <path :d="post.savePath" />
-                </svg>
               </div>
-              
-              <span v-if=" post.likes.length != 0" class="font-weight-bold">{{post.likes.length}} likes</span>
-              <span v-if=" post.likes.length == 0" class="font-weight-bold">0 likes</span>
-              
 
-              <div class="card-text position-relative">
-                <span v-if="post.editState" :id="'cancelPostEditId'+post.id" :data-postId="post.id" @click="cancelEditPostDescription" class="cancel_edit post_cancel text-danger">Cancel</span>
-                <span class="description show_more">
-                  <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{post.user.username}}</span>
-                  <textarea v-if="post.editState"  v-model="post.description" @keydown.enter.exact.prevent 
-                    @keyup.enter.exact="submitEdit" :data-postId="post.id" cols="47" rows="5" class="mt-2 editTxt">
-                  </textarea>
-                  <span v-else>{{post.description}}</span>
+              <div class="card-body">
+                <img  v-if="post.media_type == 'image'" class=" rounded-0" :src="post.media_file"/>
+                <video v-else-if="post.media_type == 'video'" class="post_feed_video" controls muted>
+                  <source :src="post.media_file"  />
+                </video>
+                <div class="px-2">
+                  <div class="interaction_buttons pt-2 d-flex">
+                    <!-- like icon -->
+                    <div class="w-10">
+                    <svg :id="'postLikeId'+post.id" :data-postId="post.id" @click="likeUnlikePosts" :fill="post.likeColor" aria-label="Like" class="mr-3" height="24" viewBox="0 0 48 48" width="24" >
+                      <path :d="post.likePath" />
+                    </svg>
+                    </div>
+
+                    <!-- comment icon -->
+                      <router-link @click="jelloAnimation" :to="'post/'+post.id">
+                        <svg :id="'postCommentId'+post.id" :data-postId="post.id" aria-label="Comment" class="_8-yf5 mr-3" fill="#262626" height="24" viewBox="0 0 48 48" width="24">
+                          <path clip-rule="evenodd" d="M47.5 46.1l-2.8-11c1.8-3.3 2.8-7.1 2.8-11.1C47.5 11 37 .5 24 .5S.5 11 .5 24 11 47.5 24 47.5c4 0 7.8-1 11.1-2.8l11 2.8c.8.2 1.6-.6 1.4-1.4zm-3-22.1c0 4-1 7-2.6 10-.2.4-.3.9-.2 1.4l2.1 8.4-8.3-2.1c-.5-.1-1-.1-1.4.2-1.8 1-5.2 2.6-10 2.6-11.4 0-20.6-9.2-20.6-20.5S12.7 3.5 24 3.5 44.5 12.7 44.5 24z" fill-rule="evenodd"/>
+                        </svg> 
+                      </router-link>
+                    <!-- direct message icon -->
+                    <svg v-b-modal="'my_sharePostModal'+post.id" aria-label="Share Post" class="_8-yf5 mr-3" fill="#262626" height="24" viewBox="0 0 48 48" width="24">
+                      <path d="M47.8 3.8c-.3-.5-.8-.8-1.3-.8h-45C.9 3.1.3 3.5.1 4S0 5.2.4 5.7l15.9 15.6 5.5 22.6c.1.6.6 1 1.2 1.1h.2c.5 0 1-.3 1.3-.7l23.2-39c.4-.4.4-1 .1-1.5zM5.2 6.1h35.5L18 18.7 5.2 6.1zm18.7 33.6l-4.4-18.4L42.4 8.6 23.9 39.7z"/>
+                    </svg>
+
+                    <b-modal :id="'my_sharePostModal'+post.id" :ref="'my_sharePostModal'+post.id"  modal-class="sharePost_Modal"  hide-header hide-footer >
+                        <ul class="sharePostUl position-relative">
+                          <span  @click="$bvModal.hide('my_sharePostModal'+post.id)" class="close_icon"></span> 
+                          <searchComponent :users="followedUsers" :post="post"></searchComponent>
+                        </ul>
+                    </b-modal> 
+
+                    <!-- save icon -->
+                    <svg :id="'postSaveId'+post.id" :data-postId="post.id" @click="saveUnsave" aria-label="Save" class="ml-auto" :fill="post.saveColor" height="24" viewBox="0 0 48 48" width="24">
+                      <path :d="post.savePath" />
+                    </svg>
+                  </div>
                   
-                </span>
-                <!-- this button shows/hides the description -->
-                <span :ref="'showMoreLess'+post.id" class="show_hide" @click="showHideDescription">{{ post.showStatus }}</span>
+                  <span v-if=" post.likes.length != 0" class="font-weight-bold">{{post.likes.length}} likes</span>
+                  <span v-if=" post.likes.length == 0" class="font-weight-bold">0 likes</span>
+                  
+
+                  <div class="card-text position-relative">
+                    <span v-if="post.editState" :id="'cancelPostEditId'+post.id" :data-postId="post.id" @click="cancelEditPostDescription" class="cancel_edit post_cancel text-danger">Cancel</span>
+                    <span class="description show_more">
+                      <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{post.user.username}}</span>
+                      <textarea v-if="post.editState"  v-model="post.description" @keydown.enter.exact.prevent 
+                        @keyup.enter.exact="submitEdit" :data-postId="post.id" cols="47" rows="5" class="mt-2 editTxt">
+                      </textarea>
+                      <span v-else>{{post.description}}</span>
+                      
+                    </span>
+                    <!-- this button shows/hides the description -->
+                    <span :ref="'showMoreLess'+post.id" class="show_hide" @click="showHideDescription">{{ post.showStatus }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-footer px-2 py-0 bg-white">
+                <router-link :to="'post/'+post.id" class="show_hide" v-if="post.comments.length > 2" >View All {{post.comments.length}} Comments</router-link>
+                <div class="comments_wrapper" v-for="(comment, key) in post.comments.slice(0, 2)" :key="key" @click="showHideComment">
+                  <div class="d-flex position-relative">
+                    <span class="comments show_more pr-3">
+                      <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{comment.username}}</span>
+                      {{comment.content}}
+                    </span>
+                    <!-- like icon -->
+                    <svg :id="'commentLikeId'+comment.id" :data-commentId="comment.id" @click="likeUnlikeComments" :fill="comment.likeColor"  class="comment_like_icon postfeed" aria-label="Like" viewBox="0 0 48 48" >
+                      <path :d="comment.likePath"></path>
+                    </svg>
+                  </div> 
+                </div>
+                <span class="text-secondary">{{post.created_at}}</span>
               </div>
             </div>
           </div>
-
-          <div class="card-footer px-2 py-0 bg-white">
-            <router-link :to="'post/'+post.id" class="show_hide" v-if="post.comments.length > 2" >View All {{post.comments.length}} Comments</router-link>
-            <div class="comments_wrapper" v-for="(comment, key) in post.comments.slice(0, 2)" :key="key" @click="showHideComment">
-              <div class="d-flex position-relative">
-                <span class="comments show_more pr-3">
-                  <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{comment.username}}</span>
-                  {{comment.content}}
-                </span>
-                <!-- like icon -->
-                <svg :id="'commentLikeId'+comment.id" :data-commentId="comment.id" @click="likeUnlikeComments" :fill="comment.likeColor"  class="comment_like_icon postfeed" aria-label="Like" viewBox="0 0 48 48" >
-                  <path :d="comment.likePath"></path>
-                </svg>
-              </div> 
+          <!-- on 'intersect' event trigger, apply 'intersected' function -->
+          <observer v-on:intersect="postIntersected" />
+        </div>
+        <b-modal id="modal_post_form" ref="modal_post_form" class="settings_Modal" title="Add a Post" hide-footer centered>
+        <validation :errors="validationErrors" v-if="validationErrors"></validation>
+        <form class="addPost_form" @submit.prevent="addPost" method="post" action="" enctype="multipart/form-data">
+          <b-form-group>
+            <div class="form-group d-flex flex-column">
+              <input type="hidden" name="type" v-model="postForm.mediaType">
+              <cld-image v-if="postForm.resourceType == 'image'" dpr="auto" responsive="width" width="auto" crop="scale" :publicId="postForm.publicId" class="my-2">
+                <cld-transformation quality="auto" fetchFormat="auto" />
+              </cld-image>
+              <video class="video img ml-auto bg-dark" v-else-if="postForm.resourceType == 'video'" controls muted>
+                <source :src="postForm.urlImg"/>
+              </video>
+              <div class="px-2">
+                <b-form-select v-model="postForm.mediaType" :options="postForm.options" size="sm" class="mt-2 mb-1"></b-form-select>
+                <b-form-textarea v-model="postForm.postCaption" name="description" placeholder="Add a caption ..."  cols="30" rows="1" max-rows="10" class="form-control addPostTxt mb-2"></b-form-textarea>
+              </div>
+              <button type="submit" class="btn btn-primary float-right">Submit</button>
             </div>
-            <span class="text-secondary">{{post.created_at}}</span>
+          </b-form-group>
+        </form>
+      </b-modal> 
+      </div>
+      <div class=" search_component_wrapper hidden md:inline-block md:w-4/12 lg:w-5/12 xl:w-4/12">
+      <h1 class="text-gray-800 text-xs mt-2 text-center">Suggestions for you :</h1>
+        <searchComponent :sessionUser="sessionUser" ></searchComponent>
+        <div class="p-3 text-xs text-gray-500" style="font-size: 9px;">
+          <div>
+            About &#8226; Help &#8226; Press &#8226; API &#8226; Jobs &#8226; Privacy &#8226; Terms &#8226; Locations &#8226; Top Accounts &#8226; Hashtags &#8226; Language &#8226; English
+
           </div>
+          <br>
+          <div>
+            © 2020 INSTAGRAM FROM FACEBOOK
+          </div>
+
         </div>
       </div>
-      <!-- on 'intersect' event trigger, apply 'intersected' function -->
-      <observer v-on:intersect="postIntersected" />
     </div>
-
     <followUsers 
     :sessionUser="sessionUser" 
     :userFeed="userFeed" 
@@ -115,8 +151,6 @@
     :followUnfollowHtml="followUnfollowHtml"
     v-if="posts.length == 0">
     </followUsers>
-
-    <div class="invisible mb-12"></div>
   </div>
 </template>
 
@@ -177,6 +211,7 @@ export default {
               { value: 'story', text: 'Publish as a Story' },
             ]
           },
+          validationErrors: '',
 
 
       // Comment Data
@@ -404,6 +439,11 @@ export default {
       });
 
     this.widget = widget
+
+    this.widget = widget
+    $('.openWidget').click(function() {
+      widget.open();
+    });
     // THIS.REFS.SHOWMORELESS NOT ACCESSIBLE
     //  console.log(this.postFeed);            
     //     console.log(this.$refs);
@@ -443,6 +483,48 @@ export default {
   },
 
   methods: {
+
+    addPost(event) {
+      
+      // let Blob = this.dataURLToBlob(this.$store.state.image.croppedImage) 
+      // this.postForm.postMedia = this.blobToFile(Blob)  
+      let formData = new FormData();
+      formData.append('media_file', this.postForm.urlImg);
+      formData.append('media_type', this.postForm.resourceType);
+      formData.append('description', this.postForm.postCaption);
+      formData.append('type', this.postForm.mediaType);
+      formData.append('user_id', this.sessionUser.id);
+      axios({
+        method: 'post',
+        url: this.publicPath+'posts',
+        data: formData,
+      }).then((response) => {
+        let post = response.data
+        post.likes = []
+        post.created_at = moment(post.created_at).fromNow();
+        post.showStatus = "Show More";
+        post.likePath = "M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+        post.likeColor = "#262626";
+        post.savePath = "M43.5 48c-.4 0-.8-.2-1.1-.4L24 29 5.6 47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 1.2-.9 1.4-.2.1-.4.1-.6.1zM24 26c.8 0 1.6.3 2.2.9l15.8 16V3H6v39.9l15.8-16c.6-.6 1.4-.9 2.2-.9z";
+        post.saveColor = "#262626";
+      
+        this.$refs['modal_post_form'].hide()
+        this.postFeed[0].splice(0, 0, post)
+
+        this.postForm.imgPreview = null;
+        this.postForm.videoPreview = null;
+        this.postForm.postCaption = ''
+
+      }).catch((error) => {
+        if (error.status == 422){
+        this.validationErrors = error.data.errors;
+        }
+
+
+      });
+
+      
+    },
     updatefeed() {
       if (this.updateFeed) {
         axios

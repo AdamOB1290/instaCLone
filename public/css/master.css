@@ -39,7 +39,7 @@ nav {
   width: 100%;
   z-index: 88888;
   top: 0;
-  max-width: 280px;
+  min-width: 350px;
 }
 
 .navbar-brand {
@@ -62,6 +62,7 @@ nav .fa-camera{
 
 main{
   padding: 40px 0;
+  min-width: 350px !important;
 }
 
 .stories_main{
@@ -74,7 +75,7 @@ main{
   width: 100%;
   z-index: 88888;
   bottom: 0;
-  max-width: 280px;
+  min-width: 350px;
 }
 
 .v_footer{
@@ -104,6 +105,7 @@ main{
   top: 0;
   left: 0;
   padding: 0 0 0.5rem;
+  
 }
 
 .dropdown-item {
@@ -126,6 +128,10 @@ main{
   overflow: scroll;
   /* top: 3px; */
   /* transform: translate3d(-172px, -104px, 0px) !important; */
+}
+
+#activity_dropdown_dropup .dropdown-menu::-webkit-scrollbar {
+  display: none;
 }
 
 #activity_dropdown_dropup #subMenu ul{
@@ -218,4 +224,8 @@ main{
 
 .card-header{
   background-color: white !important;
+}
+
+.upload-pop.foot{
+  background-color: red !important;
 }

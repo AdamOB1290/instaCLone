@@ -24,13 +24,23 @@
 
 <script>
 export default {
-    props: ['users', 'post', 'sessionUser'],
+    props: [ 'post', 'sessionUser'],
   
     data () {
       return {
+        users: [],
         search: '',
         publicPath: 'http://localhost:8000/',
         }
+    },
+
+    created: function(){
+      axios
+        .get(this.publicPath+"users")
+        .then((data) => { 
+            this.users = data.data;
+        })
+        .catch((err) => {});
     },
 
     methods :{
@@ -116,7 +126,6 @@ export default {
     computed: {
       
     filteredList() {
-      console.log(this.users);
       return this.users.filter(user => {
         return user.username.toLowerCase().includes(this.search.toLowerCase())
       })
