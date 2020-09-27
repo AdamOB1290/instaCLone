@@ -8,7 +8,7 @@
       ]
     }],
     "block-no-empty": null,
-    "unit-whitelist": ["em", "rem", "s", "%", "px", "deg"],
-    "unit-allowed-list":["em", "rem", "s", "%", "px", "deg", "@import"]
+    "unit-whitelist": ["em", "rem", "s", "%", "px", "deg", "vw", "vh"],
+    "unit-allowed-list":["em", "rem", "s", "%", "px", "deg","vw", "vh", "@import"]
   }
 }

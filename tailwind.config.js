@@ -1,4 +1,5 @@
 module.exports = {
+  important: true,
   future: {
     // removeDeprecatedGapUtilities: true,
     // purgeLayersByDefault: true,
@@ -9,5 +10,5 @@ module.exports = {
   },
   variants: {},
   plugins: [],
-  prefix: 'tw-',
+  prefix: '',
 }

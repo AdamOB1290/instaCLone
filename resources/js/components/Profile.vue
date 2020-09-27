@@ -1,43 +1,71 @@
 <template>
     <div class="profile">
-        <div class="d-flex align-items-center justify-content-around my-3"> 
+        <div class="flex items-center justify-center my-3"> 
             
-            <div class="d-flex flex-column  w-100">
+            <div class="flex flex-col items-center justify-center w-full">
                 <div class="">
-                    <div class="profile_avatar_wrapper d-flex flex-column align-items-center">
-                        <img v-b-modal.image_modal @click="showImage" class="slider-image" :src="user.pfp" />
-                        <span class="my-2 text-center username font-weight-bold position-relative">{{user.username}}                    
+                    <div class="w-content profile_avatar_wrapper flex flex-col items-center sm:flex-row ">
+                        <img v-b-modal.image_modal @click="showImage" class="slider-image sm:w-32 sm:h-32" :src="user.pfp" />
+                        <span class="sm:hidden my-2 text-center username font-weight-bold position-relative">{{user.username}}                    
                             <button :id="'userId'+user.id" :data-followerId="user.id" @click="followUnfollow" class="btn btn-light profile_follow_btn" 
                                 v-text="`${sessionUser.followed.includes(user.id) ? 'Unfollow' : 'Follow'}`">
                             </button>                      
                         </span>
-                        <div class="px-3">
-                        <!-- <span class="font-weight-bold" >bio</span>
-                        <br> -->
-                        <span class="description text-justify" style="font-size: 10px;">{{user.bio}}</span>
+                        <div class="max-w-sm">
+                            <div class="hidden sm:flex flex-col px-3">
+                                <div class="flex">
+                                    <span class="hidden sm:inline-block self-center text-xl mr-4">{{user.username}}</span>
+                                    <div v-if="sessionUserId == userId" @click="goToProfile" class="edit_profile w-content text-xs py-1 pl-1 pr-2 rounded">
+                                    <svg aria-label="Options" class="_8-yf5 " fill="#262626" height="18" viewBox="0 0 48 48" width="24"><path clip-rule="evenodd" d="M46.7 20.6l-2.1-1.1c-.4-.2-.7-.5-.8-1-.5-1.6-1.1-3.2-1.9-4.7-.2-.4-.3-.8-.1-1.2l.8-2.3c.2-.5 0-1.1-.4-1.5l-2.9-2.9c-.4-.4-1-.5-1.5-.4l-2.3.8c-.4.1-.8.1-1.2-.1-1.4-.8-3-1.5-4.6-1.9-.4-.1-.8-.4-1-.8l-1.1-2.2c-.3-.5-.8-.8-1.3-.8h-4.1c-.6 0-1.1.3-1.3.8l-1.1 2.2c-.2.4-.5.7-1 .8-1.6.5-3.2 1.1-4.6 1.9-.4.2-.8.3-1.2.1l-2.3-.8c-.5-.2-1.1 0-1.5.4L5.9 8.8c-.4.4-.5 1-.4 1.5l.8 2.3c.1.4.1.8-.1 1.2-.8 1.5-1.5 3-1.9 4.7-.1.4-.4.8-.8 1l-2.1 1.1c-.5.3-.8.8-.8 1.3V26c0 .6.3 1.1.8 1.3l2.1 1.1c.4.2.7.5.8 1 .5 1.6 1.1 3.2 1.9 4.7.2.4.3.8.1 1.2l-.8 2.3c-.2.5 0 1.1.4 1.5L8.8 42c.4.4 1 .5 1.5.4l2.3-.8c.4-.1.8-.1 1.2.1 1.4.8 3 1.5 4.6 1.9.4.1.8.4 1 .8l1.1 2.2c.3.5.8.8 1.3.8h4.1c.6 0 1.1-.3 1.3-.8l1.1-2.2c.2-.4.5-.7 1-.8 1.6-.5 3.2-1.1 4.6-1.9.4-.2.8-.3 1.2-.1l2.3.8c.5.2 1.1 0 1.5-.4l2.9-2.9c.4-.4.5-1 .4-1.5l-.8-2.3c-.1-.4-.1-.8.1-1.2.8-1.5 1.5-3 1.9-4.7.1-.4.4-.8.8-1l2.1-1.1c.5-.3.8-.8.8-1.3v-4.1c.4-.5.1-1.1-.4-1.3zM24 41.5c-9.7 0-17.5-7.8-17.5-17.5S14.3 6.5 24 6.5 41.5 14.3 41.5 24 33.7 41.5 24 41.5z" fill-rule="evenodd"></path></svg>
+                                    Edit profile 
+                                    </div>
+                                </div>
+                                <div class="flex">
+                                    <div class="flex profile_info">
+                                        <div class="mr-4 flex items-center justify-center">
+                                            <span class=" font-weight-bold pr-1">{{user.posts.length}}</span>
+                                            <span class="font-weight-light">Posts</span>
+                                        </div>
+                                        <div v-b-modal="'my-followers'" class="mx-4 flex items-center justify-center">
+                                            <span  class=" font-weight-bold pr-1">{{user.following.length}}</span>
+                                            <span class="font-weight-light">Followers</span>
+                                        </div>
+                                        <div v-b-modal="'my-following'" class="ml-4 flex items-center justify-center">
+                                            <span  class=" font-weight-bold pr-1">{{user.followedUsers.length}}</span>
+                                            <span class="font-weight-light">Following</span>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <div class="px-3 mt-2">
+                                <span class="description text-justify " style="font-size: 10px;">{{user.bio}}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div v-if="sessionUserId == userId" @click="goToProfile" class=" edit_profile w-100 btn btn-light ">
-                    <svg aria-label="Options" class="_8-yf5 " fill="#262626" height="20" viewBox="0 0 48 48" width="24"><path clip-rule="evenodd" d="M46.7 20.6l-2.1-1.1c-.4-.2-.7-.5-.8-1-.5-1.6-1.1-3.2-1.9-4.7-.2-.4-.3-.8-.1-1.2l.8-2.3c.2-.5 0-1.1-.4-1.5l-2.9-2.9c-.4-.4-1-.5-1.5-.4l-2.3.8c-.4.1-.8.1-1.2-.1-1.4-.8-3-1.5-4.6-1.9-.4-.1-.8-.4-1-.8l-1.1-2.2c-.3-.5-.8-.8-1.3-.8h-4.1c-.6 0-1.1.3-1.3.8l-1.1 2.2c-.2.4-.5.7-1 .8-1.6.5-3.2 1.1-4.6 1.9-.4.2-.8.3-1.2.1l-2.3-.8c-.5-.2-1.1 0-1.5.4L5.9 8.8c-.4.4-.5 1-.4 1.5l.8 2.3c.1.4.1.8-.1 1.2-.8 1.5-1.5 3-1.9 4.7-.1.4-.4.8-.8 1l-2.1 1.1c-.5.3-.8.8-.8 1.3V26c0 .6.3 1.1.8 1.3l2.1 1.1c.4.2.7.5.8 1 .5 1.6 1.1 3.2 1.9 4.7.2.4.3.8.1 1.2l-.8 2.3c-.2.5 0 1.1.4 1.5L8.8 42c.4.4 1 .5 1.5.4l2.3-.8c.4-.1.8-.1 1.2.1 1.4.8 3 1.5 4.6 1.9.4.1.8.4 1 .8l1.1 2.2c.3.5.8.8 1.3.8h4.1c.6 0 1.1-.3 1.3-.8l1.1-2.2c.2-.4.5-.7 1-.8 1.6-.5 3.2-1.1 4.6-1.9.4-.2.8-.3 1.2-.1l2.3.8c.5.2 1.1 0 1.5-.4l2.9-2.9c.4-.4.5-1 .4-1.5l-.8-2.3c-.1-.4-.1-.8.1-1.2.8-1.5 1.5-3 1.9-4.7.1-.4.4-.8.8-1l2.1-1.1c.5-.3.8-.8.8-1.3v-4.1c.4-.5.1-1.1-.4-1.3zM24 41.5c-9.7 0-17.5-7.8-17.5-17.5S14.3 6.5 24 6.5 41.5 14.3 41.5 24 33.7 41.5 24 41.5z" fill-rule="evenodd"></path></svg>
-                    Edit profile 
-                </div>
-                <div class="d-flex justify-content-center profile_info_wrapper  w-100">
-                    <div class="d-flex profile_info">
-                        <div class="mr-4 d-flex align-items-center justify-content-center flex-column">
-                            <span class=" font-weight-bold">{{user.posts.length}}</span>
-                            <span class="font-weight-light">Posts</span>
-                        </div>
-                        <div v-b-modal="'my-followers'" class="mx-4 d-flex align-items-center justify-content-center flex-column">
-                            <span  class=" font-weight-bold">{{user.following.length}}</span>
-                            <span class="font-weight-light">Followers</span>
-                        </div>
-                        <div v-b-modal="'my-following'" class="ml-4 d-flex align-items-center justify-content-center flex-column">
-                            <span  class=" font-weight-bold">{{user.followedUsers.length}}</span>
-                            <span class="font-weight-light">Following</span>
-                        </div>
+                <div class="w-full sm:hidden">
+                    <div v-if="sessionUserId == userId" @click="goToProfile" class="edit_profile w-full btn btn-light">
+                        <svg aria-label="Options" class="_8-yf5 " fill="#262626" height="20" viewBox="0 0 48 48" width="24"><path clip-rule="evenodd" d="M46.7 20.6l-2.1-1.1c-.4-.2-.7-.5-.8-1-.5-1.6-1.1-3.2-1.9-4.7-.2-.4-.3-.8-.1-1.2l.8-2.3c.2-.5 0-1.1-.4-1.5l-2.9-2.9c-.4-.4-1-.5-1.5-.4l-2.3.8c-.4.1-.8.1-1.2-.1-1.4-.8-3-1.5-4.6-1.9-.4-.1-.8-.4-1-.8l-1.1-2.2c-.3-.5-.8-.8-1.3-.8h-4.1c-.6 0-1.1.3-1.3.8l-1.1 2.2c-.2.4-.5.7-1 .8-1.6.5-3.2 1.1-4.6 1.9-.4.2-.8.3-1.2.1l-2.3-.8c-.5-.2-1.1 0-1.5.4L5.9 8.8c-.4.4-.5 1-.4 1.5l.8 2.3c.1.4.1.8-.1 1.2-.8 1.5-1.5 3-1.9 4.7-.1.4-.4.8-.8 1l-2.1 1.1c-.5.3-.8.8-.8 1.3V26c0 .6.3 1.1.8 1.3l2.1 1.1c.4.2.7.5.8 1 .5 1.6 1.1 3.2 1.9 4.7.2.4.3.8.1 1.2l-.8 2.3c-.2.5 0 1.1.4 1.5L8.8 42c.4.4 1 .5 1.5.4l2.3-.8c.4-.1.8-.1 1.2.1 1.4.8 3 1.5 4.6 1.9.4.1.8.4 1 .8l1.1 2.2c.3.5.8.8 1.3.8h4.1c.6 0 1.1-.3 1.3-.8l1.1-2.2c.2-.4.5-.7 1-.8 1.6-.5 3.2-1.1 4.6-1.9.4-.2.8-.3 1.2-.1l2.3.8c.5.2 1.1 0 1.5-.4l2.9-2.9c.4-.4.5-1 .4-1.5l-.8-2.3c-.1-.4-.1-.8.1-1.2.8-1.5 1.5-3 1.9-4.7.1-.4.4-.8.8-1l2.1-1.1c.5-.3.8-.8.8-1.3v-4.1c.4-.5.1-1.1-.4-1.3zM24 41.5c-9.7 0-17.5-7.8-17.5-17.5S14.3 6.5 24 6.5 41.5 14.3 41.5 24 33.7 41.5 24 41.5z" fill-rule="evenodd"></path></svg>
+                        Edit profile 
                     </div>
-                    
+                    <div class="flex justify-center profile_info_wrapper w-full">
+                        <div class="flex profile_info">
+                            <div class="mr-4 flex items-center justify-center flex-col">
+                                <span class=" font-weight-bold">{{user.posts.length}}</span>
+                                <span class="font-weight-light">Posts</span>
+                            </div>
+                            <div v-b-modal="'my-followers'" class="mx-4 flex items-center justify-center flex-col">
+                                <span  class=" font-weight-bold">{{user.following.length}}</span>
+                                <span class="font-weight-light">Followers</span>
+                            </div>
+                            <div v-b-modal="'my-following'" class="ml-4 flex items-center justify-center flex-col">
+                                <span  class=" font-weight-bold">{{user.followedUsers.length}}</span>
+                                <span class="font-weight-light">Following</span>
+                            </div>
+                        </div>
+                        
+                    </div>
                 </div>
             </div> 
             
@@ -45,7 +73,7 @@
                 <ul class="sharePostUl position-relative">
                     <span  @click="$bvModal.hide('my-followers')" class="close_icon"></span> 
                     <searchComponent :users="user.following" :sessionUser="sessionUser" ></searchComponent>
-                    <!-- <li v-for="(follower, key) in user.following" :key="key" class="d-flex justify-content-between" >
+                    <!-- <li v-for="(follower, key) in user.following" :key="key" class="flex justify-content-between" >
                         <div  class="">
                         <img class="pfp card-img-top rounded-circle mr-2" :src="follower.pfp"/>
                         <span class="username font-weight-bold">{{follower.username}}</span>
@@ -61,7 +89,7 @@
                 <ul class="sharePostUl position-relative">
                     <span  @click="$bvModal.hide('my-following')" class="close_icon"></span> 
                     <searchComponent :users="user.followedUsers" :sessionUser="sessionUser"></searchComponent>
-                    <!-- <li v-for="(followedUser, key) in user.followedUsers" :key="key" class="d-flex justify-content-between" >
+                    <!-- <li v-for="(followedUser, key) in user.followedUsers" :key="key" class="flex justify-content-between" >
                         <div  class="">
                         <img class="pfp card-img-top rounded-circle mr-2" :src="followedUser.pfp"/>
                         <span class="username font-weight-bold">{{followedUser.username}}</span>
@@ -74,7 +102,7 @@
             </b-modal>
         </div>
        
-        <div class="mb-5">
+        <div class="mb-5 sm:mx-auto sm:w-3/4">
             <b-tabs active-nav-item-class="active_svg" fill lazy>
                 <b-tab active >
                     <template v-slot:title>
@@ -85,8 +113,8 @@
                     </template>
                     <div class="post_history_wrapper">
                         <div v-for="(post, key) in user.postsType" :key="key" class="post_history" >
-                            <img v-b-modal.image_modal @click="showImage" v-if="post.media_type == 'image'"  :src="post.media_file" class="w-100 h-100"/>
-                            <video v-else-if="post.media_type == 'video'" controls muted class="w-100 h-100">
+                            <img v-b-modal.image_modal @click="showImage" v-if="post.media_type == 'image'"  :src="post.media_file" class="w-full h-100"/>
+                            <video v-else-if="post.media_type == 'video'" controls muted class="w-full h-100">
                             <source :src="post.media_file"  />
                             </video>
                         </div>
@@ -101,8 +129,8 @@
                     </template>
                     <div class="post_history_wrapper">
                         <div v-for="(story, key) in user.storiesType" :key="key" class="post_history" >
-                            <img v-b-modal.image_modal @click="showImage"  v-if="story.media_type == 'image'"  :src="story.media_file" class="w-100 h-100"/>
-                            <video v-else-if="story.media_type == 'video'" controls muted class="w-100 h-100">
+                            <img v-b-modal.image_modal @click="showImage"  v-if="story.media_type == 'image'"  :src="story.media_file" class="w-full h-100"/>
+                            <video v-else-if="story.media_type == 'video'" controls muted class="w-full h-100">
                             <source :src="story.media_file"  />
                             </video>
                         </div>
@@ -117,8 +145,8 @@
                     </template>
                     <div class="post_history_wrapper">
                         <div v-for="(favoritedPost, key) in user.favorite_posts" :key="key" class="post_history" >
-                            <img v-b-modal.image_modal @click="showImage"  v-if="favoritedPost.media_type == 'image'"  :src="favoritedPost.media_file" class="w-100 h-100"/>
-                            <video v-else-if="favoritedPost.media_type == 'video'" controls muted class="w-100 h-100">
+                            <img v-b-modal.image_modal @click="showImage"  v-if="favoritedPost.media_type == 'image'"  :src="favoritedPost.media_file" class="w-full h-100"/>
+                            <video v-else-if="favoritedPost.media_type == 'video'" controls muted class="w-full h-100">
                             <source :src="favoritedPost.media_file"  />
                             </video>
                         </div>
@@ -142,8 +170,8 @@
                             </template>
                             <div class="post_history_wrapper">
                                 <div v-for="(likedPost, key) in user.liked_posts" :key="key" class="post_history" >
-                                    <img v-b-modal.image_modal @click="showImage"  v-if="likedPost.media_type == 'image'"  :src="likedPost.media_file" class="w-100 h-100"/>
-                                    <video v-else-if="likedPost.media_type == 'video'" controls muted class="w-100 h-100">
+                                    <img v-b-modal.image_modal @click="showImage"  v-if="likedPost.media_type == 'image'"  :src="likedPost.media_file" class="w-full h-100"/>
+                                    <video v-else-if="likedPost.media_type == 'video'" controls muted class="w-full h-100">
                                     <source :src="likedPost.media_file"  />
                                     </video>
                                 </div>
@@ -156,7 +184,7 @@
                                     <span class="tooltip_text">♡ Comments</span>
                                 </div>
                             </template>
-                            <div class="liked_comments d-flex mt-2 pb-2 border-bottom"  v-for="(likedComment, key) in user.liked_comments" :key="key"  >
+                            <div class="liked_comments flex mt-2 pb-2 border-bottom"  v-for="(likedComment, key) in user.liked_comments" :key="key"  >
                                 <img class="pfp rounded-circle" :src="likedComment.user.pfp"/>
                                 <div class="pr-3 pl-1">
                                     <span class="username font-weight-bold pb-2">{{likedComment.user.username}}</span>
@@ -170,7 +198,7 @@
         </div>
 
         <b-modal id="image_modal" hide-header hide-footer centered>
-        <!----><img :src="clickedImgSrc" alt="" class="Modal_image w-100 h-100">
+        <!----><img :src="clickedImgSrc" alt="" class="Modal_image w-full h-100">
         </b-modal>
     </div>
 </template>

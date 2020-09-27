@@ -1,10 +1,10 @@
 <template>
     <div class="conversation_wrapper">
         <div class="d-flex">
-            <i @click="goToContactListTrigger" class="fas fa-arrow-left align-self-center left pl-3 cursor-pointer"></i>
-            <h1 v-if="!contact" class="center">Select a Contact</h1>
-            <h1 v-else @click="goToProfile" :data-userId="contact.id">{{contact.name}} </h1>
-            <i @click="goToContactListTrigger" class="align-self-center right invisible"></i>
+            <i @click="goToContactListTrigger" class="sm:hidden fas fa-arrow-left align-self-center left pl-3 cursor-pointer"></i>
+            <h1 v-if="!contact" class="center mx-auto">Select a Contact</h1>
+            <h1 v-else @click="goToProfile" :data-userId="contact.id" class=" mx-auto">{{contact.name}} </h1>
+            <i @click="goToContactListTrigger" class="sm:hidden align-self-center right invisible"></i>
         </div>
         <MessagesFeed :contact="contact" :messages="messages"/>
         <MessageComposer @send="sendMessage"/>

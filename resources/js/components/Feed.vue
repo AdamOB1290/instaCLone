@@ -1,6 +1,6 @@
 <template>
   <div key="feedKey" class="h-100  mt-1 mb-5 ">
-    <div class="d-flex pb-12 sm:pb-0 mx-auto sm:w-3/4  ">
+    <div class="feed_content flex justify-between pb-12 sm:pb-5 text-xs mx-auto sm:w-3/4 lg:text-sm  ">
       <div class="w-full md:w-8/12 lg:w-7/12 xl:w-8/12 ">
         <storyGlider 
         :sessionUser="sessionUser" 

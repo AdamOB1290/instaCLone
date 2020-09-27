@@ -44,7 +44,7 @@
         @if (Request::path() != 'login' && Request::path() != 'register')
           <navbar></navbar>  
         @endif    
-        <main class="h-100 main">
+        <main class="h-full main py-10 sm:pb-0">
             @yield('content')
         </main>
        

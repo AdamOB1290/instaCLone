@@ -2,7 +2,7 @@
     <div>
         
         <div v-dragscroll  class="glider story_slider border-down pb-1 sm:py-1" >
-            <div class="story_wrapper d-flex px-2 my-1">
+            <div class="story_wrapper d-flex px-2 my-1 ">
                 <div @click="openWidget" class="float-left d-flex flex-column align-items-center mr-1">
                     <div class="gradiant_background d-flex">
                         <!-- why do we need both m-auto and dflex to center the image  -->

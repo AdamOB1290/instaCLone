@@ -19518,6 +19518,10 @@ video {
   width: auto;
 }
 
+.w-content {
+  width: max-content;
+}
+
 .w-px {
   width: 1px;
 }
@@ -32172,7 +32176,7 @@ video {
   }
 
   .sm\:h-32 {
-    height: 8rem;
+    height: 8rem !important;
   }
 
   .sm\:h-40 {
@@ -41304,7 +41308,7 @@ video {
   }
 
   .sm\:w-32 {
-    width: 8rem;
+    width: 8rem !important;
   }
 
   .sm\:w-40 {

@@ -58,8 +58,7 @@ export default {
 <style lang="scss" scoped>
 .contact_list_wrapper {
     flex: 2;
-    max-height: 100%;
-    height: 600px;
+    height: 100%;
     overflow-y: scroll;
     border-left: 1px solid #a6a6a6;
     

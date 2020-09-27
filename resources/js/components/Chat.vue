@@ -1,13 +1,17 @@
 <template>
     <div class="chat_wrapper">
-          <b-tabs v-model="tabIndex"  content-class="" class="w-100" active-nav-item-class="font-weight-bold text-danger" fill lazy>
-                <b-tab>
-                    <contactList  :contacts="contacts" @selected="startConversationWith"/>
-                </b-tab>
-                <b-tab>
-                    <conversation :contact="selectedContact" :messages="messages" @changeTabTo='activateContactList' @newMessage="saveNewMessage"/>
-                </b-tab>
-            </b-tabs>
+        <div class="hidden w-full h-full sm:flex">
+            <contactList  :contacts="contacts" @selected="startConversationWith"/>
+            <conversation :contact="selectedContact" :messages="messages" @changeTabTo='activateContactList' @newMessage="saveNewMessage"/>
+        </div>
+        <b-tabs v-model="tabIndex" content-class="" class="w-full sm:hidden" active-nav-item-class="font-weight-bold text-danger" fill lazy>
+            <b-tab>
+                <contactList  :contacts="contacts" @selected="startConversationWith"/>
+            </b-tab>
+            <b-tab>
+                <conversation :contact="selectedContact" :messages="messages" @changeTabTo='activateContactList' @newMessage="saveNewMessage"/>
+            </b-tab>
+        </b-tabs>
        
     </div>
     
