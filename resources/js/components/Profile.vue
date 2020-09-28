@@ -5,22 +5,26 @@
             <div class="flex flex-col items-center justify-center w-full">
                 <div class="">
                     <div class="w-content profile_avatar_wrapper flex flex-col items-center sm:flex-row ">
-                        <img v-b-modal.image_modal @click="showImage" class="slider-image sm:w-32 sm:h-32" :src="user.pfp" />
+                        <img v-b-modal.image_modal @click="showImage" class="slider-image sm:w-32 sm:h-32 lg:w-40 lg:h-40 lg:mr-10" :src="user.pfp" />
                         <span class="sm:hidden my-2 text-center username font-weight-bold position-relative">{{user.username}}                    
                             <button :id="'userId'+user.id" :data-followerId="user.id" @click="followUnfollow" class="btn btn-light profile_follow_btn" 
                                 v-text="`${sessionUser.followed.includes(user.id) ? 'Unfollow' : 'Follow'}`">
                             </button>                      
                         </span>
                         <div class="max-w-sm">
-                            <div class="hidden sm:flex flex-col px-3">
-                                <div class="flex">
-                                    <span class="hidden sm:inline-block self-center text-xl mr-4">{{user.username}}</span>
-                                    <div v-if="sessionUserId == userId" @click="goToProfile" class="edit_profile w-content text-xs py-1 pl-1 pr-2 rounded">
-                                    <svg aria-label="Options" class="_8-yf5 " fill="#262626" height="18" viewBox="0 0 48 48" width="24"><path clip-rule="evenodd" d="M46.7 20.6l-2.1-1.1c-.4-.2-.7-.5-.8-1-.5-1.6-1.1-3.2-1.9-4.7-.2-.4-.3-.8-.1-1.2l.8-2.3c.2-.5 0-1.1-.4-1.5l-2.9-2.9c-.4-.4-1-.5-1.5-.4l-2.3.8c-.4.1-.8.1-1.2-.1-1.4-.8-3-1.5-4.6-1.9-.4-.1-.8-.4-1-.8l-1.1-2.2c-.3-.5-.8-.8-1.3-.8h-4.1c-.6 0-1.1.3-1.3.8l-1.1 2.2c-.2.4-.5.7-1 .8-1.6.5-3.2 1.1-4.6 1.9-.4.2-.8.3-1.2.1l-2.3-.8c-.5-.2-1.1 0-1.5.4L5.9 8.8c-.4.4-.5 1-.4 1.5l.8 2.3c.1.4.1.8-.1 1.2-.8 1.5-1.5 3-1.9 4.7-.1.4-.4.8-.8 1l-2.1 1.1c-.5.3-.8.8-.8 1.3V26c0 .6.3 1.1.8 1.3l2.1 1.1c.4.2.7.5.8 1 .5 1.6 1.1 3.2 1.9 4.7.2.4.3.8.1 1.2l-.8 2.3c-.2.5 0 1.1.4 1.5L8.8 42c.4.4 1 .5 1.5.4l2.3-.8c.4-.1.8-.1 1.2.1 1.4.8 3 1.5 4.6 1.9.4.1.8.4 1 .8l1.1 2.2c.3.5.8.8 1.3.8h4.1c.6 0 1.1-.3 1.3-.8l1.1-2.2c.2-.4.5-.7 1-.8 1.6-.5 3.2-1.1 4.6-1.9.4-.2.8-.3 1.2-.1l2.3.8c.5.2 1.1 0 1.5-.4l2.9-2.9c.4-.4.5-1 .4-1.5l-.8-2.3c-.1-.4-.1-.8.1-1.2.8-1.5 1.5-3 1.9-4.7.1-.4.4-.8.8-1l2.1-1.1c.5-.3.8-.8.8-1.3v-4.1c.4-.5.1-1.1-.4-1.3zM24 41.5c-9.7 0-17.5-7.8-17.5-17.5S14.3 6.5 24 6.5 41.5 14.3 41.5 24 33.7 41.5 24 41.5z" fill-rule="evenodd"></path></svg>
-                                    Edit profile 
+                            <div class="hidden sm:flex flex-col px-3 ">
+                                <div class="flex justify-between mt-5">
+                                    <span class="hidden sm:inline-block self-center text-xl lg:text-3xl ">{{user.username}}</span>
+                                    <div v-if="sessionUserId == userId" @click="goToProfile" class="edit_profile cursor-pointer w-content text-xs py-1 pl-1 pr-2 rounded">
+                                        <svg aria-label="Options"  fill="#262626" height="18" viewBox="0 0 48 48" width="24"><path clip-rule="evenodd" d="M46.7 20.6l-2.1-1.1c-.4-.2-.7-.5-.8-1-.5-1.6-1.1-3.2-1.9-4.7-.2-.4-.3-.8-.1-1.2l.8-2.3c.2-.5 0-1.1-.4-1.5l-2.9-2.9c-.4-.4-1-.5-1.5-.4l-2.3.8c-.4.1-.8.1-1.2-.1-1.4-.8-3-1.5-4.6-1.9-.4-.1-.8-.4-1-.8l-1.1-2.2c-.3-.5-.8-.8-1.3-.8h-4.1c-.6 0-1.1.3-1.3.8l-1.1 2.2c-.2.4-.5.7-1 .8-1.6.5-3.2 1.1-4.6 1.9-.4.2-.8.3-1.2.1l-2.3-.8c-.5-.2-1.1 0-1.5.4L5.9 8.8c-.4.4-.5 1-.4 1.5l.8 2.3c.1.4.1.8-.1 1.2-.8 1.5-1.5 3-1.9 4.7-.1.4-.4.8-.8 1l-2.1 1.1c-.5.3-.8.8-.8 1.3V26c0 .6.3 1.1.8 1.3l2.1 1.1c.4.2.7.5.8 1 .5 1.6 1.1 3.2 1.9 4.7.2.4.3.8.1 1.2l-.8 2.3c-.2.5 0 1.1.4 1.5L8.8 42c.4.4 1 .5 1.5.4l2.3-.8c.4-.1.8-.1 1.2.1 1.4.8 3 1.5 4.6 1.9.4.1.8.4 1 .8l1.1 2.2c.3.5.8.8 1.3.8h4.1c.6 0 1.1-.3 1.3-.8l1.1-2.2c.2-.4.5-.7 1-.8 1.6-.5 3.2-1.1 4.6-1.9.4-.2.8-.3 1.2-.1l2.3.8c.5.2 1.1 0 1.5-.4l2.9-2.9c.4-.4.5-1 .4-1.5l-.8-2.3c-.1-.4-.1-.8.1-1.2.8-1.5 1.5-3 1.9-4.7.1-.4.4-.8.8-1l2.1-1.1c.5-.3.8-.8.8-1.3v-4.1c.4-.5.1-1.1-.4-1.3zM24 41.5c-9.7 0-17.5-7.8-17.5-17.5S14.3 6.5 24 6.5 41.5 14.3 41.5 24 33.7 41.5 24 41.5z" fill-rule="evenodd"></path></svg>
+                                        <span>Edit profile </span> 
                                     </div>
+                                    <button :id="'userId'+user.id" :data-followerId="user.id" @click="followUnfollow" class="edit_profile w-content text-xs py-1 px-3 rounded font-semibold" 
+                                        v-text="`${sessionUser.followed.includes(user.id) ? 'Unfollow' : 'Follow'}`">
+                                        
+                                    </button>    
                                 </div>
-                                <div class="flex">
+                                <div class="flex my-2">
                                     <div class="flex profile_info">
                                         <div class="mr-4 flex items-center justify-center">
                                             <span class=" font-weight-bold pr-1">{{user.posts.length}}</span>
@@ -39,7 +43,7 @@
                                 </div>
                             </div>
                             <div class="px-3 mt-2">
-                                <span class="description text-justify " style="font-size: 10px;">{{user.bio}}</span>
+                                <span class="description text-justify text-xs lg:text-sm font-light">{{user.bio}}</span>
                             </div>
                         </div>
                     </div>

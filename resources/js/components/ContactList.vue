@@ -61,6 +61,7 @@ export default {
     height: 100%;
     overflow-y: scroll;
     border-left: 1px solid #a6a6a6;
+    border-right: 1px solid #a6a6a68c;
     
     ul {
         list-style-type: none;

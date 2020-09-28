@@ -74,7 +74,7 @@ export default {
 <style lang="scss" scoped>
 .message_feed_wrapper {
     background: #f0f0f0;
-    height: 100%;
+    flex: 1;
     overflow-y: scroll;
     ul {
         list-style-type: none;

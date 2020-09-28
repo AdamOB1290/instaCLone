@@ -5,7 +5,8 @@
  }
 
 html{
-  height: 100% !important;
+  /* height: 100% !important; */
+  height: max-content !important;
   margin: 0 !important;
 }
 

@@ -1,5 +1,5 @@
 <template>
-    <div class="post_comment_wrapper" :key = "commentKey">
+    <div class="post_comment_wrapper sm:mx-auto sm:w-3/4 md:w-7/12" :key = "commentKey">
       <div class="post-head d-flex align-items-center border-down py-1">
         <img @click="goToProfile" :data-userId="post.user.id" class="pfp  rounded-circle mr-2" :src="post.user.pfp"/>
         <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{post.user.username}}</span>
@@ -15,7 +15,7 @@
         <video v-else-if="post.media_type == 'video'" class="post_feed_video" controls muted>
           <source :src="post.media_file"  />
         </video>
-        <div class="px-2">
+        <div class="px-2 mt-1">
           <div class="interaction_buttons pt-2 d-flex">
             <!-- like icon -->
             <svg :id="'postLikeId'+post.id" :data-postId="post.id" @click="likeUnlikePosts" :fill="post.likeColor" aria-label="Like" class="mr-3" height="24" viewBox="0 0 48 48" width="24" data-objectType='posts'>
@@ -44,11 +44,12 @@
             </svg>
           </div>
           
-          <span v-if=" post.likes.length != 0" class="font-weight-bold">{{post.likes.length}} likes</span>
-          <span v-if=" post.likes.length == 0" class="font-weight-bold">0 likes</span>
-          
+          <div class="mt-1">
+            <span v-if=" post.likes.length != 0" class="font-weight-bold ">{{post.likes.length}} likes</span>
+            <span v-if=" post.likes.length == 0" class="font-weight-bold ">0 likes</span>
+          </div>
 
-          <div class="card-text position-relative">
+          <div class="card-text position-relative mt-2">
             <span v-if="post.editState" :id="'cancelPostEditId'+post.id" :data-postId="post.id" @click="cancelEditPostDescription" class="cancel_edit post_cancel text-danger">Cancel</span>
             <span class="description show_more">
               <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{post.user.username}}</span>
@@ -63,7 +64,7 @@
           </div>
         </div>
       </div>
-      <div class="comments_wrapper" v-for="(commentPage, key) in commentFeed" :key="key">
+      <div class="comments_wrapper mt-3" v-for="(commentPage, key) in commentFeed" :key="key">
         <div  v-for="(comment, key) in commentPage" :key="key">
           <div :ref="'comment'+comment.id" :id="'comment'+comment.id" :class="`comments d-flex position-relative show_more ${comment.delete_state == 1 ? 'px-2 pt-2 pb-0' : 'p-2'}`" >
             <img v-if="!comment.delete_state == 1" @click="goToProfile" :data-userId="comment.user.id" class="pfp rounded-circle mr-2" :src="comment.user.pfp"/>
@@ -136,15 +137,14 @@
         <input type="hidden" name="parent_comment_id" id="parent_comment_id" v-model.trim="addCommentForm.parentCommentId">
         <input type="hidden" name="original_comment_id" id="parent_comment_id" v-model.trim="addCommentForm.originalCommentId">
         <input type="hidden" name="post_id" id="post_id" v-model.trim="postId">
-        <div class="form-group position-relative d-flex justify-content-center"> 
+        <div class="form-group position-relative d-flex justify-content-center mb-0"> 
             <img class="pfp_form" :src="sessionUser.pfp"/>
-            <b-form-textarea ref="commentForm" placeholder="Add a comment ..." v-model="addCommentForm.commentBody" cols="30" rows="1" max-rows="10" class="form-control addCommentTxt" name="content" id="content" ></b-form-textarea>
+            <b-form-textarea ref="commentForm" placeholder="Add a comment ..." v-model="addCommentForm.commentBody" cols="30" max-rows="10" class="form-control " name="content" id="content" ></b-form-textarea>
             <button type="submit" class="btn btn-primary-outline submitComment p-0">Post</button>
             <p class="text-danger"></p>
         </div>
       </form>  
     </div>
-    
 </template>
 <script>
 import Observer from "./Observer";

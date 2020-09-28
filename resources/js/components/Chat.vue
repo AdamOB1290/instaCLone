@@ -150,7 +150,7 @@ export default {
 <style lang="scss" scoped>
 .chat_wrapper {
     display: flex;
-    height: 100%;
+    height: calc(100vh - 40px);    
     .tabs{
         > :nth-child(1) {
             background: green;
