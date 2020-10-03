@@ -1,9 +1,8 @@
 <template>
     <div class="profile">
         <div class="flex items-center justify-center my-3"> 
-            
             <div class="flex flex-col items-center justify-center w-full">
-                <div class="">
+                <div v-if="sessionUser" class="">
                     <div class="w-content profile_avatar_wrapper flex flex-col items-center sm:flex-row ">
                         <img v-b-modal.image_modal @click="showImage" class="slider-image sm:w-32 sm:h-32 lg:w-40 lg:h-40 lg:mr-10" :src="user.pfp" />
                         <span class="sm:hidden my-2 text-center username font-weight-bold position-relative">{{user.username}}                    
@@ -13,7 +12,7 @@
                         </span>
                         <div class="max-w-sm">
                             <div class="hidden sm:flex flex-col px-3 ">
-                                <div class="flex justify-between mt-5">
+                                <div class="flex justify-between">
                                     <span class="hidden sm:inline-block self-center text-xl lg:text-3xl ">{{user.username}}</span>
                                     <div v-if="sessionUserId == userId" @click="goToProfile" class="edit_profile cursor-pointer w-content text-xs py-1 pl-1 pr-2 rounded">
                                         <svg aria-label="Options"  fill="#262626" height="18" viewBox="0 0 48 48" width="24"><path clip-rule="evenodd" d="M46.7 20.6l-2.1-1.1c-.4-.2-.7-.5-.8-1-.5-1.6-1.1-3.2-1.9-4.7-.2-.4-.3-.8-.1-1.2l.8-2.3c.2-.5 0-1.1-.4-1.5l-2.9-2.9c-.4-.4-1-.5-1.5-.4l-2.3.8c-.4.1-.8.1-1.2-.1-1.4-.8-3-1.5-4.6-1.9-.4-.1-.8-.4-1-.8l-1.1-2.2c-.3-.5-.8-.8-1.3-.8h-4.1c-.6 0-1.1.3-1.3.8l-1.1 2.2c-.2.4-.5.7-1 .8-1.6.5-3.2 1.1-4.6 1.9-.4.2-.8.3-1.2.1l-2.3-.8c-.5-.2-1.1 0-1.5.4L5.9 8.8c-.4.4-.5 1-.4 1.5l.8 2.3c.1.4.1.8-.1 1.2-.8 1.5-1.5 3-1.9 4.7-.1.4-.4.8-.8 1l-2.1 1.1c-.5.3-.8.8-.8 1.3V26c0 .6.3 1.1.8 1.3l2.1 1.1c.4.2.7.5.8 1 .5 1.6 1.1 3.2 1.9 4.7.2.4.3.8.1 1.2l-.8 2.3c-.2.5 0 1.1.4 1.5L8.8 42c.4.4 1 .5 1.5.4l2.3-.8c.4-.1.8-.1 1.2.1 1.4.8 3 1.5 4.6 1.9.4.1.8.4 1 .8l1.1 2.2c.3.5.8.8 1.3.8h4.1c.6 0 1.1-.3 1.3-.8l1.1-2.2c.2-.4.5-.7 1-.8 1.6-.5 3.2-1.1 4.6-1.9.4-.2.8-.3 1.2-.1l2.3.8c.5.2 1.1 0 1.5-.4l2.9-2.9c.4-.4.5-1 .4-1.5l-.8-2.3c-.1-.4-.1-.8.1-1.2.8-1.5 1.5-3 1.9-4.7.1-.4.4-.8.8-1l2.1-1.1c.5-.3.8-.8.8-1.3v-4.1c.4-.5.1-1.1-.4-1.3zM24 41.5c-9.7 0-17.5-7.8-17.5-17.5S14.3 6.5 24 6.5 41.5 14.3 41.5 24 33.7 41.5 24 41.5z" fill-rule="evenodd"></path></svg>
@@ -24,7 +23,7 @@
                                         
                                     </button>    
                                 </div>
-                                <div class="flex my-2">
+                                <div v-if="user" class="flex my-2">
                                     <div class="flex profile_info">
                                         <div class="mr-4 flex items-center justify-center">
                                             <span class=" font-weight-bold pr-1">{{user.posts.length}}</span>
@@ -54,7 +53,7 @@
                         Edit profile 
                     </div>
                     <div class="flex justify-center profile_info_wrapper w-full">
-                        <div class="flex profile_info">
+                        <div v-if="user" class="flex profile_info">
                             <div class="mr-4 flex items-center justify-center flex-col">
                                 <span class=" font-weight-bold">{{user.posts.length}}</span>
                                 <span class="font-weight-light">Posts</span>
@@ -77,15 +76,6 @@
                 <ul class="sharePostUl position-relative">
                     <span  @click="$bvModal.hide('my-followers')" class="close_icon"></span> 
                     <searchComponent :users="user.following" :sessionUser="sessionUser" ></searchComponent>
-                    <!-- <li v-for="(follower, key) in user.following" :key="key" class="flex justify-content-between" >
-                        <div  class="">
-                        <img class="pfp card-img-top rounded-circle mr-2" :src="follower.pfp"/>
-                        <span class="username font-weight-bold">{{follower.username}}</span>
-                        </div>
-                        <button :id="'userId'+follower.id" :data-followerId="follower.id" @click="followUnfollow" class="btn btn-primary" 
-                            v-text="`${sessionUser.followed.includes(follower.id) ? 'Unfollow' : 'Follow'}`">
-                        </button>
-                    </li> -->
                 </ul>
             </b-modal>
 
@@ -93,15 +83,6 @@
                 <ul class="sharePostUl position-relative">
                     <span  @click="$bvModal.hide('my-following')" class="close_icon"></span> 
                     <searchComponent :users="user.followedUsers" :sessionUser="sessionUser"></searchComponent>
-                    <!-- <li v-for="(followedUser, key) in user.followedUsers" :key="key" class="flex justify-content-between" >
-                        <div  class="">
-                        <img class="pfp card-img-top rounded-circle mr-2" :src="followedUser.pfp"/>
-                        <span class="username font-weight-bold">{{followedUser.username}}</span>
-                        </div>
-                        <button :id="'userId'+followedUser.id" :data-followerId="followedUser.id" @click="followUnfollow" class="btn btn-primary" 
-                            v-text="`${sessionUser.followed.includes(followedUser.id) ? 'Unfollow' : 'Follow'}`">
-                        </button>
-                    </li> -->
                 </ul>            
             </b-modal>
         </div>
@@ -117,7 +98,7 @@
                     </template>
                     <div class="post_history_wrapper">
                         <div v-for="(post, key) in user.postsType" :key="key" class="post_history" >
-                            <img v-b-modal.image_modal @click="showImage" v-if="post.media_type == 'image'"  :src="post.media_file" class="w-full h-100"/>
+                            <img v-b-modal.image_modal @click="showImage" v-if="post.media_type == 'image'"  :src="post.media_file" :data-postId="post.id" class="w-full h-100"/>
                             <video v-else-if="post.media_type == 'video'" controls muted class="w-full h-100">
                             <source :src="post.media_file"  />
                             </video>
@@ -149,7 +130,7 @@
                     </template>
                     <div class="post_history_wrapper">
                         <div v-for="(favoritedPost, key) in user.favorite_posts" :key="key" class="post_history" >
-                            <img v-b-modal.image_modal @click="showImage"  v-if="favoritedPost.media_type == 'image'"  :src="favoritedPost.media_file" class="w-full h-100"/>
+                            <img v-b-modal.image_modal @click="showImage"  v-if="favoritedPost.media_type == 'image'"  :src="favoritedPost.media_file" :data-postId="favoritedPost.id" class="w-full h-100"/>
                             <video v-else-if="favoritedPost.media_type == 'video'" controls muted class="w-full h-100">
                             <source :src="favoritedPost.media_file"  />
                             </video>
@@ -174,7 +155,7 @@
                             </template>
                             <div class="post_history_wrapper">
                                 <div v-for="(likedPost, key) in user.liked_posts" :key="key" class="post_history" >
-                                    <img v-b-modal.image_modal @click="showImage"  v-if="likedPost.media_type == 'image'"  :src="likedPost.media_file" class="w-full h-100"/>
+                                    <img v-b-modal.image_modal @click="showImage"  v-if="likedPost.media_type == 'image'"  :src="likedPost.media_file" :data-postId="likedPost.id" class="w-full h-100"/>
                                     <video v-else-if="likedPost.media_type == 'video'" controls muted class="w-full h-100">
                                     <source :src="likedPost.media_file"  />
                                     </video>
@@ -201,8 +182,9 @@
             </b-tabs>
         </div>
 
-        <b-modal id="image_modal" hide-header hide-footer centered>
-        <!----><img :src="clickedImgSrc" alt="" class="Modal_image w-full h-100">
+        <b-modal id="image_modal" body-class="relative" hide-header hide-footer centered>
+            <!----><img :src="clickedImgSrc" alt="" class="Modal_image w-full h-100 hover:brightness-75 cursor-pointer">
+            <router-link :to="'/post/'+postId" class="go_to_post hover:text-white"><i class="fas fa-long-arrow-alt-right"></i> Go to Post</router-link>
         </b-modal>
     </div>
 </template>
@@ -218,6 +200,7 @@ export default {
             sessionUserId: this.$sessionUserId,
             sessionUser: '',
             userId: '',
+            postId:'',
             clickedImgSrc:'',
         }
     },
@@ -237,11 +220,10 @@ export default {
 
         this.userId = window.location.href.split("/")[3];
         // console.log(this.userId);
-        this.followUnfollow = _.debounce(this.followUnfollow, 300)
+        // this.followUnfollow = _.debounce(this.followUnfollow, 300)
         axios
         .get(this.publicPath+"users/"+this.userId)
         .then((data) => { 
-            
             this.user= data.data
                 this.user.storiesType = [];
                 this.user.postsType = [];
@@ -264,36 +246,42 @@ export default {
     methods: {
 
         showImage(event) {
-            console.log(event.target.attributes[0].nodeValue);
+            // console.log(event.target.attributes[0].nodeValue);
             this.clickedImgSrc=event.target.attributes[0].nodeValue
+            this.postId=event.target.attributes[1].nodeValue
         },
 
         followUnfollow(event) {
             let userFollowId;
-
+            let userFollowAttrId;
+          
             if (typeof $(event.target).attr("id") == 'undefined') {
-                userFollowId = $(event.target.parentElement).attr("id");
+                // console.log($(event.target.parentElement));
+                userFollowAttrId = $(event.target.parentElement);
+                userFollowId = $(event.target.parentElement).attr("id").replace(/[^0-9]/g, '');;
             } else {
-                userFollowId = $(event.target).attr("id");
+                // console.log($(event.target));
+                userFollowAttrId = $(event.target).attr("id");
+                userFollowId = $(event.target).attr("id").replace(/[^0-9]/g, '');;
             }
 
             //  check if the post is already liked by the user
-            if (this.sessionUser.followed.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))) {
+            if (this.sessionUser.followed.includes(parseInt(userFollowId))) {
                 // apply the laravel unlike function
                 axios
-                    .get(this.publicPath+"users/" +$("#" + userFollowId)[0].attributes[1].nodeValue +"/" 
+                    .get(this.publicPath+"users/" +userFollowId +"/" 
                     +this.sessionUser.id +"/unfollow")
                     .then((response) => {
                     
                     // get the index of the user id we want to delete
                     let index = this.sessionUser.followed.indexOf(
-                        parseInt($("#" + userFollowId)[0].attributes[1].nodeValue)
+                        parseInt(userFollowId)
                     );
 
-                    if (this.sessionUser.followed.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))){
+                    if (this.sessionUser.followed.includes(parseInt(userFollowId))){
                         //  remove it from the followedUsersId array
                         this.sessionUser.followed.splice(index, 1)
-                        $("#" + userFollowId)[0].innerHTML = 'Follow' 
+                        $("#" + userFollowAttrId)[0].innerHTML = 'Follow' 
                     
                     }
                     
@@ -302,15 +290,15 @@ export default {
             } else {
                 // apply the laravel follow function
                 axios
-                .get(this.publicPath+"users/" + $("#" + userFollowId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/follow" )
+                .get(this.publicPath+"users/" + userFollowId + "/" + this.sessionUser.id + "/follow" )
                 .then((response) => {
                     
-                    if (!this.sessionUser.followed.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))){
+                    if (!this.sessionUser.followed.includes(parseInt(userFollowId))){
                         // add the user id to the followedUsersId array
                         this.sessionUser.followed.push(
-                        parseInt($("#" + userFollowId)[0].attributes[1].nodeValue)
+                        parseInt(userFollowId)
                         )
-                        $("#" + userFollowId)[0].innerHTML = 'Unfollow' 
+                        $("#" + userFollowAttrId)[0].innerHTML = 'Unfollow' 
                                     
 
                     }

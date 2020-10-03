@@ -12,9 +12,11 @@
                 <span @click="goToProfile" :data-userId="user.id" class="username font-weight-bold">{{user.username}}</span>
               </div>
               <button v-if="post" :id="'postShareId'+post.id" :data-contactId="user.id" :data-postId="post.id" @click="sendPost" class="btn-primary py-1 px-4  border-0 rounded  h-25 align-self-center">Send</button>
-              <button v-else :id="'userId'+user.id" :data-followerId="user.id" @click="followUnfollow" class="btn btn-primary" 
-                v-text="`${sessionUser.followed.includes(user.id) ? 'Unfollow' : 'Follow'}`">
-              </button>
+              <span v-else>
+                <button v-if="sessionUser" @click="followUnfollow" :ref="'userId'+user.id" :id="'userId'+user.id" :data-followerId="user.id" class="btn btn-primary" 
+                  v-text="`${sessionUser.followed.includes(user.id) ? 'Unfollow' : 'Follow'}`">
+                </button>
+              </span>
             </li>
         </div>
         
@@ -65,30 +67,35 @@ export default {
 
        followUnfollow(event) {
             let userFollowId;
-
+            let userFollowAttrId;
+          
             if (typeof $(event.target).attr("id") == 'undefined') {
-                userFollowId = $(event.target.parentElement).attr("id");
+                // console.log($(event.target.parentElement));
+                userFollowAttrId = $(event.target.parentElement);
+                userFollowId = $(event.target.parentElement).attr("id").replace(/[^0-9]/g, '');;
             } else {
-                userFollowId = $(event.target).attr("id");
+                // console.log($(event.target));
+                userFollowAttrId = $(event.target).attr("id");
+                userFollowId = $(event.target).attr("id").replace(/[^0-9]/g, '');;
             }
 
             //  check if the post is already liked by the user
-            if (this.sessionUser.followed.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))) {
+            if (this.sessionUser.followed.includes(parseInt(userFollowId))) {
                 // apply the laravel unlike function
                 axios
-                    .get(this.publicPath+"users/" +$("#" + userFollowId)[0].attributes[1].nodeValue +"/" 
+                    .get(this.publicPath+"users/" +userFollowId +"/" 
                     +this.sessionUser.id +"/unfollow")
                     .then((response) => {
                     
                     // get the index of the user id we want to delete
                     let index = this.sessionUser.followed.indexOf(
-                        parseInt($("#" + userFollowId)[0].attributes[1].nodeValue)
+                        parseInt(userFollowId)
                     );
 
-                    if (this.sessionUser.followed.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))){
+                    if (this.sessionUser.followed.includes(parseInt(userFollowId))){
                         //  remove it from the followedUsersId array
                         this.sessionUser.followed.splice(index, 1)
-                        $("#" + userFollowId)[0].innerHTML = 'Follow' 
+                        $("#" + userFollowAttrId)[0].innerHTML = 'Follow' 
                     
                     }
                     
@@ -97,15 +104,15 @@ export default {
             } else {
                 // apply the laravel follow function
                 axios
-                .get(this.publicPath+"users/" + $("#" + userFollowId)[0].attributes[1].nodeValue + "/" + this.sessionUser.id + "/follow" )
+                .get(this.publicPath+"users/" + userFollowId + "/" + this.sessionUser.id + "/follow" )
                 .then((response) => {
                     
-                    if (!this.sessionUser.followed.includes(parseInt($("#" + userFollowId)[0].attributes[1].nodeValue))){
+                    if (!this.sessionUser.followed.includes(parseInt(userFollowId))){
                         // add the user id to the followedUsersId array
                         this.sessionUser.followed.push(
-                        parseInt($("#" + userFollowId)[0].attributes[1].nodeValue)
+                        parseInt(userFollowId)
                         )
-                        $("#" + userFollowId)[0].innerHTML = 'Unfollow' 
+                        $("#" + userFollowAttrId)[0].innerHTML = 'Unfollow' 
                                     
 
                     }

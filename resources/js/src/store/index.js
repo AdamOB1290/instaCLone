@@ -1,5 +1,4 @@
 // store/index.js
- 
 import Vue from "vue";
 import Vuex from "vuex";
  
@@ -59,11 +58,9 @@ export default new Vuex.Store({
 
   async setSessionUser(state) {
     axios
-    .get("users/21")
+    .get("http://localhost:8000/users/"+Vue.prototype.$sessionUserId)
     .then((response) => { 
       state.commit('changeSessionUser', response.data)
-      // state.commit('changeLoadingState', false)
-        
     })
     .catch((err) => {})
   }

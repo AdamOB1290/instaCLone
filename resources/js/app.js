@@ -97,6 +97,7 @@ Vue.use(VueDragscroll);
 
 
 
+
 let routes = [
   { name: 'feeds', path: '/', component: require('./components/Feed.vue').default },
   { name: 'stories', path: '/story/:userId', component: require('./components/Stories.vue').default, },
@@ -123,7 +124,6 @@ const app = new Vue({
         },
         created: function() {
           this.$store.dispatch('setSessionUser') 
-
         },
         mounted() {
           // console.log(this.$store.getters.getCurrentSessionUser);
@@ -138,6 +138,16 @@ const app = new Vue({
         },
       
     });
+
+    const publicPath = 'http://localhost:8000/'
+
+    if (window.location.href == publicPath+'js/lib.esm.js.map') {
+      window.location.replace(publicPath)
+    }
+    if (window.location.href == publicPath+'login' ) {
+      $('.main').removeClass('py-10')
+    }
+    
 
 // LOGIN IMAGE FADE EFFECT
 

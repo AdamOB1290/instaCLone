@@ -30,10 +30,17 @@
             <svg aria-label="Share Post" class="mx-2" fill="#262626" height="24" viewBox="0 0 48 48" width="24">
               <path d="M47.8 3.8c-.3-.5-.8-.8-1.3-.8h-45C.9 3.1.3 3.5.1 4S0 5.2.4 5.7l15.9 15.6 5.5 22.6c.1.6.6 1 1.2 1.1h.2c.5 0 1-.3 1.3-.7l23.2-39c.4-.4.4-1 .1-1.5zM5.2 6.1h35.5L18 18.7 5.2 6.1zm18.7 33.6l-4.4-18.4L42.4 8.6 23.9 39.7z"></path>
             </svg>
-            <span v-if="unreadNotifications.length > 0" class="notif_count">{{unreadNotifications.length}}</span>
+            <div class="notif_count direct_message" >
+              <span  v-if="unreadMessageNotifications.length > 0" class="relative inline-flex rounded-full h-4 w-4 bg-red-650 text-center" >
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-650 opacity-75"></span> 
+                <span class="mx-auto">{{unreadMessageNotifications.length}}</span>
+              </span>
+            </div>
           </span>
           <svg v-else aria-label="Direct" class="mx-2" fill="#262626" height="22" viewBox="0 0 48 48" width="22"><path d="M47.8 3.8c-.3-.5-.8-.8-1.3-.8h-45C.9 3.1.3 3.5.1 4S0 5.2.4 5.7l13.2 13c.5.4 1.1.6 1.7.3l16.6-8c.7-.3 1.6-.1 2 .5.4.7.2 1.6-.5 2l-15.6 9.9c-.5.3-.8 1-.7 1.6l4.6 19c.1.6.6 1 1.2 1.1h.2c.5 0 1-.3 1.3-.7l23.2-39c.5-.5.5-1.1.2-1.6z"></path></svg>
-
+          
+        <!-- add a post -->
+        <svg v-if="homePage" aria-label="New Post"  class="_8-yf5 openWidget mx-2" fill="#262626" height="24" viewBox="0 0 48 48" width="24"><path ref="search_icon_path" d="M31.8 48H16.2c-6.6 0-9.6-1.6-12.1-4C1.6 41.4 0 38.4 0 31.8V16.2C0 9.6 1.6 6.6 4 4.1 6.6 1.6 9.6 0 16.2 0h15.6c6.6 0 9.6 1.6 12.1 4C46.4 6.6 48 9.6 48 16.2v15.6c0 6.6-1.6 9.6-4 12.1-2.6 2.5-5.6 4.1-12.2 4.1zM16.2 3C10 3 7.8 4.6 6.1 6.2 4.6 7.8 3 10 3 16.2v15.6c0 6.2 1.6 8.4 3.2 10.1 1.6 1.6 3.8 3.1 10 3.1h15.6c6.2 0 8.4-1.6 10.1-3.2 1.6-1.6 3.1-3.8 3.1-10V16.2c0-6.2-1.6-8.4-3.2-10.1C40.2 4.6 38 3 31.8 3H16.2z"></path><path d="M36.3 25.5H11.7c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5h24.6c.8 0 1.5.7 1.5 1.5s-.7 1.5-1.5 1.5z"></path><path d="M24 37.8c-.8 0-1.5-.7-1.5-1.5V11.7c0-.8.7-1.5 1.5-1.5s1.5.7 1.5 1.5v24.6c0 .8-.7 1.5-1.5 1.5z"></path></svg>
 
         <!-- activity -->
           <b-dropdown ref="activity_dropdown_dropup"  id="activity_dropdown_dropup" dropup text="Drop-Up" size="sm"  variant="link" toggle-class="text-decoration-none" no-caret>
@@ -55,7 +62,7 @@
               <!-- activity icon -->
               <svg  aria-label="Activity" class="_8-yf5 " fill="#262626" height="24" viewBox="0 0 48 48" width="24"><path ref="activity_icon_path" d="M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"></path></svg>    
               <!-- <svg aria-label="Activity" class="_8-yf5 " fill="#262626" height="24" viewBox="0 0 48 48" width="24"><path d="M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"></path></svg> -->
-              <div class="notif_count" >
+              <div class="notif_count nav_activity" >
               <span  v-if="unreadNotifications.length > 0" class="relative inline-flex rounded-full h-4 w-4 bg-red-650 text-center" >
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-650 opacity-75"></span> 
                 <span class="mx-auto">{{unreadNotifications.length}}</span>
@@ -69,7 +76,7 @@
                 <div class="d-flex flex-column">
                   <div class="notif_message">
                     <span class=" font-weight-bold ">{{notification.notifier.username}}</span>
-                    <span v-if="notification.read_at" class="  "> {{notification.data.notification_message}} </span>
+                    <span v-if="notification.read_at" class=""> {{notification.data.notification_message}} </span>
                     <span v-else class=" notif_font "> {{notification.data.notification_message}} </span>
                   </div>
                   <span v-if="notification.read_at" class="text-secondary">{{notification.created_at}}</span>
@@ -124,6 +131,13 @@
      }
         
     },
+    
+     watch: {
+        '$route': {
+            handler: 'ifNotInStories',
+            immediate: true
+        }
+    },
 
     created: function () {
       
@@ -172,13 +186,19 @@
 
     methods: {
 
-      
-      updateNav(){
+      ifNotInStories (event) {
+        if (this.$route.name != 'stories') {
+          $('.main').removeClass('stories_main')
+        }
+      },
+        
+      updateNav(event){
          axios
         .get(this.publicPath+this.sessionUserId+'/notifications/messages')
         .then((data) => { 
           this.messageNotifications = data.data
            this.unreadMessageNotifications = []
+           this.notifications=[]
           this.notifications.forEach(notification => {
             if (notification.read_at == null) {
               this.unreadNotifications.push(notification)
@@ -238,7 +258,7 @@
         .catch((err) => {});
       },
 
-       markAllRead(event){
+      markAllRead(event){
         axios({
           method: 'patch',
           url: this.publicPath+'notifications/'+this.sessionUserId+'/read',
@@ -298,15 +318,16 @@
                   // check if it's a reply
                   if (notification.data.original_comment_id != undefined) {
                     originalCommentId = notification.data.original_comment_id
-                    this.$router.push({path : '/post/'+postId+'?'+objectId+'?'+originalCommentId})
-                    // window.location.replace(this.publicPath+'post/'+postId+'?'+objectId+'?'+originalCommentId)
+                    // this.$router.push({path : '/post/'+postId+'?'+objectId+'?'+originalCommentId})
+                    this.$router.push({name: 'comments', params: {postId:postId, objectId:objectId, originalCommentId:originalCommentId} })
+                  //  window.location.replace(this.publicPath+'post/'+postId+'?'+objectId+'?test?test')
                   } else {
-                    this.$router.push({path : '/post/'+postId+'?'+objectId})
+                    this.$router.push({name: 'comments', params: {postId:postId, objectId:objectId} })
                     // window.location.replace(this.publicPath+'post/'+postId+'?'+objectId)
                   }
                   
                 } else {
-                  this.$router.push({path : '/post/'+objectId})
+                  this.$router.push({name: 'comments', params: {postId:objectId} })
                   // window.location.replace(this.publicPath+'post/'+objectId)
                 }              
               } else if (notifType == 'Follow') {
@@ -326,6 +347,7 @@
     },
 
     mounted: function () {
+
         Echo.private('messages.'+this.sessionUserId)
         .listen('MessageSent', (e) => {
           this.unreadNotifications.push(e)
@@ -351,20 +373,23 @@
             })
         }  
 
-         this.observer = new MutationObserver(mutations => {
-          for (const m of mutations) {
-            const newValue = m.target.getAttribute(m.attributeName);
-            this.$nextTick(() => {
-              this.onClassChange(newValue, m.oldValue);
+         if (this.$route.name != 'stories') {
+                $('.main').removeClass('stories_main')
+              this.observer = new MutationObserver(mutations => {
+              for (const m of mutations) {
+                const newValue = m.target.getAttribute(m.attributeName);
+                this.$nextTick(() => {
+                  this.onClassChange(newValue, m.oldValue);
+                });
+              }
             });
-          }
-        });
 
-        this.observer.observe(document.querySelectorAll("#activity_dropdown_dropup")[0], {
-          attributes: true,
-          attributeOldValue : true,
-          attributeFilter: ['class'],
-        });
+            this.observer.observe(document.querySelectorAll("#activity_dropdown_dropup")[0], {
+              attributes: true,
+              attributeOldValue : true,
+              attributeFilter: ['class'],
+            });
+        }
 
         },
         
@@ -401,9 +426,9 @@
         }
       },
 
-      sessionUser() {
-              return this.$store.getters.getCurrentSessionUser           
-      }
+      // sessionUser() {
+      //         return this.$store.getters.getCurrentSessionUser           
+      // }
     },
     
   }

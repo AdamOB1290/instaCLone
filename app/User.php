@@ -156,9 +156,6 @@ class User extends Authenticatable
 
         // Fetch from database the user who will receive the id
         $sessionUser = User::findorFail($sessionUserId);
-
-        
-
         // Fetch the user's attribute who will store the id and assign it to a variable $followedUsers
         $followedUsers = $sessionUser->$storage;
 

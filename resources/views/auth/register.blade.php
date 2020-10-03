@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-md mx-auto h-full flex items-center">
+<div class="mx-auto max-w-md h-full flex items-center">
     <div class="w-full">
         <div class="card">
             <div class="card-header text-center text-6xl login_brand text-white-100 border-bottom-0">Instaclone</div>
@@ -112,5 +112,23 @@
             </div>
         </div>
     </div>
+</div>
+<div class=" mx-auto Log_Reg_Footer w-full max-w-xl mb-2">
+    <nav class="">
+        <ul class="flex justify-between mb-2">
+            <li class=""><a class="" href="https://about.instagram.com/" rel="nofollow noopener noreferrer" target="_blank">About</a></li>
+            <li class=""><a class="" href="https://help.instagram.com/">Help</a></li>
+            <li class=""><a class="" href="https://about.instagram.com/blog/">Press</a></li>
+            <li class=""><a class="" href="/developer/">API</a></li>
+            <li class=""><a class="" href="/about/jobs/">Jobs</a></li>
+            <li class=""><a class="" href="/legal/privacy/">Privacy</a></li>
+            <li class=""><a class=" _vfM2" href="/legal/terms/">Terms</a></li>
+            <li class=""><a class="" href="/explore/locations/">Locations</a></li>
+            <li class=""><a class="" href="/directory/profiles/">Top Accounts</a></li>
+            <li class=""><a class="" href="/directory/hashtags/">Hashtags</a></li>
+            <li class=""><span class="">Language</span></li>
+        </ul>
+    </nav>
+    <div class="text-center w-full mb-1">© 2020 Instagram from Facebook</div>
 </div>
 @endsection

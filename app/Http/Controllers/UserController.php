@@ -98,7 +98,6 @@ class UserController extends Controller
         } else {
             $user['liked_comments'] = [];
         }
-
         if(isset($user->followed)){
             foreach ($user->followed as $followedId) {
                 $followedUser = User::findOrFail($followedId);
@@ -108,7 +107,7 @@ class UserController extends Controller
         } else {
             $user['followedUsers'] = [];
         }
-
+        
         if(isset($user->followers)){
             foreach ($user->followers as $followersId) {
                 $follower = User::findOrFail($followersId);
@@ -118,7 +117,8 @@ class UserController extends Controller
         } else {
             $user['following'] = [];
         }
-
+        
+        
 
         if(isset($user->posts)){
             $user['posts'] = $user->post;
@@ -134,7 +134,7 @@ class UserController extends Controller
         //     $user['followed'] = [];
         // } 
 
-       
+        
         return $user;
     }
 

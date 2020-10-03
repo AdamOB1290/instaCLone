@@ -1,13 +1,13 @@
 <template>
-    <div>
-        <div class="welcome follow_suggestions text-center mb-0">
+    <div class="follow_suggestions_wrapper">
+        <div class="welcome follow_suggestions text-center mb-0 ">
             <h5>Welcome to Instaclone</h5>
             <p class="welcome_message mx-4 my-0">Follow people to start seeing the photos and videos they share.</p>
         </div>
 
-            <slick ref="slick" :options="slickOptions"  v-for="(page, key) in slickForLoop " :key="key" class="pt-3 pb-5 follow_suggestions d-flex justify-content-center align-items-center">
+            <slick ref="slick" :options="slickOptions"  v-for="(page, key) in slickForLoop " :key="key" class="pt-6 pb-10 lg:pb-0 follow_suggestions d-flex justify-content-center align-items-center">
 
-                <div v-for="(user, key) in userFeed" :key="key" class="user_wrapper py-2 px-1 position-relative">
+                <div v-for="(user, key) in userFeed" :key="key" class="user_wrapper pt-4 pb-2 px-1 position-relative">
                     <observer class="position-absolute" :id="'slickOsberver'+user.id" :data-slickIndex="key" v-on:intersect="reInit" />
                     <div class="card py-2 px-1 border-0 mx-1">
 
@@ -21,7 +21,7 @@
                         <p  class="suggestion_text">{{user.bio}}</p>
                         <div class="d-flex justify-content-center align-items-center image_wrapper">
                         <div v-for="(post, key) in user.top_posts.slice(0,3)" :key="key" class="image_div">
-                            <img v-if="post.media_type == 'image'" class="suggestion_images rounded-0"  :src="post.media_file"/>
+                            <img v-if="post.media_type == 'image'" class="cursor-pointer suggestion_images rounded-0"  :src="post.media_file"/>
                         </div>
                         </div>
                         
@@ -41,7 +41,7 @@
 
 
       
-                <div id="SLICKNONE" class="bg-dark text-center text-white" >{{sessionUser.name}}</div>
+                <div v-if="sessionUser" id="SLICKNONE" class="bg-dark text-center text-white" >{{sessionUser.name}}</div>
 
 
     </div>
@@ -82,7 +82,7 @@ export default {
             userSliceIndex: 10,
             userIterations: 0,
             userSlickIterations: 0,
-            userTarget: 7,
+            userTarget: 10,
 
 
             // Slick Options
@@ -99,16 +99,16 @@ export default {
 
                 // cards needs to be bigger through media queries
 
-                // {
-                // breakpoint: 1024,
-                // settings: {
-                //   centerMode: true,
-                //   centerPadding: '40px',
-                //     slidesToShow: 3,
-                //     slidesToScroll: 3,
-                //     infinite: true,
-                // }
-                // },
+                {
+                breakpoint: 1800,
+                settings: {
+                    centerMode: true,
+                    centerPadding: '140px',
+                    slidesToShow: 3,
+                    slidesToScroll: 3,
+                    infinite: true,
+                }
+                },
                 // {
                 // breakpoint: 900,
                 // settings: {
@@ -236,7 +236,7 @@ export default {
     
 
     created: function () {
-        this.followUnfollow = _.debounce(this.followUnfollow, 300)
+        // this.followUnfollow = _.debounce(this.followUnfollow, 300)
 
         // to fire the slick forloop once
         this.slickForLoop=[1]
@@ -358,8 +358,8 @@ export default {
     },
     
         goToProfile(event) {
-        var userId = event.target.attributes[0].nodeValue;
-        window.location.replace(this.publicPath+'profile/'+userId)
+            var userId = event.target.attributes[0].nodeValue;
+            this.$router.push({path : userId+'/profile'})
         },    
     },
 

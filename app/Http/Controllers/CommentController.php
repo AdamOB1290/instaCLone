@@ -83,6 +83,8 @@ class CommentController extends Controller
             'notifier' => User::findOrFail($notifierId),
             'notified_userId' => $notifiedUserId,
         ];
+
+        // dd($data_notifications);
         
         $comment['real_time_notification'] = json_encode($notification);
         broadcast(new CommentCreated($comment));

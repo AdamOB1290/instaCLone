@@ -2384,6 +2384,10 @@ video {
   background-color: rgba(112, 36, 89, var(--bg-opacity));
 }
 
+.hover\:brightness-75:hover {
+  filter: brightness(0.75);
+}
+
 .hover\:bg-transparent:hover {
   background-color: transparent;
 }

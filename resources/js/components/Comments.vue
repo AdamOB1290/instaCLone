@@ -1,6 +1,6 @@
 <template>
-    <div class="post_comment_wrapper sm:mx-auto sm:w-3/4 md:w-7/12" :key = "commentKey">
-      <div class="post-head d-flex align-items-center border-down py-1">
+    <div v-if="post.user" class="post_comment_wrapper sm:mx-auto sm:w-3/4 md:w-7/12" :key = "commentKey">
+      <div  class="post-head d-flex align-items-center border-down py-1">
         <img @click="goToProfile" :data-userId="post.user.id" class="pfp  rounded-circle mr-2" :src="post.user.pfp"/>
         <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{post.user.username}}</span>
         <i class="fas fa-ellipsis-h text-secondary ml-auto mr-2 pt-2" v-b-modal="'my_postModal'+post.id"></i>
@@ -44,17 +44,17 @@
             </svg>
           </div>
           
-          <div class="mt-1">
+          <div v-if=" post.likes" class="mt-1">
             <span v-if=" post.likes.length != 0" class="font-weight-bold ">{{post.likes.length}} likes</span>
             <span v-if=" post.likes.length == 0" class="font-weight-bold ">0 likes</span>
           </div>
 
           <div class="card-text position-relative mt-2">
-            <span v-if="post.editState" :id="'cancelPostEditId'+post.id" :data-postId="post.id" @click="cancelEditPostDescription" class="cancel_edit post_cancel text-danger">Cancel</span>
+            <span v-if="post.editState" :id="'cancelPostEditId'+post.id" :data-postId="post.id" @click="cancelEditPostDescription" class="cancel_edit post_cancel text-danger cursor-pointer">Cancel</span>
             <span class="description show_more">
               <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{post.user.username}}</span>
               <textarea v-if="post.editState"  v-model="post.description" @keydown.enter.exact.prevent 
-                @keyup.enter.exact="submitEdit" :data-postId="post.id" cols="47" rows="5" class="mt-2 editTxt">
+                @keyup.enter.exact="submitEditPost" :data-postId="post.id" cols="47" rows="5" class="mt-2 editTxt">
               </textarea>
               <span v-else>{{post.description}}</span>
               
@@ -95,7 +95,7 @@
               <path :d="comment.likePath"></path>
             </svg>
           </div>
-          <div :ref="'showReplies'+comment.id" v-if="comment.replies.length > 0" class="text-secondary text-center cursor-pointer" @click="Expand_Collapse">View Replies</div>
+          <div :ref="'showReplies'+comment.id" :id="'showReplies'+comment.id" v-if="comment.replies.length > 0" class="text-secondary text-center cursor-pointer" @click="Expand_Collapse">View Replies</div>
           <div v-if="comment.replies.length > 0" class="reply_wrapper mx-4" :class="reply_display">
             <div  v-for="(reply, key) in comment.replyFeed" :key="key">
               <div :ref="'comment'+reply.id" :id="'comment'+reply.id"  class="replies d-flex position-relative show_more p-2">
@@ -104,7 +104,7 @@
                   <span class="username font-weight-bold pb-2">{{reply.user.username}}</span>
                   <span @click="goToParent" :data-parentId="'#comment'+reply.parent_comment_id" class="text-gray-600 hover:underline hover:text-red-600 cursor-pointer">{{'replied to comment#'+reply.parent_comment_id}}</span>
                   <textarea  v-if="reply.editState" v-model="reply.content" @keydown.enter.exact.prevent 
-                  @keyup.enter.exact="submitEdit" :data-commentId="reply.id" 
+                  @keyup.enter.exact="submitEdit" :data-replyId="reply.id" 
                   cols="30" rows="5" class="mt-2 editTxt">
                   </textarea>
                   <div v-else :class="`${reply.delete_state == 1 ? 'text-secondary font-italic deleted_comment' : 'break-all'}`">{{reply.content}}</div>
@@ -112,7 +112,7 @@
                   <span class="text-secondary">{{reply.created_at}}</span>
                   <span v-if=" reply.likes.length != 0" class="text-secondary ml-2">{{reply.likes.length}} likes</span>
                   <span v-if=" reply.likes.length == 0" class="text-secondary ml-2">0 likes</span>
-                  <span :id="'commentReplyId'+comment.id" :data-commentId="reply.id" :data-username="reply.user.username" :data-originalCommentId="reply.original_comment_id" @click="commentReply" class="text-secondary ml-2 cursor-pointer">Reply</span>
+                  <span :id="'commentReplyId'+comment.id" :data-replyId="reply.id" :data-username="reply.user.username" :data-originalCommentId="reply.original_comment_id" @click="commentReply" class="text-secondary ml-2 cursor-pointer">Reply</span>
                   <i class="fas fa-ellipsis-h text-secondary ml-2 cursor-pointer"  v-b-modal="'my_replyModal'+reply.id"></i>
                   <b-modal :id="'my_replyModal'+reply.id" :ref="'my_commentModal'+reply.id" modal-class="settings_Modal" hide-header hide-footer centered>
                     <button :id="'replyEditId'+reply.id" :data-replyId="reply.id" @click="editComment"  class="w-100 settings_btn px-5 py-2">Edit</button>
@@ -190,14 +190,18 @@ export default {
     };
   },
 
+  watch: {
+        '$route': {
+            handler: 'update_data',
+            immediate: true
+        }
+    },
+
   created () {
-    // this.likeUnlikePosts = _.debounce(this.likeUnlikePosts, 300)
-      // this.likeUnlikeComments = _.debounce(this.likeUnlikeComments, 300)
       this.saveUnsave = _.debounce(this.saveUnsave, 300)
       this.likeUnlikePosts = _.debounce(this.likeUnlikePosts, 300)
       this.likeUnlikeComments = _.debounce(this.likeUnlikeComments, 300)
       this.postId = window.location.href.split("/")[4];
-      this.postId = this.postId.split("?")[0];
       axios
       .get(this.publicPath+"posts/"+this.postId)
       .then((data) => {
@@ -219,6 +223,8 @@ export default {
 
           // POST
         this.post= data.data;
+        this.post.editState = false
+
         if (this.post.likes == null) {
           this.post.likes = []
         }
@@ -244,6 +250,9 @@ export default {
         }
 
         // COMMENTS
+        this.originalComments = []
+        this.commentFeed = []
+        this.comments = []
         this.comments = data.data.comments;
         this.comments.forEach((comment) => {
          comment.replies = []
@@ -317,80 +326,103 @@ export default {
   },
 
   updated: function () {
-        var urlArray= window.location.href.split("?")
-        console.log('Url', urlArray);
-        console.log('Scroll state', this.executeScroll);
-        var commentId
-        var parentId
-        var targetComment
-        var showReplies
-        var showMore
-        var originalCommentId
-
-        if (urlArray.length > 1 && this.executeScroll) {
-          commentId = window.location.href.split("?")[1]
-          targetComment = document.getElementById("comment"+commentId)
-          console.log('commentId then targetComment then scroll state', commentId, targetComment, this.executeScroll);
-
-          // check if it's a reply
-          if (urlArray.length == 3) {
-            originalCommentId = window.location.href.split("?")[2]
-            showReplies = this.$refs['showReplies'+originalCommentId]
-            
-
-            // finds the comment and pushes it into the replyfeed
-            this.originalComments.forEach(originalComment => {
-              if (originalComment.id == originalCommentId) {
-                originalComment.replyFeed.forEach(replyInFeed => {
-                  if (replyInFeed.id == commentId) {
-                    let index = originalComment.replyFeed.indexOf(replyInFeed)
-                    originalComment.replyFeed.splice(index, 1)
-                  }
-                });
-                originalComment.replies.forEach(reply => {
-                  if (reply.id == commentId) {
-                    originalComment.replyFeed.splice(0, 0, reply)
-                  }
-                });
-
-
-              }
-            });
-          }      
-          this.executeScroll =false
-          this.forceRerender() 
-          setTimeout(() => {
-            targetComment = document.getElementById("comment"+commentId)
-            showReplies[0].click()
-            console.log('showrepliesEl and then its sibling', targetComment, showReplies[0], showReplies[0].nextElementSibling);
-            $(showReplies[0].nextElementSibling).removeClass('highlight')    
-            targetComment.className += " highlight";
-            targetComment.scrollIntoView({behavior: "smooth"})
-          }, 1000);
-          
-        }
-
-  
-
+    
     
   },
 
   mounted: function () {
-    // this.$store.commit("changeName", "New Name");
-    // console.log(this.$store.state.user.username);
-    // const commentId = window.location.href.split("?")[1]
-    // const el = this.$el
-    
-    //   console.log(this.$refs);
-      // el.scrollIntoView({behavior: "smooth"});
-
   },
 
   methods: {
+    scrollToTarget(){
+       const urlArray= window.location.href.split("/")
+        // console.log('Scroll state', this.executeScroll);
+        let commentId
+        let parentId
+        let targetComment
+        let showReplies
+        let showMore
+        let originalCommentId
+
+        if (urlArray.length > 5 && this.executeScroll) {
+          setTimeout(() => {
+          commentId = urlArray[5]
+          targetComment = document.getElementById("comment"+commentId)
+          // console.log('commentId then targetComment then scroll state', commentId, targetComment, this.executeScroll);
+
+          // check if it's a reply
+          if (urlArray.length == 7) {
+              originalCommentId = urlArray[6]
+              showReplies = this.$refs['showReplies'+originalCommentId]
+              // finds the comment and pushes it into the replyfeed
+              this.originalComments.forEach(originalComment => {
+                if (originalComment.id == originalCommentId) {
+                  originalComment.replyFeed.forEach(replyInFeed => {
+                    if (replyInFeed.id == commentId) {
+                      let index = originalComment.replyFeed.indexOf(replyInFeed)
+                      originalComment.replyFeed.splice(index, 1)
+                    }
+                  });
+                  originalComment.replies.forEach(reply => {
+                    if (reply.id == commentId) {
+                      originalComment.replyFeed.splice(0, 0, reply)
+                    }
+                  });
+                }
+              });
+              // this.executeScroll =false
+            
+              targetComment = document.getElementById("comment"+commentId)
+              console.log(showReplies[0]);
+              showReplies[0].click()
+              // console.log('comment THEN showrepliesEl THEN its sibling', targetComment, showReplies[0], showReplies[0].nextElementSibling);
+             $(showReplies[0].nextElementSibling).removeClass('highlight')
+          }      
+               
+              targetComment.className += " highlight";
+              targetComment.scrollIntoView({behavior: "smooth"})
+
+                      }, 1000);             
+            this.forceRerender() 
+
+        }
+
+  
+
+    },
+    
     update_data() {
+      this.postId = window.location.href.split("/")[4];
        axios
       .get(this.publicPath+"posts/"+this.postId)
-      .then((data) => {  
+      .then((data) => { 
+         // POST
+        this.post = data.data;
+        if (this.post.likes == null) {
+          this.post.likes = []
+        }
+
+        if (this.likedPosts.includes(this.post.id)) {
+          this.post.likePath =
+            "M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+          this.post.likeColor = "#ed4956";
+        } else {
+          this.post.likePath =
+            "M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+          this.post.likeColor = "#262626";
+        }
+        
+        if (this.savedPosts.includes(this.post.id)) {
+          this.post.savePath =
+            "M43.5 48c-.4 0-.8-.2-1.1-.4L24 28.9 5.6 47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 1.2-.9 1.4-.2.1-.4.1-.6.1z";
+          this.post.saveColor = "#ffbb00";
+        } else {
+          this.post.savePath =
+            "M43.5 48c-.4 0-.8-.2-1.1-.4L24 29 5.6 47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 1.2-.9 1.4-.2.1-.4.1-.6.1zM24 26c.8 0 1.6.3 2.2.9l15.8 16V3H6v39.9l15.8-16c.6-.6 1.4-.9 2.2-.9z";
+          this.post.saveColor = "#262626";
+        }
+
+        // Comment
         this.originalComments = []
         this.commentFeed = []
         this.comments = []
@@ -439,6 +471,7 @@ export default {
         });
 
         this.commentFeed.push(this.originalComments.slice(0, 10))
+        this.scrollToTarget()
       })
       .catch((err) => {});
     },
@@ -515,10 +548,10 @@ export default {
     },
 
     likeUnlikeComments(event) {
-      var target
-      var commentLikeId
-      var dataPostId
-      var dataCommentId
+      let target
+      let commentLikeId
+      let dataPostId
+      let dataCommentId
       
 
       if (typeof $(event.target).attr("id") == 'undefined') {
@@ -658,10 +691,6 @@ export default {
       this.addCommentForm.parentCommentId = event.target.attributes[1].nodeValue
       this.addCommentForm.commentBody = '@'+event.target.attributes[2].nodeValue+' '
       this.addCommentForm.originalCommentId = event.target.attributes[3].nodeValue
-      // console.log($(this.$refs.comment113[0]));
-;      // $(this.$refs.comment123[0])[0]
-      // console.log($(this.$refs.comment123[0])[0]);
-      // console.log(this.$refs);
       this.$refs.commentForm.focus()
     },
 
@@ -847,36 +876,37 @@ export default {
     },
     
     dateReformat (createdAt) {
-      // var dateArray = moment(createdAt).fromNow()
-      moment.updateLocale('en', {
-          relativeTime: {
-              future: "in %s",
-              past: "%s ago",
-              s: number=>number + "s ago",
-              ss: '%ds ago',
-              m: "1m ago",
-              mm: "%dm ago",
-              h: "1h ago",
-              hh: "%dh ago",
-              d: "1d ago",
-              dd: "%dd ago",
-              M: "a month ago",
-              MM: "%d months ago",
-              y: "a year ago",
-              yy: "%d years ago"
-          }
-      });
+      var dateArray = moment(createdAt).fromNow()
+      return dateArray
+      // moment.updateLocale('en', {
+      //     relativeTime: {
+      //         future: "in %s",
+      //         past: "%s ago",
+      //         s: number=>number + "s ago",
+      //         ss: '%ds ago',
+      //         m: "1m ago",
+      //         mm: "%dm ago",
+      //         h: "1h ago",
+      //         hh: "%dh ago",
+      //         d: "1d ago",
+      //         dd: "%dd ago",
+      //         M: "a month ago",
+      //         MM: "%d months ago",
+      //         y: "a year ago",
+      //         yy: "%d years ago"
+      //     }
+      // });
 
-      let secondsElapsed = moment().diff(createdAt, 'seconds');
-      let dayStart = moment("2018-01-01").startOf('day').seconds(secondsElapsed);
+      // let secondsElapsed = moment().diff(createdAt, 'seconds');
+      // let dayStart = moment("2018-01-01").startOf('day').seconds(secondsElapsed);
 
-      if (secondsElapsed > 300) {
-          return moment(createdAt).fromNow(true);
-      } else if (secondsElapsed < 60) {
-          return dayStart.format('s') + 's ago';
-      } else {
-          return dayStart.format('m:ss') + 'm ago';
-      }
+      // if (secondsElapsed > 300) {
+      //     return moment(createdAt).fromNow(true);
+      // } else if (secondsElapsed < 60) {
+      //     return dayStart.format('s') + 's ago';
+      // } else {
+      //     return dayStart.format('m:ss') + 'm ago';
+      // }
     },
     
     goToProfile(event) {
@@ -886,33 +916,33 @@ export default {
     },  
     
     editPostDescription(event) {
-      var targetId = event.target.attributes[1].nodeValue
-      this.postFeed.forEach(page => {
-        page.forEach(post => {
-          if (post.id == targetId) {
-            
-            post.editState = true
-          } 
-        });
-      });
-      $(this.$refs)[0]['my_postModal'+targetId][0].hide() 
-      this.updatefeed()
+      this.post.editState = true
+      $('.modal').modal('hide');
+      this.forceRerender()
       // this.forceRerender()
     },
 
     cancelEditPostDescription(event) {
-      var targetId = event.target.attributes[1].nodeValue
-      this.postFeed.forEach(page => {
-        page.forEach(post => {
-          if (post.id == targetId) {
-            post.editState = false
-            
-          } 
-        });
-      });
-      $(this.$refs)[0]['my_postModal'+targetId][0].hide() 
+      this.post.editState = false
+      $('.modal').modal('hide');      
       this.forceRerender()
     },
+
+    submitEditPost (event) {
+      var updatedPost = $(event.target)[0].value
+      console.log(updatedPost);
+      axios({
+        method: 'patch',
+        url: this.publicPath+'posts/'+this.post.id,
+        data: {
+          description: updatedPost,
+          },
+      }).then((response) => {
+        this.post.editState = false
+        this.forceRerender()
+      })
+    },
+
 
     sendPost (event) {
       var targetcontactId = event.target.attributes[1].nodeValue
@@ -1059,7 +1089,6 @@ export default {
       $('html, body').animate({scrollTop:offset}, 700);
 
       if ($(targetCommentId).hasClass('highlight')) {
-        console.log($(targetCommentId).hasClass('highlight'));
         $(targetCommentId).removeClass('highlight');
       }
       setTimeout(()=>{

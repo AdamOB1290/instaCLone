@@ -40,10 +40,10 @@
 
 </head>
 <body style="font-weight:500!important">
-    <div id="app" class=" h-100">        
+    <div id="app" class=" h-100"> 
         @if (Request::path() != 'login' && Request::path() != 'register')
           <navbar></navbar>  
-        @endif    
+        @endif
         <main class="h-full main py-10 sm:pb-0">
             @yield('content')
         </main>

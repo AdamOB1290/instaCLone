@@ -64,7 +64,7 @@ export default {
              console.log(e.messages);
             this.handleIncoming(e.messages);
         })
-        }, 900)
+        }, 1000)
         axios.get('/contacts')
         .then((response) => {
             this.contacts = response.data
@@ -77,6 +77,7 @@ export default {
     },
 
     methods: {
+
         setSessionUser() {
         this.user = this.$store.getters.getCurrentSessionUser;
         },
@@ -88,16 +89,18 @@ export default {
                 this.messages = response.data
                 this.selectedContact= contact
             })
-               
+
             this.updateUnreadCount(contact, true)
         },
 
         saveNewMessage(message) {
-            console.log(message);
-            console.log(message.sender_id, message.receiver_id);
-            if (message.sender_id != message.receiver_id) {
-                this.messages.push(message);
-            }     
+            // DEPRECATED// if sessionUser is not sending msg to himself display Msg 
+            // if (message.sender_id != message.receiver_id) {
+            //     this.messages.push(message);
+            // }     
+            this.messages.push(message);
+            // $('.contact_list_wrapper').animate({scrollTop: 0}, 100);
+
         },
 
         handleIncoming (message) {
@@ -107,7 +110,7 @@ export default {
                 this.saveNewMessage(message)
                 return;
             }
-            
+
             this.updateUnreadCount(message.sender, false)
         },
 

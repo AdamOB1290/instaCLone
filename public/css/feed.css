@@ -64,7 +64,7 @@
 
 .sharePost_Modal .modal-dialog {
   height: max-content;
-  margin: 0 !important;
+  margin: 0 auto !important;
   width: 100%;
 }
 
@@ -137,6 +137,63 @@ cursor: pointer;
     color: rgb(165, 165, 165);
     font-weight: 600;
 }
+
+
+/* ADDPOST FORM */
+
+
+
+#modal_post_form .modal-dialog{
+  margin-top: 48px;
+}
+
+#modal_post_form .modal-header {
+  padding-top: 3px;
+  padding-bottom: 3px;
+  display: flex;
+  align-items: center;
+}
+
+#modal_post_form .modal-header button {
+  padding: 0 0 2px;
+  margin:0;
+}
+
+#modal_post_form .modal-title {
+  font-size: 15px;
+}
+
+#modal_post_form .modal-body {
+  padding: 0;
+}
+
+#modal_post_form .modal-body img{
+  max-height: 300px;
+  width: auto !important;
+}
+
+#modal_post_form .form-group {
+  margin-bottom: 0;
+}
+
+#modal_post_form .btn {
+  padding: 2px 0px;
+  width: 95%;
+  margin: 0 auto 7px;
+  border-radius: 15px;
+}
+
+.card-header{
+  background-color: white !important;
+}
+
+.upload-pop.foot{
+  background-color: red !important;
+}
+
+
+
+
 
 /* Stories */
 /* GlIDER JS */
@@ -217,7 +274,6 @@ cursor: pointer;
 /* bootstrap vue carousel */
 
 .storyHeader{
-  height: 10%;
   position: relative;
   z-index: 1;
   width: 100%;
@@ -226,10 +282,10 @@ cursor: pointer;
 
 }
 
-.carousel{
-  position: relative;
-  height: 100%;
+.carousel_wrapper{
+  background:black !important
 }
+
 .carousel_wrapper .pfp{
   cursor: pointer;
   width: 40px;
@@ -240,14 +296,16 @@ cursor: pointer;
   cursor: pointer;
   font-size: 15px;
   color: white;
-}
-
-.carousel_wrapper .username{
   text-decoration: underline;
 }
 
-.carousel_wrapper{
-  background:#262626 !important
+.storyHeader, .carousel {
+  background:#262626
+}
+
+.carousel{
+  position: relative;
+  height: calc(100vh - 48px);
 }
 
 .carousel_max_width{
@@ -262,19 +320,19 @@ cursor: pointer;
   height: fit-content;
   width: fit-content;
   top: 50% !important;
+  bottom: auto !important;
 }
 .carousel-control-next{
-  right: -12% !important;
+  right: -10px !important;
 }
 .carousel-control-prev{
-  left: -12% !important;
+  left: -10px !important;
 }
 
 .storySettings {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%); 
-  right: 5%;
+  top: 2px;
+  right: 25px;
   color: rgb(168, 167, 167);
   font-size: 20px;
 }
@@ -294,9 +352,8 @@ cursor: pointer;
 
 }
 .storyHeader .close_icon {
-  top: 41%;
-  transform: translateY(-50%);
-  right: 3%;
+  top: 14px;
+  right: 25px;
 }
 
 
@@ -305,7 +362,7 @@ cursor: pointer;
   top: 0;
   left: 9px;
   content: '';
-  height: 13px;
+  height: 20px;
   width: 2.5px;
   background-color: rgb(168, 167, 167);
 }
@@ -329,7 +386,7 @@ cursor: pointer;
 
 .carousel-indicators{
   bottom:auto;
-  top: 3.5%;
+  top: 0px;
 }
 
 .carousel-inner,
@@ -339,7 +396,7 @@ cursor: pointer;
 }
 
 .img_carousel_wrapper {
-  height: 90%;
+  height: 100%;
 }
 
 .helper {
@@ -347,6 +404,7 @@ cursor: pointer;
   height: 100%;
   vertical-align: middle;
 }
+
 .stories_images {
   vertical-align: middle;
   width: 100%;
@@ -368,23 +426,28 @@ cursor: pointer;
 }
 
 .user_wrapper {
-    width: 300px;
-    height: fit-content;
-    min-width: 205px;
-    margin: 0;
+  width: 300px;
+  height: fit-content;
+  min-width: 205px;
+  margin: 0;
+  transition: all 0.2s;
 }
 
 .user_wrapper .card{
-    width: 180px;
-    min-width: 180px;
-    height: fit-content;  
-    box-shadow: 0px 3px 20px #00000041;
-    border-radius: 10%;
-    /* padding */
+  width: 180px;
+  min-width: 180px;
+  height: fit-content;  
+  box-shadow: 0px 3px 20px #00000041;
+  border-radius: 10%;
+  margin: 0 auto !important;
+  overflow: hidden;
+  transition: all 0.2s;
 }
+
 .user_wrapper .card-body{
-    padding: 0;
-    margin: 0;
+  padding: 0;
+  margin: 0;
+  transition: all 0.2s;
 }
 
 .suggestion_pfp {
@@ -394,6 +457,7 @@ cursor: pointer;
   height: 60px;
   border-radius: 50%;
   box-shadow: 0px 0px 0.5px #000000;
+  transition: all 0.2s;
 }
 
 .suggestion_pfp:hover
@@ -405,62 +469,66 @@ cursor: pointer;
   cursor: pointer;
   font-size: 11px;
   margin: 10px 10px 0;
-}
-
-.suggestion_username{
+  transition: all 0.2s;
   text-decoration: underline;
 }
 
 .suggestion_text{
-    font-size: 7px;
-    color: gray;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2; /* number of lines to show */
-    -webkit-box-orient: vertical;
-    text-align: center;
-    padding: 0 25px;
-    margin: 3px 0 7px;
-    height: 20px;
+  font-size: 7px;
+  color: gray;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* number of lines to show */
+  -webkit-box-orient: vertical;
+  text-align: center;
+  padding: 0 25px;
+  margin: 3px 0 7px;
+  height: 20px;
+  transition: all 0.2s;
 }
 
 .suggestion_images {
-    width: 100%;
-    max-height: 42px;
+  width: 100%;
+  max-height: 42px;
+  transition: all 0.2s;
 }
 
 .user_wrapper .card-footer{
-    border: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 8px;
-    height: 58px;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 8px;
+  height: 58px;
+  background: white;
+  transition: all 0.2s;
 }
 
 .user_wrapper .card-head{
-    
-    height: 86px;
+  transition: all 0.2s;
+  height: 86px;
 }
 
 .user_wrapper .card-body{
-    
-    height: 72px;
+  transition: all 0.2s;
+  height: 72px;
 }
 
 .user_wrapper .card-footer button{
-    padding: 0 6px 1.5px;
-    font-size: 9px;
-    border-radius: 2px;
-    margin-top: 2px;
+  padding: 0 6px 1.5px;
+  font-size: 9px;
+  border-radius: 2px;
+  margin-top: 2px;
+  transition: all 0.2s;
 }
 
 .image_div {
-    width: 33.3%;
-    margin: 0 0.5px;
-    height: 100%;
-    background-color:rgba(128, 128, 128, 0.158);
+  width: 33.3%;
+  margin: 0 0.5px;
+  height: 100%;
+  background-color:rgba(128, 128, 128, 0.158);
+  transition: all 0.2s;
 }
 
 .image_wrapper {
@@ -470,6 +538,7 @@ cursor: pointer;
 .slick-slide > div {
     padding-bottom: 20px;
 }
+
 .deleted_comment {
   padding-top: 5px;
   height: 20px;
@@ -576,6 +645,9 @@ cursor: pointer;
 
 .editTxt {
     font-size: 11px !important;
+    border: 1px solid #BFBFBF;
+    width: 100%;
+    padding: 10px 3%;
 }
 
 .addComment_form{
@@ -809,12 +881,26 @@ div#search div.wrapper {
   padding: 0;
 }
 
+#image_modal .modal-body:hover a{
+  display: inline-block;
+}
+
+.go_to_post {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  display: none;
+  color: #ffffffc7;
+  font-size: 15px;
+}
+
 .exit_edit_profile{
   position: absolute;
   font-size: 22px;
   left: 10px;
   top: 10px;
 }
+
 
 /* LOGIN PAGE */
 
@@ -898,6 +984,24 @@ div#search div.wrapper {
   visibility: hidden;
 }
 
+.Log_Reg_Footer {
+  height: max-content;
+  margin-top: 40px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+}
+
+.Log_Reg_Footer nav {
+  height: max-content;
+  position: static !important;
+  box-shadow: none !important;
+}
+
+.Log_Reg_Footer a {
+  color: rgba(var(--fe0,0,55,107),1);
+  font-weight: 500;
+}
+
 
 /* SEARCH COMPONENT */
 
@@ -928,8 +1032,17 @@ div#search div.wrapper {
 }
 
 .search_component_wrapper  li button{
-  font-size: 10px;
-  padding: 2px 5px !important;
+  font-size: 12px;
+  padding: 0 !important;
+  color: rgba(var(--d69,0,149,246),1) !important;
+  background-color: white !important;
+  border: none !important;
+  font-weight: 600 !important;
+
+}
+
+.search_component_wrapper  li button:focus{
+  box-shadow: none !important;
 
 }
 
@@ -953,6 +1066,10 @@ div#search div.wrapper {
 }
 
 @media only screen and (min-width: 640px) {
+  #modal_post_form .modal-dialog{
+    height: max-content;
+    width: max-content;
+  }
 
   .addComment_form{
     position: static!important;
@@ -1008,7 +1125,6 @@ div#search div.wrapper {
 
   .search_component_wrapper  li button{
     font-size: 12px;
-  
   }
 
   .nav_content,
@@ -1018,6 +1134,130 @@ div#search div.wrapper {
     max-width: 700px;
   }
 
+  .follow_suggestions_wrapper {
+    height: calc(100vh - 44px);
+    overflow: hidden;
+  }
+  .welcome{
+    padding-top: 15px;
+  }
+
+  .welcome h5{
+    font-size: 30px;
+  }
+
+  .welcome_message {
+      font-size: 13px;
+      /* font-weight: 300; */
+  }
+
+/* FOLLOW CARD */
+  .user_wrapper .card{
+      width: 250px;
+      height: max-content;  
+  }
+
+  .user_wrapper .card .card-head {
+    height: max-content;
+  }
+
+  .user_wrapper .card .card-head img{
+    margin-top: 13px;
+    width: 120px;
+    height: 120px;
+  }
+
+  .user_wrapper .card .card-head span{
+    font-size: 18px;
+  }
+
+  .user_wrapper .card .card-body{
+    height: max-content;
+  }
+
+  .user_wrapper .card .card-body p{
+    font-size: 10px;
+    height: max-content;
+  }
+
+  .user_wrapper .card .card-body .image_wrapper{ 
+    height: max-content;
+  }
+
+  .user_wrapper .card .card-body .image_wrapper .image_div{ 
+    height: max-content;
+    min-height: 60px;
+  }
+
+  .user_wrapper .card .card-body .image_wrapper .image_div img{ 
+    max-height: 60px;
+  }
+
+  .user_wrapper .card .card-footer{ 
+    height: max-content;
+  }
+
+  .user_wrapper .card .card-footer span{ 
+    font-size: 10px;
+    padding: 0;
+  }
+
+  .user_wrapper .card .card-footer button{ 
+    font-size: 15px;
+    padding: 0 13px 1.5px;
+    border-radius: 4px;
+  }
+
+    /* SLICK CENTERED CARD */
+    .slick-current .card{
+      padding-bottom: 20px;
+  }
   
+  .slick-current .user_wrapper{
+    padding-top: 11px !important;
+  }
+  
+  .slick-current .user_wrapper .card{
+    width: 280px;
+    box-shadow: 0px 8px 29px #00000041;
+  }
+
+  .slick-current .user_wrapper .card .card-head img{
+  width: 130px;
+  height: 130px;
+  }
+  
+  .slick-current .user_wrapper .card .card-head span{
+  font-size: 19px;
+  margin-bottom: 5px;
+  }
+  
+  .slick-current .user_wrapper .card .card-body p{ 
+    margin-bottom: 13px;
+  }
+
+  .slick-current .user_wrapper .card .card-body .image_wrapper .image_div{ 
+  min-height: 67px;
+  }
+  
+  .slick-current .user_wrapper .card .card-body .image_wrapper .image_div img{ 
+  max-height: 67px;
+  }
+  
+  .slick-current .user_wrapper .card .card-footer { 
+    padding-top: 10px;  
+  }
+
+  .slick-current .user_wrapper .card .card-footer span{ 
+  font-size: 11px;
+  }
+  
+  .slick-current .user_wrapper .card .card-footer button{ 
+  font-size: 16px;
+  padding: 0 15px 1.5px;
+  border-radius: 4px;
+  margin-bottom: 3px;
+  }
+
 }
 

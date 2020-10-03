@@ -1,17 +1,17 @@
 <template>
-  <div key="feedKey" class="h-100  mt-1 mb-5 ">
-    <div class="feed_content flex justify-between pb-12 sm:pb-5 text-xs mx-auto sm:w-3/4 lg:text-sm  ">
+  <div key="feedKey" :class="`h-100 mt-1 ${sessionUser.followed.length != 0 ? 'mb-5' : ''}`">
+    <div v-if="sessionUser.followed.length != 0" class="feed_content flex justify-between pb-12 sm:pb-5 text-xs mx-auto sm:w-3/4 lg:text-sm  ">
       <div class="w-full md:w-8/12 lg:w-7/12 xl:w-8/12 ">
         <storyGlider 
         :sessionUser="sessionUser" 
         :storyFeed="storyFeed" 
         :storyUsers="storyUsers" 
         v-if="posts.length > 0" 
-        :class="post_display"
+        
         :widget="widget">
         </storyGlider>
         
-        <div  class="feed_wrapper" v-for="(page, key) in postFeed" :key="key" :class="post_display">
+        <div  class="feed_wrapper" v-for="(page, key) in postFeed" :key="key" >
           
           <div class="post_wrapper " v-for="(post, key) in page" :key="key">
             <div class="card rounded-0">
@@ -89,7 +89,7 @@
                 <div class="comments_wrapper" v-for="(comment, key) in post.comments.slice(0, 2)" :key="key" @click="showHideComment">
                   <div class="d-flex position-relative">
                     <span class="comments show_more pr-3">
-                      <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{comment.username}}</span>
+                      <span @click="goToProfile" :data-userId="comment.user_id" class="username font-weight-bold">{{comment.username}}</span>
                       {{comment.content}}
                     </span>
                     <!-- like icon -->
@@ -125,10 +125,10 @@
             </div>
           </b-form-group>
         </form>
-      </b-modal> 
+        </b-modal> 
       </div>
       <div class=" search_component_wrapper hidden md:inline-block md:w-4/12 lg:w-5/12 xl:w-4/12">
-      <h1 class="text-gray-800 text-xs mt-2 text-center">Suggestions for you :</h1>
+        <h1 class="text-gray-800 text-xs mt-2 text-center">Suggestions for you :</h1>
         <searchComponent :sessionUser="sessionUser" ></searchComponent>
         <div class="p-3 text-xs text-gray-500" style="font-size: 9px;">
           <div>
@@ -149,7 +149,7 @@
     :users="users" 
     :followedUsersId="followedUsersId"  
     :followUnfollowHtml="followUnfollowHtml"
-    v-if="posts.length == 0">
+    v-if=" sessionUser.followed.length == 0">
     </followUsers>
   </div>
 </template>
@@ -227,8 +227,6 @@ export default {
       // User Data
         users: [],
         userFeed: [],
-        post_display: '',
-        user_display: '',
         followedUsers: [],
         followedUsersId: [],
         followUnfollowHtml:null,      
@@ -240,9 +238,9 @@ export default {
       .get("posts")
       .then((data) => { 
         this.sessionUser = data.data[0].session_user 
-        this.likeUnlikePosts = _.debounce(this.likeUnlikePosts, 300)
-        this.likeUnlikeComments = _.debounce(this.likeUnlikeComments, 300)
-        this.saveUnsave = _.debounce(this.saveUnsave, 300)
+        // this.likeUnlikePosts = _.debounce(this.likeUnlikePosts, 300)
+        // this.likeUnlikeComments = _.debounce(this.likeUnlikeComments, 300)
+        // this.saveUnsave = _.debounce(this.saveUnsave, 300)
         this.likedPosts.push(...this.sessionUser.liked.posts)
         
         if (this.sessionUser.favorites !== null) {
@@ -250,12 +248,13 @@ export default {
         }
         if (this.sessionUser.followed !== null) {
           this.followedUsersId.push(...this.sessionUser.followed);        
+        } else {
+          this.sessionUser.followed = []
         }
 
         if (typeof data.data[0].username == "undefined") {
           this.followedUsers.push(...this.sessionUser.followed_users)
           this.likedComments.push(...this.sessionUser.liked.comments);
-          this.user_display = "d-none";
 
           this.posts = data.data;
 
@@ -327,7 +326,6 @@ export default {
        
 
         } else {
-          this.post_display = "d-none";
           this.users = data.data;
           
           this.users.forEach(user => {
@@ -442,20 +440,10 @@ export default {
 
     this.widget = widget
     $('.openWidget').click(function() {
-      widget.open();
+      widget.open(); 
     });
-    // THIS.REFS.SHOWMORELESS NOT ACCESSIBLE
-    //  console.log(this.postFeed);            
-    //     console.log(this.$refs);
-    //     console.log(this.$refs['modal_post_form']);
+    
 
-    //     this.postFeed.forEach(page => {
-    //       page.forEach(post => {
-    //       console.log(this.$refs['showMoreLess3']);
-    //       console.log('showMoreLess'+post.id);
-
-    //       });
-    //     });
     this.posts.forEach((post) => {
             if (this.likedPosts.includes(post.id)) {
               post.likePath =
@@ -483,6 +471,33 @@ export default {
   },
 
   methods: {
+
+    updatefeed() {
+      if (this.updateFeed) {
+        axios
+        .get("posts")
+        .then((data) => {  
+          this.updateFeed =0
+          if (typeof data.data[0].username == "undefined") {
+            
+            this.posts = data.data;
+            
+          } else {
+            
+            this.users = data.data;
+            if (this.sessionUser.followed == null) {
+              this.sessionUser.followed = []
+            }
+
+            
+          }
+          
+        })
+        .catch((err) => {});
+      }
+      
+    },
+    
 
     addPost(event) {
       
@@ -525,30 +540,10 @@ export default {
 
       
     },
-    updatefeed() {
-      if (this.updateFeed) {
-        axios
-        .get("posts")
-        .then((data) => {  
-          this.updateFeed =0
-          if (typeof data.data[0].username == "undefined") {
-            
-            this.posts = data.data;
-            
-          } else {
-            
-            this.users = data.data;
-            
-          }
-          
-        })
-        .catch((err) => {});
-      }
-      
-    },
     
     
-    // by default vues js @click has an event parameter from which we can access elements
+    
+    // by default @click has an event parameter from which we can access elements
     showHideDescription(event) {
       // check if the inner text of the element clicked equals 'show more'
       if ($(event.target).html() == "Show More") {
@@ -568,7 +563,7 @@ export default {
       }
     },
 
-    // by default vues js @click has an event parameter from which we can access elements
+    // by default @click has an event parameter from which we can access elements
     showHideComment(event) {
       // check if the element clicked has the class 'show more'
       if ($(event.target).hasClass("show_more")) {
@@ -996,7 +991,12 @@ export default {
     
   },
 
-
+  // computed: {
+  //     sessionUser() {
+  //             return this.$store.getters.getCurrentSessionUser           
+  //     }
+  //   },
+    
   components: {
     Slick,
     Observer,

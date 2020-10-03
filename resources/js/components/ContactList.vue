@@ -10,7 +10,14 @@
                     <p class="name">{{contact.name}}</p>
                     <p class="email">{{contact.email}}</p>
                 </div>
-                <span v-if="contact.unread" class="unread">{{contact.unread}}</span>
+                <!-- <span v-if="contact.unread" class="">{{contact.unread}}</span> -->
+                <div class="notif_count unread" >
+                    <span  v-if="contact.unread" class="relative inline-flex rounded-full h-4 w-4 bg-green-500 text-center" >
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span> 
+                        <span class="mx-auto text-white">{{contact.unread}}</span>
+                    </span>
+                </div>
+
             </li>
         </ul>
     </div>
@@ -33,7 +40,6 @@ export default {
     methods: {
         selectContact(contact) {
             this.selected = contact
-            $('.contact_list_wrapper').animate({scrollTop: 0}, 100);
             this.$emit('selected', contact)
         }
     },
@@ -45,6 +51,7 @@ export default {
                 // if (contact == this.selected) {
                 //     return Infinity;
                 // }
+                console.log(contact.unread);
                 return contact.unread;
             }]).reverse();
         }
@@ -58,6 +65,7 @@ export default {
 <style lang="scss" scoped>
 .contact_list_wrapper {
     flex: 2;
+    min-width: 320px;
     height: 100%;
     overflow-y: scroll;
     border-left: 1px solid #a6a6a6;
@@ -66,6 +74,7 @@ export default {
     ul {
         list-style-type: none;
         padding-left: 0;
+        margin: 0;
         li {
             display: flex;
             padding: 2px;
@@ -76,35 +85,25 @@ export default {
             &.selected {
                 background: #dfdfdf;
             }
-            span.unread {
-                background: #82e0a8;
-                color: #fff;
-                position: absolute;
-                right: 11px;
+            .notif_count.unread{
                 top: 20px;
-                display: flex;
-                font-weight: 700;
-                justify-content: center;
-                align-items: center;
-                line-height: 12px;
-                font-size: 7px;
-                padding: 0 4px;
-                border-radius: 50%;
+                right: 15px;
+                font-size: 10px;
             }
             .avatar {
                 flex: 1;
                 display: flex;
                 align-items: center;
                 img {
-                    width: 35px;
-                    height: 35px;
+                    width: 70px;
+                    height: 70px;
                     border-radius: 50%;
                     margin: 0 auto;
                 }
             }
             .contact {
-                flex: 3;
-                font-size: 10px;
+                flex: 2;
+                font-size: 13px;
                 overflow: hidden;
                 display: flex;
                 flex-direction: column;
@@ -119,4 +118,11 @@ export default {
         }
     }
 }
+
+.contact_list_wrapper::-webkit-scrollbar {
+    width: 6px!important;
+    height: 6px!important;
+}
+
+
 </style>

@@ -3,7 +3,7 @@
         <div class="d-flex contact_header">
             <i @click="goToContactListTrigger" class="sm:hidden fas fa-arrow-left align-self-center left pl-3 cursor-pointer"></i>
             <h1 v-if="!contact" class="center mx-auto">Select a Contact</h1>
-            <h1 v-else @click="goToProfile" :data-userId="contact.id" class=" mx-auto">{{contact.name}} </h1>
+            <router-link v-else tag="h1" :to="'/'+contact.id+'/profile'" class=" mx-auto cursor-pointer">{{contact.name}} </router-link>
             <i @click="goToContactListTrigger" class="sm:hidden align-self-center right invisible"></i>
         </div>
         <MessagesFeed :contact="contact" :messages="messages"/>
@@ -51,11 +51,6 @@ export default {
                 console.log(err);
             });
 
-        },
-
-         goToProfile(event) {
-            var userId = event.target.attributes[1].nodeValue;
-            window.location.replace(this.publicPath+userId+'/profile')
         },
 
     },

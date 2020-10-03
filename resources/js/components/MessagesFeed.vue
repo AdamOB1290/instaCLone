@@ -109,7 +109,7 @@ export default {
                 &.sent {
                     text-align: right;
                     .message {
-                        background: #b2b2b2;
+                        background: #b2b2b240;
                         text-align: left;
                     }
                 }

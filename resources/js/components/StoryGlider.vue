@@ -58,13 +58,13 @@ export default {
     methods: {
 
         disableStoryHref(){
-            this.goToStoryHref= false
+            // this.goToStoryHref= false
             // console.log('disable',this.goToStoryHref);
             this.enableStoryHref()
         },
 
         enableStoryHref(){
-            this.goToStoryHref = true;
+            // this.goToStoryHref = true;
             // console.log('enable',this.goToStoryHref);
         },
 

@@ -11,6 +11,6 @@ class ChatSeeder extends Seeder
      */
     public function run()
     {
-        factory(\App\Chat::class, 200)->create();
+        factory(\App\Chat::class, 2000)->create();
     }
 }

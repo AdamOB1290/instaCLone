@@ -67,6 +67,8 @@ Route::patch('/notifications/{userId}/unread', 'NotificationController@markAllUn
 Route::patch('/notifications/{userId}/{notifId}/read', 'NotificationController@markRead')->name('clear.notifications');
 Route::patch('/notifications/{userId}/{notifId}/unread', 'NotificationController@markUnread')->name('clear.notifications');
 
+
+Auth::routes();
 Route::get('{path}','HomeController@index')->where( 'path', '([A-z\d\-\/_.]+)?' );
 
 // Route::get('feeds', function () {
@@ -94,7 +96,5 @@ Route::get('{path}','HomeController@index')->where( 'path', '([A-z\d\-\/_.]+)?' 
 // })->middleware('auth');
 
 
-
-Auth::routes();
 
 // Route::get('/home', 'HomeController@index')->name('home');
