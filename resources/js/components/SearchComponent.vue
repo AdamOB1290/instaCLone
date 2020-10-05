@@ -2,8 +2,8 @@
   <div class="container">
     <div id="search">
         <div class="search-wrapper my-2">
-            <input type="text" v-model="search" placeholder="Search title.."/>
-                <label>Search title:</label>
+            <input type="text" v-model="search" placeholder="Search User.."/>
+                <label>Search User:</label>
         </div>
         <div class="wrapper">
             <li v-for="(user, key) in filteredList" :key="key" class="d-flex justify-content-between">

@@ -58,10 +58,8 @@ export default {
         // when a message is sent, laravel Echo displays it dynamically to the receiver
 
         setTimeout(()=> {
-            console.log(this.user);
             Echo.private('messages.'+this.user.id)
             .listen('MessageSent', (e) => {
-             console.log(e.messages);
             this.handleIncoming(e.messages);
         })
         }, 1000)
@@ -153,7 +151,7 @@ export default {
 <style lang="scss" scoped>
 .chat_wrapper {
     display: flex;
-    height: calc(100vh - 40px);    
+    height: calc(100vh - 80px);    
     .tabs{
         > :nth-child(1) {
             background: green;
@@ -167,6 +165,12 @@ export default {
         }
     }
     
+}
+@media only screen and (min-width: 640px) {
+
+  .chat_wrapper {
+    height: calc(100vh - 40px);  
+  }
 }
 
 </style>

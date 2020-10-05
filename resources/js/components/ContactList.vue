@@ -51,7 +51,6 @@ export default {
                 // if (contact == this.selected) {
                 //     return Infinity;
                 // }
-                console.log(contact.unread);
                 return contact.unread;
             }]).reverse();
         }

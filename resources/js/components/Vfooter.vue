@@ -51,7 +51,7 @@
           </div>
         </template>
         <b-dropdown-item  v-for="(notification, key) in notifications" :key="key" size="lg" class="position-relative">
-          <div @click="notificationRedirect" :data-notifId="notification.id"  class="d-flex">
+          <div @click="notificationRedirect"   class="d-flex" :data-notifId="notification.id">
             <img v-if="notification.read_at" class="pfp_notif rounded-circle mr-2 " :src="notification.notifier.pfp">
             <img v-else class="pfp_notif rounded-circle mr-2 " :src="notification.notifier.pfp"  style="border : 2px solid #007bff;">
             <div class="d-flex flex-column">
@@ -85,7 +85,7 @@
         <template v-slot:button-content>
           <img class="footer_pfp" :src="sessionUser.pfp">
         </template>
-        <b-dropdown-item size="sm" :to="sessionUserId+'/profile'">Profile</b-dropdown-item>
+        <b-dropdown-item size="sm" @click="goToProfile" :to="'/'+sessionUserId+'/profile'">Profile</b-dropdown-item>
         <b-dropdown-item size="sm" @click="logout" variant="danger" active-class="bg-danger">Log Out</b-dropdown-item>
       </b-dropdown>
     </div>
@@ -141,10 +141,10 @@
     },
 
     created: function () {
-      this.markAllRead = _.debounce(this.markAllRead, 300)
-      this.markAllUnread = _.debounce(this.markAllUnread, 300)
-      this.markRead = _.debounce(this.markRead, 300)
-      this.markUnread = _.debounce(this.markUnread, 300)
+      // this.markAllRead = _.debounce(this.markAllRead, 300)
+      // this.markAllUnread = _.debounce(this.markAllUnread, 300)
+      // this.markRead = _.debounce(this.markRead, 300)
+      // this.markUnread = _.debounce(this.markUnread, 300)
       if (this.sessionUserId) {
         axios
         .get(this.publicPath+"users/"+this.sessionUserId)
@@ -183,16 +183,21 @@
     },
 
     methods: {
+
+      goToProfile(event){
+        this.$router.push({path :'/'+this.sessionUserId+'/profile'})
+      },
+      
       notificationRedirect(event){
 
         if ($(event.currentTarget)[0].nextElementSibling.className.includes('bg-primary')) {
           $(event.currentTarget)[0].nextElementSibling.click()
         }
-        var notifId = event.currentTarget.attributes[0].nodeValue
-        var notifType
-        var objectId 
-        var postId 
-        var originalCommentId
+        const notifId = $(event.currentTarget).attr('data-notifId')
+        let notifType
+        let objectId 
+        let postId 
+        let originalCommentId
         setTimeout(() => {
           this.notifications.forEach(notification => {
             objectId = notification.data.object_id
@@ -205,15 +210,16 @@
                   // check if it's a reply
                   if (notification.data.original_comment_id != undefined) {
                     originalCommentId = notification.data.original_comment_id
-                    this.$router.push({path : '/post/'+postId+'?'+objectId+'?'+originalCommentId})
-                    // window.location.replace(this.publicPath+'post/'+postId+'?'+objectId+'?'+originalCommentId)
+                    // this.$router.push({path : '/post/'+postId+'?'+objectId+'?'+originalCommentId})
+                    this.$router.push({name: 'comments', params: {postId:postId, objectId:objectId, originalCommentId:originalCommentId} })
+                  //  window.location.replace(this.publicPath+'post/'+postId+'?'+objectId+'?test?test')
                   } else {
-                    this.$router.push({path : '/post/'+postId+'?'+objectId})
+                    this.$router.push({name: 'comments', params: {postId:postId, objectId:objectId} })
                     // window.location.replace(this.publicPath+'post/'+postId+'?'+objectId)
                   }
                   
                 } else {
-                  this.$router.push({path : '/post/'+objectId})
+                  this.$router.push({name: 'comments', params: {postId:objectId} })
                   // window.location.replace(this.publicPath+'post/'+objectId)
                 }              
               } else if (notifType == 'Follow') {
@@ -296,20 +302,18 @@
       },
 
       markRead(event){
-        var targetId = event.target.attributes[0].nodeValue
         axios({
           method: 'patch',
-          url: this.publicPath+'notifications/'+this.sessionUserId+'/'+targetId+'/read',
+          url: this.publicPath+'notifications/'+this.sessionUserId+'/'+$(event.currentTarget).attr('data-notifId')+'/read',
         }).then((response) => {
           this.updateFooter()
         })
       },
       
       markUnread(event){
-        var targetId = event.target.attributes[0].nodeValue
         axios({
           method: 'patch',
-          url: this.publicPath+'notifications/'+this.sessionUserId+'/'+targetId+'/unread',
+          url: this.publicPath+'notifications/'+this.sessionUserId+'/'+$(event.currentTarget).attr('data-notifId')+'/unread',
         }).then((response) => {
           this.updateFooter()
         })

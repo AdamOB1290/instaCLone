@@ -58,7 +58,7 @@ class ContactController extends Controller
             // or  the auth user received
             $querry->where('sender_id', $id);
             $querry->where('receiver_id',Auth::user()->id);
-        })->get();
+        })->orderBy('created_at', 'asc')->get();
 
         foreach ($messages as $message) {
 
@@ -103,7 +103,7 @@ class ContactController extends Controller
                 $message->shared_post= $sharedPost; 
             }
         }
-
+        // dd(response()->json($messages));
         return response()->json($messages);
     }
 
@@ -157,6 +157,7 @@ class ContactController extends Controller
         ]);
 
         if ($message->sender_id != $message->receiver_id) {
+            // dd($message);
             broadcast(new MessageSent($message)); 
         }
 

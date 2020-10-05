@@ -82,6 +82,11 @@ nav .fa-camera{
   right: 2px;
 }
 
+.notif_count.direct_message_sm{
+  bottom: 7px;
+  right: 2px;
+}
+
 .notif_count.nav_activity{
   bottom: 16px;
   right: 0px;

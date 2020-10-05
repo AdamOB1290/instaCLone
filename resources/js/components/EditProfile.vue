@@ -32,7 +32,7 @@
                                 <label for="select-gender"><code>Password</code>:</label>
                             </b-col>
                             <b-col  class="position-relative px-0">
-                                <b-form-input :type="form.password.type" v-model="form.password.vModelVal" class="pr-4" ></b-form-input>
+                                <b-form-input :type="form.password.type" v-model="form.password.vModelVal" class="pr-4" placeholder="Enter a New Password" ></b-form-input>
                                 <i @click="switchVisibility" :class="form.password.eyeIcon"></i>
                             </b-col>
                         </b-row>
@@ -79,16 +79,34 @@
                     pfp : { publicId:'', url:''},
                     
                 },
-                genders: [{ text: 'Select One', value: null }, 'Male', 'Female'],
+                genders: [
+                    { text: 'Select One', value: null }, 
+                    'Male', 
+                    'Female'
+                    ],
                 
             }
         },
+
+        // watch: {
+        // '$route': {
+        //         handler: 'reloadProfile',
+        //         immediate: true
+        //     }
+        // },
+
                             
         created: function () {
         axios
         .get(this.publicPath+"users/"+this.sessionUserId)
         .then((data) => { 
             this.sessionUser = data.data;
+            console.log(this.sessionUser.gender);
+            if (this.sessionUser.gender == 'Male') {
+                this.form.gender = 'Male'
+            } else if(this.sessionUser.gender == 'Female') {
+                this.form.gender = 'Female'
+            }
         })
         .catch((err) => {});
         },
@@ -96,7 +114,6 @@
         methods:{
             backToProfile(){
                 this.$router.push({path : '/'+this.sessionUserId+'/profile'})
-                // window.location.replace(this.publicPath+this.sessionUserId+'/profile')
             },
             
             reloadProfile() {
@@ -104,6 +121,12 @@
                 .get(this.publicPath+"users/"+this.sessionUserId)
                 .then((data) => { 
                     this.sessionUser = data.data;
+                     console.log(this.sessionUser.gender);
+                    if (this.sessionUser.gender == 'Male') {
+                        this.form.gender = 'Male'
+                    } else if(this.sessionUser.gender == 'Female') {
+                        this.form.gender = 'Female'
+                    }
                 })
                 .catch((err) => {});
             },
@@ -153,8 +176,9 @@
                     }
                     
                 }).catch((error) => {
-                    
+                    this.validationSuccess = '';
                     if (error.response.status == 422){
+                        console.log(error.response.data.errors);
                     this.validationErrors = error.response.data.errors
                     }
                 });

@@ -198,9 +198,9 @@ export default {
     },
 
   created () {
-      this.saveUnsave = _.debounce(this.saveUnsave, 300)
-      this.likeUnlikePosts = _.debounce(this.likeUnlikePosts, 300)
-      this.likeUnlikeComments = _.debounce(this.likeUnlikeComments, 300)
+      // this.saveUnsave = _.debounce(this.saveUnsave, 300)
+      // this.likeUnlikePosts = _.debounce(this.likeUnlikePosts, 300)
+      // this.likeUnlikeComments = _.debounce(this.likeUnlikeComments, 300)
       this.postId = window.location.href.split("/")[4];
       axios
       .get(this.publicPath+"posts/"+this.postId)
@@ -373,7 +373,7 @@ export default {
               // this.executeScroll =false
             
               targetComment = document.getElementById("comment"+commentId)
-              console.log(showReplies[0]);
+              // console.log(showReplies[0]);
               showReplies[0].click()
               // console.log('comment THEN showrepliesEl THEN its sibling', targetComment, showReplies[0], showReplies[0].nextElementSibling);
              $(showReplies[0].nextElementSibling).removeClass('highlight')
@@ -589,7 +589,7 @@ export default {
                       comment.likes.splice(index, 1)
                     } else if (comment.replies.length > 0) {
                       comment.replyFeed.forEach(reply => {
-                        if (reply.id == dataReplyId ) {
+                        if (reply.id == dataCommentId ) {
                           let index = reply.likes.indexOf(this.sessionUser.id)
                           reply.likes.splice(index, 1)
                         }
@@ -634,7 +634,7 @@ export default {
                       comment.likes.push(this.sessionUser.id)
                     } else if (comment.replies.length > 0) {
                       comment.replyFeed.forEach(reply => {
-                        if (reply.id == dataReplyId ) {
+                        if (reply.id == dataCommentId ) {
                           let index = reply.likes.indexOf(this.sessionUser.id)
                           reply.likes.push(this.sessionUser.id)
                         }
@@ -930,7 +930,7 @@ export default {
 
     submitEditPost (event) {
       var updatedPost = $(event.target)[0].value
-      console.log(updatedPost);
+      // console.log(updatedPost);
       axios({
         method: 'patch',
         url: this.publicPath+'posts/'+this.post.id,

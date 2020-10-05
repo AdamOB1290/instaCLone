@@ -3,8 +3,8 @@
         <ul v-if="contact">
             <li v-for="(message, key) in messages" :key="key" :class="`message_wrapper ${message.receiver_id == contact.id ? 'sent' : 'received'}`">
                 <div class="message">
-                    <div @click="goToPost" :data-postId="message.shared_post.id" v-if="message.shared_post">
-                        <div class="d-flex align-items-center border-down pb-1 px-3">
+                    <div @click="goToPost" class="cursor-pointer" :data-postId="message.shared_post.id" v-if="message.shared_post">
+                        <div class="d-flex align-items-center pb-1 px-3">
                             <img class="pfp rounded-circle mr-2" :src="message.shared_post.user.pfp" />
                             <span class="username font-weight-bold">{{message.shared_post.user.username}}</span>
                         </div>
@@ -14,7 +14,7 @@
                             </video>
                             <img  v-else-if="message.shared_post.media_type == 'image'" class="card-img-top rounded-0" :src="message.shared_post.media_file"/>
                                 <span class="msg_description px-3 pt-1">
-                                    <span class="username font-weight-bold float-left">{{message.shared_post.user.username }}</span>
+                                    <!-- <span class="username font-weight-bold float-left">{{message.shared_post.user.username }}</span> -->
                                     {{message.shared_post.description}}
                                 </span>
                         </div>
@@ -53,7 +53,8 @@ export default {
         },
         goToPost(event) {
             let postId= event.target.parentElement.parentElement.attributes[1].nodeValue
-            window.location.replace(this.publicPath+'post/'+postId)
+            // window.location.replace(this.publicPath+'post/'+postId)
+            this.$router.push({path: '/post/'+postId})
         },
     },
 
@@ -102,15 +103,16 @@ export default {
                 &.received {
                     text-align: left;
                     .message {
-                        background: #81c4f9;
-
+                        background: #219bff;
+                        color: white;
                     }
                 }
                 &.sent {
                     text-align: right;
                     .message {
-                        background: #b2b2b240;
+                        background: #636363;
                         text-align: left;
+                        color: white;
                     }
                 }
             }

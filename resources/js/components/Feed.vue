@@ -13,7 +13,7 @@
         
         <div  class="feed_wrapper" v-for="(page, key) in postFeed" :key="key" >
           
-          <div class="post_wrapper " v-for="(post, key) in page" :key="key">
+          <div class="post_wrapper pt-2" v-for="(post, key) in page" :key="key">
             <div class="card rounded-0">
               <div class="card-head d-flex align-items-center border-down py-1">
                 <img @click="goToProfile" :data-userId="post.user.id" class="pfp  rounded-circle mr-2" :src="post.user.pfp"/>
@@ -27,10 +27,13 @@
               </div>
 
               <div class="card-body">
-                <img  v-if="post.media_type == 'image'" class=" rounded-0" :src="post.media_file"/>
-                <video v-else-if="post.media_type == 'video'" class="post_feed_video" controls muted>
-                  <source :src="post.media_file"  />
-                </video>
+                <router-link :to="'post/'+post.id">
+                  <img  v-if="post.media_type == 'image'" class=" rounded-0" :src="post.media_file"/>
+                  <video v-else-if="post.media_type == 'video'" class="post_feed_video" controls muted>
+                    <source :src="post.media_file"  />
+                  </video>   
+                </router-link>
+                
                 <div class="px-2">
                   <div class="interaction_buttons pt-2 d-flex">
                     <!-- like icon -->
@@ -69,13 +72,13 @@
                   
 
                   <div class="card-text position-relative">
-                    <span v-if="post.editState" :id="'cancelPostEditId'+post.id" :data-postId="post.id" @click="cancelEditPostDescription" class="cancel_edit post_cancel text-danger">Cancel</span>
+                    <span v-if="post.editState" :id="'cancelPostEditId'+post.id" :data-postId="post.id" @click="cancelEditPostDescription" class="cursor-pointer cancel_edit post_cancel text-danger">Cancel</span>
                     <span class="description show_more">
                       <span @click="goToProfile" :data-userId="post.user.id" class="username font-weight-bold">{{post.user.username}}</span>
                       <textarea v-if="post.editState"  v-model="post.description" @keydown.enter.exact.prevent 
                         @keyup.enter.exact="submitEdit" :data-postId="post.id" cols="47" rows="5" class="mt-2 editTxt">
                       </textarea>
-                      <span v-else>{{post.description}}</span>
+                      <span v-else :ref="'postDescription'+post.id" class="post_description" >{{post.description}}</span>
                       
                     </span>
                     <!-- this button shows/hides the description -->
@@ -85,7 +88,9 @@
               </div>
 
               <div class="card-footer px-2 py-0 bg-white">
-                <router-link :to="'post/'+post.id" class="show_hide" v-if="post.comments.length > 2" >View All {{post.comments.length}} Comments</router-link>
+                <div class="w-full flex justify-center ">
+                  <router-link :to="'post/'+post.id" class="show_hide" v-if="post.comments.length > 2" >View All {{post.comments.length}} Comments</router-link>
+                </div>
                 <div class="comments_wrapper" v-for="(comment, key) in post.comments.slice(0, 2)" :key="key" @click="showHideComment">
                   <div class="d-flex position-relative">
                     <span class="comments show_more pr-3">
@@ -233,6 +238,16 @@ export default {
     }
   },
 
+  // watch: {
+  //   '$route': {
+  //       handler: 'uploadWidget',
+  //       immediate: true
+  //   }
+  // },
+
+
+    
+
   created: function () {
     axios
       .get("posts")
@@ -357,7 +372,6 @@ export default {
 
           
         }
-        
       })
       .catch((err) => {});
   },
@@ -366,111 +380,254 @@ export default {
     // this.updatefeed()
   },
 
-  mounted: function () {
+  mounted: function () { 
     this.updateFeed =1
     this.$store.commit("changeState", true);
     this.$store.commit("changeHomeIcon", true);
 
-
     var widget = cloudinary.createUploadWidget( 
-    { 
-        cloudName: "resize", 
-        uploadPreset: "resize_preset", 
-        showAdvancedOptions: true,
-        googleApiKey: "<image_search_google_api_key>",
-        cropping: true,
-        multiple: false,
-        sources: [
-          "local",
-          "url",
-          "camera",
-          "image_search",
-          "google_drive",
-          "facebook",
-          "dropbox",
-          "instagram",
-          "shutterstock"
-        ],
-        defaultSource: "local",
-        styles: {
-            palette: {
-                window: "#000000",
-                sourceBg: "#000000",
-                windowBorder: "#8E9FBF",
-                tabIcon: "#FFFFFF",
-                inactiveTabIcon: "#8E9FBF",
-                menuIcons: "#2AD9FF",
-                link: "#08C0FF",
-                action: "#336BFF",
-                inProgress: "#00BFFF",
-                complete: "#33ff00",
-                error: "#EA2727",
-                textDark: "#000000",
-                textLight: "#FFFFFF"
-            },
-            fonts: {
-                default: null,
-                "'Space Mono', monospace": {
-                    url: "https://fonts.googleapis.com/css?family=Space+Mono",
-                    active: true
+            { 
+                cloudName: "resize", 
+                uploadPreset: "resize_preset", 
+                showAdvancedOptions: true,
+                googleApiKey: "<image_search_google_api_key>",
+                cropping: true,
+                multiple: false,
+                sources: [
+                  "local",
+                  "url",
+                  "camera",
+                  "image_search",
+                  "google_drive",
+                  "facebook",
+                  "dropbox",
+                  "instagram",
+                  "shutterstock"
+                ],
+                defaultSource: "local",
+                styles: {
+                    palette: {
+                        window: "#000000",
+                        sourceBg: "#000000",
+                        windowBorder: "#8E9FBF",
+                        tabIcon: "#FFFFFF",
+                        inactiveTabIcon: "#8E9FBF",
+                        menuIcons: "#2AD9FF",
+                        link: "#08C0FF",
+                        action: "#336BFF",
+                        inProgress: "#00BFFF",
+                        complete: "#33ff00",
+                        error: "#EA2727",
+                        textDark: "#000000",
+                        textLight: "#FFFFFF"
+                    },
+                    fonts: {
+                        default: null,
+                        "'Space Mono', monospace": {
+                            url: "https://fonts.googleapis.com/css?family=Space+Mono",
+                            active: true
+                        }
+                    }
                 }
-            }
-        }
-    },
-      (error, result) => { 
-              this.postForm.postMedia = result
-          if (typeof result.info.files != 'undefined') {
-            this.postForm.publicId = result.info.files[0].uploadInfo.public_id
-            this.postForm.resourceType = result.info.files[0].uploadInfo.resource_type
-            this.postForm.fileName = result.info.files[0].name
-            this.postForm.urlImg = result.info.files[0].uploadInfo.url
-            this.$bvModal.show('modal_post_form')
-          }
-      
+            },
+              (error, result) => { 
+                      this.postForm.postMedia = result
+                  if (typeof result.info.files != 'undefined') {
+                    this.postForm.publicId = result.info.files[0].uploadInfo.public_id
+                    this.postForm.resourceType = result.info.files[0].uploadInfo.resource_type
+                    this.postForm.fileName = result.info.files[0].name
+                    this.postForm.urlImg = result.info.files[0].uploadInfo.url
+                    this.$bvModal.show('modal_post_form')
+                  }
+              
 
-        
-        
+                
+                
 
-          // this.publicId = result.info.uploadInfo.publicId
-              //  console.log(result.info.files[0].uploadInfo.resource_type);
+                  // this.publicId = result.info.uploadInfo.publicId
+                      //  console.log(result.info.files[0].uploadInfo.resource_type);
 
+              });
+              
+    this.widget = widget
+
+    setTimeout(()=>{
+      $('.openWidget').click(function() {
+            
+        widget.open(); 
       });
-
-    this.widget = widget
-
-    this.widget = widget
-    $('.openWidget').click(function() {
-      widget.open(); 
-    });
+    },1000)
     
 
-    this.posts.forEach((post) => {
-            if (this.likedPosts.includes(post.id)) {
-              post.likePath =
-                "M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
-              post.likeColor = "#ed4956";
-            } else {
-              post.likePath =
-                "M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
-              post.likeColor = "#262626";
-            }
+  //   $("#openWidget").addEventListener("click", function(){
+  //   widget.open();
+  // }, false);
+    
 
-            if (this.savedPosts.includes(post.id)) {
-              post.savePath =
-                "M43.5 48c-.4 0-.8-.2-1.1-.4L24 28.9 5.6 47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 1.2-.9 1.4-.2.1-.4.1-.6.1z";
-              post.saveColor = "#ffbb00";
-            } else {
-              post.savePath =
-                "M43.5 48c-.4 0-.8-.2-1.1-.4L24 29 5.6 47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 1.2-.9 1.4-.2.1-.4.1-.6.1zM24 26c.8 0 1.6.3 2.2.9l15.8 16V3H6v39.9l15.8-16c.6-.6 1.4-.9 2.2-.9z";
-              post.saveColor = "#262626";
-            }
 
-           
+    void function $getLines($){    
+      function countLines($element){
+          var lines          = 0;
+          var greatestOffset = void 0;
+
+          $element.find('character').each(function(){
+              if(!greatestOffset || this.offsetTop > greatestOffset){
+                  greatestOffset = this.offsetTop;
+                  ++lines;
+              }
           });
           
+          return lines;
+      }
+      
+      $.fn.getLines = function $getLines(){
+          var lines = 0;
+          var clean = this;
+          var dirty = this.clone();
+          
+          (function wrapCharacters(fragment){
+              var parent = fragment;
+              
+              $(fragment).contents().each(function(){                
+                  if(this.nodeType === Node.ELEMENT_NODE){
+                      wrapCharacters(this);
+                  }
+                  else if(this.nodeType === Node.TEXT_NODE){
+                      void function replaceNode(text){
+                          var characters = document.createDocumentFragment();
+                          
+                          text.nodeValue.replace(/[\s\S]/gm, function wrapCharacter(character){
+                              characters.appendChild($('<character>' + character + '</>')[0]);
+                          });
+                          
+                          parent.replaceChild(characters, text);
+                      }(this);
+                  }
+              });
+          }(dirty[0]));
+          
+          clean.replaceWith(dirty);
+
+          lines = countLines(dirty);
+          
+          dirty.replaceWith(clean);
+          
+          return lines;
+      };
+    }(jQuery);
+
+    // $('li').each(function(){console.log($(this).getLines());})
+    
+    setTimeout(() =>{
+      $('.post_description').each(function(){
+        if($(this).getLines() < 3) {
+          $($(this)[0].parentElement.nextElementSibling).hide()
+        }
+      })
+    }, 5000)
+
+
+    // need setTimeOut for this.posts to load
+    // this.posts.forEach((post) => {
+      
+    //         if (this.likedPosts.includes(post.id)) {
+    //           post.likePath =
+    //             "M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+    //           post.likeColor = "#ed4956";
+    //         } else {
+    //           post.likePath =
+    //             "M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z";
+    //           post.likeColor = "#262626";
+    //         }
+
+    //         if (this.savedPosts.includes(post.id)) {
+    //           post.savePath =
+    //             "M43.5 48c-.4 0-.8-.2-1.1-.4L24 28.9 5.6 47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 1.2-.9 1.4-.2.1-.4.1-.6.1z";
+    //           post.saveColor = "#ffbb00";
+    //         } else {
+    //           post.savePath =
+    //             "M43.5 48c-.4 0-.8-.2-1.1-.4L24 29 5.6 47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 1.2-.9 1.4-.2.1-.4.1-.6.1zM24 26c.8 0 1.6.3 2.2.9l15.8 16V3H6v39.9l15.8-16c.6-.6 1.4-.9 2.2-.9z";
+    //           post.saveColor = "#262626";
+    //         }
+        
+    //       });  
   },
 
   methods: {
+
+    // uploadWidget(){
+    //   var widget = cloudinary.createUploadWidget( 
+    //         { 
+    //             cloudName: "resize", 
+    //             uploadPreset: "resize_preset", 
+    //             showAdvancedOptions: true,
+    //             googleApiKey: "<image_search_google_api_key>",
+    //             cropping: true,
+    //             multiple: false,
+    //             sources: [
+    //               "local",
+    //               "url",
+    //               "camera",
+    //               "image_search",
+    //               "google_drive",
+    //               "facebook",
+    //               "dropbox",
+    //               "instagram",
+    //               "shutterstock"
+    //             ],
+    //             defaultSource: "local",
+    //             styles: {
+    //                 palette: {
+    //                     window: "#000000",
+    //                     sourceBg: "#000000",
+    //                     windowBorder: "#8E9FBF",
+    //                     tabIcon: "#FFFFFF",
+    //                     inactiveTabIcon: "#8E9FBF",
+    //                     menuIcons: "#2AD9FF",
+    //                     link: "#08C0FF",
+    //                     action: "#336BFF",
+    //                     inProgress: "#00BFFF",
+    //                     complete: "#33ff00",
+    //                     error: "#EA2727",
+    //                     textDark: "#000000",
+    //                     textLight: "#FFFFFF"
+    //                 },
+    //                 fonts: {
+    //                     default: null,
+    //                     "'Space Mono', monospace": {
+    //                         url: "https://fonts.googleapis.com/css?family=Space+Mono",
+    //                         active: true
+    //                     }
+    //                 }
+    //             }
+    //         },
+    //           (error, result) => { 
+    //                   this.postForm.postMedia = result
+    //               if (typeof result.info.files != 'undefined') {
+    //                 this.postForm.publicId = result.info.files[0].uploadInfo.public_id
+    //                 this.postForm.resourceType = result.info.files[0].uploadInfo.resource_type
+    //                 this.postForm.fileName = result.info.files[0].name
+    //                 this.postForm.urlImg = result.info.files[0].uploadInfo.url
+    //                 this.$bvModal.show('modal_post_form')
+    //               }
+              
+
+                
+                
+
+    //               // this.publicId = result.info.uploadInfo.publicId
+    //                   //  console.log(result.info.files[0].uploadInfo.resource_type);
+
+    //           });
+              
+    //           this.widget = widget
+
+    //           this.widget = widget
+    //           $('.openWidget').click(function() {
+    //             widget.open(); 
+    //           });
+    // },
+    
 
     updatefeed() {
       if (this.updateFeed) {
@@ -927,12 +1084,11 @@ export default {
         page.forEach(post => {
           if (post.id == targetId) {
             post.editState = false
-            
           } 
         });
       });
       $(this.$refs)[0]['my_postModal'+targetId][0].hide() 
-      this.forceRerender()
+      this.$forceUpdate();
     },
 
     submitEdit (event) {
@@ -953,7 +1109,7 @@ export default {
             } 
           });
         });
-        this.forceRerender()
+        this.$forceUpdate();
       })
     },
 

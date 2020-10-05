@@ -775,6 +775,10 @@ cursor: pointer;
   margin-bottom: 80px;
 }
 
+.liked_comments {
+  padding: 0 5%;
+}
+
 .post-body img{
   width: 100%;
 }
@@ -1055,7 +1059,7 @@ div#search div.wrapper {
 
 @media only screen and (min-width: 450px) {
   .post_comment_wrapper{
-    margin-bottom: 0;
+    margin-bottom: 40px;
     box-shadow: 0px 1px 15px #0000001f;
     padding: 20px 50px;
   }
@@ -1066,6 +1070,7 @@ div#search div.wrapper {
 }
 
 @media only screen and (min-width: 640px) {
+  
   #modal_post_form .modal-dialog{
     height: max-content;
     width: max-content;
@@ -1117,6 +1122,21 @@ div#search div.wrapper {
     background: #4a55680d;
   }
   
+  .liked_comments {
+    max-width: 85%;
+    margin: 0 auto;
+    padding: 10px 5%;
+    border-right: 1px solid #dee2e6 !important;
+    border-left: 1px solid #dee2e6 !important;
+    font-size: 15px;
+    font-weight: 400;
+  }
+
+  .liked_comments img{
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+  }
 }
 @media only screen and (min-width: 1024px) {
   .story-username{

@@ -252,12 +252,22 @@ class CommentController extends Controller
         // } else {
         //     $newNotifId = 1;
         // }
-
-        $data_notifications=[
-            'post_id' => $comment->post_id,
-            'object_id' => $comment->id,
-            'notification_message' => " has liked your comment!",
-        ];
+        if ($comment->original_comment_id == 0) {
+            $data_notifications=[
+                'post_id' => $comment->post_id,
+                'object_id' => $comment->id,
+                'notification_message' => " has liked your comment!",
+            ];
+        } else {
+            $data_notifications=[
+                'post_id' => $comment->post_id,
+                'object_id' => $comment->id,
+                'original_comment_id' => $comment->original_comment_id,
+                'notification_message' => " has liked your comment!",
+            ];
+            
+        }
+        
         // FOR REAL TIME NOTIFICATION
         $notification =
         [
@@ -276,6 +286,7 @@ class CommentController extends Controller
         //remove the indexes created earlier
         unset($commentUser['liker_id'], $commentUser['liked_comment'], $commentUser['real_time_notification']);
 
+       
         //apply like function
         $sessionUser = $commentUser->dynamicLike($comment, $userId, $object);
         // return redirect('/' . $object . 's');

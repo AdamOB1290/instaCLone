@@ -48,7 +48,6 @@ export default {
             }).then((response)=>{
                 this.$emit('newMessage', response.data);
             }).catch((err) => {
-                console.log(err);
             });
 
         },
