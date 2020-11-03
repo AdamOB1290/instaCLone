@@ -289,9 +289,9 @@ export default {
         },
 
         showImage(event) {
-            // console.log(event.target.attributes[0].nodeValue);
-            this.clickedImgSrc=event.target.attributes[0].nodeValue
-            this.postId=event.target.attributes[1].nodeValue
+            // console.log(event.target.attributes['data-postId'].nodeValue);
+            this.clickedImgSrc=event.target.attributes.src.nodeValue
+            this.postId=event.target.attributes['data-postId'].nodeValue
         },
 
         followUnfollow(event) {

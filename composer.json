@@ -17,6 +17,7 @@
         "laravel/ui": "^2.1",
         "makeabledk/laravel-cloud-images": "^1.2",
         "pusher/pusher-php-server": "^4.1",
+        "unsplash/unsplash": "^3.1",
         "waynestate/image-faker": "^1.0"
     },
     "require-dev": {

@@ -11,6 +11,8 @@ use App\Events\PostCreated;
 use App\Notification;
 use finfo;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 
 class PostController extends Controller
 {
@@ -44,7 +46,6 @@ class PostController extends Controller
         //         $followedUser['pfp_type'] = 'localImage';
         //     }
         // }
-
         
         $sessionUser = User::findOrFail(Auth::user()->id);
 
