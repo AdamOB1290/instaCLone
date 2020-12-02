@@ -1,61 +1,167 @@
-<p align="center"><img src="https://res.cloudinary.com/dtfbvvkyp/image/upload/v1566331377/laravel-logolockup-cmyk-red.svg" width="400"></p>
+# InstaClone
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+<!-- TABLE OF CONTENTS -->
+<details open="open">
+  <summary>Table of Contents</summary>
+  <ol>
+    <li><a href="#demo">Demo</a></li>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#acknowledgements">Acknowledgements</a></li>
+  </ol>
+</details>
 
-## About Laravel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+<!-- Demo -->
+## Demo
 
-## Learning Laravel
+To see the demo, visit this link : https://www.youtube.com/watch?v=lcjqbgalgwI
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+<a href="https://www.youtube.com/watch?v=lcjqbgalgwI">![Instaclone_Moment(4)](https://user-images.githubusercontent.com/68733361/100875879-e2d8b300-34a6-11eb-92b1-9f04219a5d0b.jpg)</a>
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-## Laravel Sponsors
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+<!-- ABOUT THE PROJECT -->
+## About The Project
 
-### Premium Partners
+This is a clone of instagram that includes stories, realtime chat & notifications among other features. It is my second project after only a couple of weeks of being introduced to Laravel and Vue js, the focus was on being able to make things work rather than doing it in the most optimized way. 
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[OP.GG](https://op.gg)**
+This project has been done in pair programming with [Diae Louali](https://github.com/Diae-Louali). Neither of us had any experience with frameworks prior to this project.
 
-## Contributing
+### Built With
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+* [Vue js](https://vuejs.org/)
+* [Laravel](https://laravel.com)
 
-## Code of Conduct
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+<!-- GETTING STARTED -->
+## Getting Started
 
-## Security Vulnerabilities
+In order to make the project run on your computer, follow these steps :
+NOTICE : you can global search for " ****REMOVED**** " to easily locate all the information that needs to be replaced in the project.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Prerequisites
 
-## License
+* [Pusher](https://pusher.com/) account
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+* [Cloudinary](https://cloudinary.com/) account
+
+* [Unsplash](https://unsplash.com/developers) account
+
+
+### Installation
+
+* Clone the repo and cd into the project's folder
+
+   ```sh
+   git clone https://github.com/AdamOB1290/instaCLone.git
+   ```
+   ```sh
+   cd instaCLone
+   ```
+   
+* Duplicate your ".env.example" file and rename it to ".env"
+
+* In your terminal, execute :
+
+   ```sh
+   composer install
+   ```
+   ```sh
+   npm install
+   ```
+   ```sh
+   php artisan key:generate
+   ```
+   
+* In your ".env" file make sure your have the following :
+
+   ```sh
+   DB_DATABASE=instaclone
+   ```
+   ```sh
+   BROADCAST_DRIVER=pusher
+   ```
+   
+* In [Pusher](https://pusher.com/), under Channels, create your app
+   
+* Copy your [Pusher](https://pusher.com/) keys located in App Keys and paste them in your ".env" file like so :
+
+    ```sh
+    - PUSHER_APP_ID = app_id goes here 
+    - PUSHER_APP_KEY = key goes here 
+	- PUSHER_APP_SECRET = secret goes here 
+	- PUSHER_APP_CLUSTER = cluster goes here 
+    ```
+
+* Add at the bottom of your .env file : 
+    ```sh
+    - BASE_URL=https://localhost:8000
+    ```
+* In [Unsplash](https://unsplash.com/developers), register your app and copy the api keys
+
+* Paste the keys in "database/factories/PostFactory.php" and "database/factories/UserFactory.php" like so :
+
+    ```sh
+    'applicationId'	=> 'applicationId goes here',
+    'secret'	=> 'secret goes here',
+    ```
+    
+* In [Cloudinary](https://cloudinary.com/), create an uploadPreset and enable cropping
+
+* Copy your cloudName and uploadPreset in "ressource/js/app.js", "ressource/js/components/EditProfile.vue" & "ressource/js/components/Feed.vue" like so :
+    
+    ```sh
+    cloudName: "cloudName goes here",
+    uploadPreset: "uploadPreset goes here",
+    ```
+    
+* Create your SQL database under the name " instaclone "
+
+* In your terminal, execute the following : 
+
+    ```sh
+    php artisan migrate
+    ```
+    ```sh
+    php artisan db:seed
+    ```
+
+
+
+<!-- CONTACT -->
+## Contact
+
+Adam LOUALI - [LinkedIn](https://www.linkedin.com/in/adam-louali/) - loualiadam0@gmail.com
+
+Project Link: [https://github.com/AdamOB1290/instaCLone](https://github.com/AdamOB1290/instaCLone)
+
+
+
+<!-- ACKNOWLEDGEMENTS -->
+## Acknowledgements
+* [Pusher](https://pusher.com/)
+* [Cloudinary](https://cloudinary.com/)
+* [Bootstrap Vue](https://bootstrap-vue.org/)
+* [Tailwind](https://tailwindcss.com/)
+* [Animate.css](https://animate.style/)
+* [Vuex](https://vuex.vuejs.org/)
+* [Slick Carousel](https://kenwheeler.github.io/slick/)
+* [Glide js](https://glidejs.com/)
+* [Unsplash](https://unsplash.com/developers)
+* [Faker](https://github.com/fzaninotto/Faker)
+
