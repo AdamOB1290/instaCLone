@@ -200,7 +200,7 @@
         mounted() {
             
              var widget = cloudinary.createUploadWidget( 
-                { cloudName: "resize", uploadPreset: "resize_preset", cropping: true },
+                { cloudName: "****REMOVED****", uploadPreset: "****REMOVED****", cropping: true },
                 (error, result) => { 
                     if (typeof result.info.files != 'undefined') {
                         this.form.pfp.url = result.info.files[0].uploadInfo.url

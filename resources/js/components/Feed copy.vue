@@ -405,7 +405,7 @@ export default {
 
 
     var widget = cloudinary.createUploadWidget( 
-    { cloudName: "resize", uploadPreset: "resize_preset", cropping: true },
+    { cloudName: "****REMOVED****", uploadPreset: "****REMOVED****", cropping: true },
      (error, result) => { 
          this.postForm.postMedia = result
          if (typeof result.info.files != 'undefined') {
